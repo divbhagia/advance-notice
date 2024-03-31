@@ -1,0 +1,6 @@
+job.slurm
+__pychache__/
+
+# Ignore all files pychache in folders and subfolders
+**/__pychache__/*
+

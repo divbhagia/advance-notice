@@ -1,7 +1,7 @@
-# Parallel computing for loops
-
 # Housekeeping
+import sys
 import numpy as np
+sys.path.append('code')
 from utils.SimFns import DGP, SimData
 from utils.DataFns import DurDist
 import multiprocessing as mp
