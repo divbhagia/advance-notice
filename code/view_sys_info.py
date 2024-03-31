@@ -1,4 +1,6 @@
 import psutil
+import platform
+import numpy, pandas, matplotlib
 
 # CPU information
 print(f"Physical cores: {psutil.cpu_count(logical=False)}")
@@ -21,11 +23,9 @@ print(f"Processor: {platform.processor()}")
 print(f"OS Type: {platform.architecture()}")
 
 # Python version
-import platform
-print(f"Python version: {platform.python_version()}")
+print(f"Python Version: {platform.python_version()}")
 
 # Package versions
-import numpy, pandas, matplotlib
 print(f"NumPy version: {numpy.__version__}")
 print(f"Pandas version: {pandas.__version__}")
 print(f"Matplotlib version: {matplotlib.__version__}")

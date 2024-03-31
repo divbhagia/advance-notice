@@ -34,7 +34,7 @@ if __name__ == '__main__':
     # Parameters
     T = 8
     J = 2  
-    n = 10000
+    n = 50000
     iters = 500 
     
     # Find hazard rates and standard errors
