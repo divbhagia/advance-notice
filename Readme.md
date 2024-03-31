@@ -1,7 +1,8 @@
 
 This repository contains the code for the paper "Duration Dependence and Heterogeneity: Learning from Early Notice of Layoff" by Div Bhagia. 
 
-This project was built using Python 3.11.
+### Software Requirements
+This project was built using Python 3.11. To install python:
 
 ```bash
 git clone git@github.com:divbhagia/notice.git
@@ -12,7 +13,7 @@ To run the code use the makefile.
 
 # Create a virtual environment
 
-```bash
+
 
 
 
