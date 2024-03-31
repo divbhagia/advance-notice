@@ -60,4 +60,6 @@ if __name__ == '__main__':
 
     # Save plot
     plt.savefig('output/simulation/s2_multi_iters.png')
+    plt.show()
+
 
