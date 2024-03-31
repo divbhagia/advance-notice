@@ -25,8 +25,7 @@ import platform
 print(f"Python version: {platform.python_version()}")
 
 # Package versions
-import numpy, pandas, matplotlib, sklearn
+import numpy, pandas, matplotlib
 print(f"NumPy version: {numpy.__version__}")
 print(f"Pandas version: {pandas.__version__}")
 print(f"Matplotlib version: {matplotlib.__version__}")
-print(f"Scikit-learn version: {sklearn.__version__}")
