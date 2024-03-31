@@ -35,7 +35,7 @@ if __name__ == '__main__':
     T = 8
     J = 2  
     n = 10000
-    iters = 500 
+    iters = 1000 
     
     # Find hazard rates and standard errors
     h_list, se_list = HazardSimMP(n, T, J, iters)
