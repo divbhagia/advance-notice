@@ -50,7 +50,6 @@ if __name__ == '__main__':
     plt.plot(se_anl, 'red')
     plt.legend(['Simulation', 'Analytical'])
     plt.title('Standard Errors')
-    plt.show()
     
     # Plot average hazard + margin of error
     plt.subplot(2, 1, 2)
@@ -58,7 +57,6 @@ if __name__ == '__main__':
     plt.plot(avg_h + 1.96 * se_anl, 'red')
     plt.legend(['Simulation', 'Analytical'])
     plt.title('Average Hazard + Margin of Error')
-    plt.show()
 
     # Save plot
     plt.savefig('output/simulation/s2_multi_iters.png')
