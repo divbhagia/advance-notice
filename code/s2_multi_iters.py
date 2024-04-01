@@ -31,12 +31,12 @@ if __name__ == '__main__':
     # Parameters
     T = 8
     J = 2  
-    n = 10000
-    iters = 200 
+    n = 50000
+    iters = 1000 
     
     # Set seed
     np.random.seed(1118)
-    seeds = np.random.randint(1, iters, iters)
+    seeds = np.random.randint(1, 10*iters, iters)
     print('Looping multiple times using MP...')
     
     # Find hazard rates and standard errors
