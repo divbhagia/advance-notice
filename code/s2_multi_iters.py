@@ -8,16 +8,17 @@ import multiprocessing as mp
 import matplotlib.pyplot as plt
 
 # Function to simulate data and calculate duration distribution
-def HazardSim(n, T, J):
+def HazardSim(n, T, J, seed=1118):
     data = SimData(n, T, J)
     h, se = DurDist(data['obsdur'], data['cens'])
     return h, se
 
 # Function loops using MP to run HazardSim multiple times
-def HazardSimMP(n, T, J, iters):
+def HazardSimMP(n, T, J, seeds):
     num_cores = mp.cpu_count()
     pool = mp.Pool(num_cores)
-    results = pool.starmap(HazardSim, [(n, T, J) for i in range(iters)])
+    results = pool.starmap(HazardSim, [(n, T, J, seeds[i]) for i in range(len(seeds))])
+    #results = pool.starmap(HazardSim, [(n, T, J) for i in range(iters)])
     h_list = np.array([results[i][0] for i in range(iters)])
     se_list = np.array([results[i][1] for i in range(iters)])
     pool.close()
@@ -27,18 +28,19 @@ def HazardSimMP(n, T, J, iters):
 # Main program
 if __name__ == '__main__':
     
-    # Initialise
-    np.random.seed(1118)
-    print('Looping multiple times using MP...')
-
     # Parameters
     T = 8
     J = 2  
-    n = 50000
-    iters = 500 
+    n = 10000
+    iters = 10 
+    
+    # Set seed
+    #np.random.seed(1118)
+    seeds = np.random.randint(1, iters, iters)
+    print('Looping multiple times using MP...')
     
     # Find hazard rates and standard errors
-    h_list, se_list = HazardSimMP(n, T, J, iters)
+    h_list, se_list = HazardSimMP(n, T, J, seeds)
     se_sim = np.std(h_list, axis=0)
     se_anl = np.mean(se_list, axis=0)
     avg_h = np.mean(h_list, axis=0)

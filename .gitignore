@@ -1,9 +1,10 @@
 job.slurm
 __pychache__/
-**/__pychache__/*
+**/__pychache__/
 .DS_Store
 **/.DS_Store/*
 myenv/
+code/utils/__pycache__/
 
 
 
