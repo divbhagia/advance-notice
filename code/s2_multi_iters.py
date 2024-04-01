@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 # Function to simulate data and calculate duration distribution
 def HazardSim(n, T, J, seed=1118):
+    np.random.seed(seed)
     data = SimData(n, T, J)
     h, se = DurDist(data['obsdur'], data['cens'])
     return h, se
@@ -18,7 +19,6 @@ def HazardSimMP(n, T, J, seeds):
     num_cores = mp.cpu_count()
     pool = mp.Pool(num_cores)
     results = pool.starmap(HazardSim, [(n, T, J, seeds[i]) for i in range(len(seeds))])
-    #results = pool.starmap(HazardSim, [(n, T, J) for i in range(iters)])
     h_list = np.array([results[i][0] for i in range(iters)])
     se_list = np.array([results[i][1] for i in range(iters)])
     pool.close()
@@ -32,10 +32,10 @@ if __name__ == '__main__':
     T = 8
     J = 2  
     n = 10000
-    iters = 10 
+    iters = 200 
     
     # Set seed
-    #np.random.seed(1118)
+    np.random.seed(1118)
     seeds = np.random.randint(1, iters, iters)
     print('Looping multiple times using MP...')
     
