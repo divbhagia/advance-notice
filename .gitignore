@@ -5,6 +5,7 @@ __pychache__/
 **/.DS_Store/*
 myenv/
 code/utils/__pycache__/
+data/
 
 
 

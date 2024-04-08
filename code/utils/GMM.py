@@ -51,7 +51,7 @@ def Distance(x, nrm, g_data, W = None):
 # Function: 2-step GMM
 ##########################################################
 
-def GMM(g, nrm, unstack = False):
+def GMM(g, nrm=0.5, unstack = False):
     T, J = g.shape
     num_vars = 2 * T + J - 2
     x0 = 0.5*np.ones(num_vars)
