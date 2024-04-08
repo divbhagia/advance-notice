@@ -1,1 +1,96 @@
-python: can't open file '/home/dbhagia/./code/s2_multi_iters.py': [Errno 2] No such file or directory
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,
+/home/dbhagia/.pyenv/versions/3.12.0/envs/env-notice/lib/python3.12/site-packages/joblib/parallel.py:1332: UserWarning: Loky-backed parallel loops cannot be called in a multiprocessing, setting n_jobs=1
+  n_jobs = self._backend.configure(n_jobs=self.n_jobs, parallel=self,

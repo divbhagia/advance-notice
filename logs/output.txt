@@ -1,0 +1,2 @@
+Simulation parameters: n = 200000, iterations = 200
+Model PS: nn (true: logit), Model RA: nn, nfolds: 2

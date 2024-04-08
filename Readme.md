@@ -27,11 +27,3 @@ make
 ```
 If you did not create a virtual environment, just omit the `pyenv activate env-notice` command.
 
-
-
-
-
-
-
-
-
