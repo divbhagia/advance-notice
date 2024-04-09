@@ -1,12 +1,18 @@
-import pandas as pd
-from ipumspy import readers
-import numpy as np
-from OccInd import get_occ, get_broad_occ
-from OccInd import get_ind, get_broad_ind
+##########################################################
+# Housekeeping
+##########################################################
 
-################################################################
-# Initialise 
-################################################################
+# Add utils to path
+import sys; sys.path.append('code')
+
+# Import external libraries
+import pandas as pd
+import numpy as np
+
+# Import custom functions
+from utils.OccInd import get_occ, get_broad_occ
+from utils.OccInd import get_ind, get_broad_ind
+from utils.DataFns import Indicator
 
 # Specify directories & parameters
 ipums_dir = 'data/raw/IPUMS-Extract'
@@ -16,8 +22,13 @@ unemp_file = 'data/raw/yearly_state_ur.csv'
 data_dir = 'data'
 extract_ipums = False
 
+##########################################################
+# Extract IPUMS data or load previously extracted data
+##########################################################
+
 # Extract IPUMS data or load previously extracted data
 if extract_ipums:
+    from ipumspy import readers # type: ignore
     ddi = readers.read_ipums_ddi(f'{ipums_dir}/cps_00039.xml')
     df = readers.read_microdata(ddi, f'{ipums_dir}/cps_00039.dat')
     df.columns = df.columns.str.lower()
@@ -25,9 +36,9 @@ if extract_ipums:
 else:
     df = pd.read_csv(f'{ipums_dir}/cps_raw.csv')
 
-################################################################
+##########################################################
 # Remove armed forces and keep select variables 
-################################################################
+##########################################################
     
 # Filter armed forces & children under 14/15
 df = df[df['popstat']==1]
@@ -58,9 +69,9 @@ df = df[cps_oth_vars + cps_cat_vars + cps_cont_vars + \
 # Declare all variables as intergers
 df = df.astype(int, errors='ignore')
 
-################################################################
+##########################################################
 # Merge state-year level unemployment rate & GDP data 
-################################################################
+##########################################################
 
 unemp = pd.read_csv(unemp_file)
 gdp = pd.read_csv(gdp_file)
@@ -71,9 +82,9 @@ df = pd.merge(df, gdp, on=['year', 'statefip', 'state'], how='left')
 df[df['ur'].isnull()]['year'].value_counts()
 df[df['gdp'].isnull()]['year'].value_counts()
 
-################################################################
+##########################################################
 # Missing values & top codes for continous variables
-################################################################
+##########################################################
 
 # CPS variables
 df['uhrsworkt'] = np.where(df['uhrsworkt'] >= 997, np.nan, df['uhrsworkt'])
@@ -96,12 +107,14 @@ df['dwweekc'] = np.where(df['dwweekc'] == 0, np.nan, df['dwweekc'])
 
 # Other DWS variables
 df['dwwksun'] = np.where(df['dwwksun'] >= 996, np.nan, df['dwwksun'])
-df['dwjobsince'] = np.where(df['dwjobsince'] >= 95, np.nan, df['dwjobsince'])
-df['dwhrswkc'] = np.where(df['dwhrswkc'] >= 96, np.nan, df['dwhrswkc'])
+varlist = ['dwjobsince', 'dwhrswkc', 'dwunion', 'dwlastwrk', 'dwhi']
+for var in varlist:
+    df[var] = np.where(df[var] >= 96, np.nan, df[var])
+df['dwreas'] = np.where(df['dwreas'] >= 95, np.nan, df['dwreas'])
 
-################################################################
+##########################################################
 # CPI adjustment
-################################################################
+##########################################################
 
 # Load CPI data
 cpi99 = pd.read_csv(cpi_file, sep="\t", header=None, 
@@ -116,38 +129,56 @@ df['dwweekl'] = df['dwweekl'] * df['cpi99']
 df['dwweekc'] = df['dwweekc'] * df['cpi99']
 df['faminc'] = df['faminc'] * df['cpi99']
 
-################################################################
+##########################################################
 # Generate additional variables
-################################################################
+##########################################################
 
-df = df.assign(
-    female = np.where(df['sex'] == 2, 1, 0),
-    black = np.where(df['race'] == 200, 1, 0),
-    married = np.where((df['marst'] == 1) | (df['marst'] == 2), 1, 0),
-    col = np.where(df['educ'] >= 110, 1, 0),
-    lnearnl = np.log(df['dwweekl']),
-    lnearnc = np.log(df['dwweekc']),
-    pc = np.where(df['dwreas'] == 1, 1, 0),
-    union = np.where(df['dwunion'] == 2, 1, 0),
-    hi = np.where(df['dwhi'] == 2, 1, 0),
-    jf = np.where(df['dwjobsince'] != 0, 1, 0),
-    notice = np.where(df['dwnotice'] == 4, 1, 0),
-    j2j = np.where((df['dwwksun'] == 0) & (df['dwjobsince'] > 0), 1, 0),
-    dyear = df['year'] - df['dwlastwrk'],
-    in_metro = np.where((df['metro'] >= 2) & (df['metro'] <= 4), 1, 0),
-    emp = np.where((df['empstat'] >= 10) & (df['empstat'] <= 12), 1, 0),
-    unemp = np.where((df['empstat'] >= 20) & (df['empstat'] <= 22), 1, 0),
-    nilf = np.where((df['empstat'] >= 30) & (df['empstat'] <= 36), 1, 0),
-)
+# Create new binary variables (preserves missing values)
+df['female'] = Indicator(df['sex'], 2)
+df['black'] = Indicator(df['race'], 200)
+df['married'] = Indicator(df['marst'], [1, 2])
+df['col'] = Indicator(df['educ'], 110, 'greater')
+df['pc'] = Indicator(df['dwreas'], 1)
+df['union'] = Indicator(df['dwunion'], 2)
+df['hi'] = Indicator(df['dwhi'], 2)
+df['jf'] = Indicator(df['dwjobsince'], 1, 'greater')
+df['in_metro'] = Indicator(df['metro'], [2, 3, 4])
+df['emp'] = Indicator(df['empstat'], [10, 11, 12])
+df['unemp'] = Indicator(df['empstat'], [20, 21, 22])
+df['nilf'] = Indicator(df['empstat'], [30, 36], 'range')
+
+# Log earnings
+df['lnearnl'] = np.log(df['dwweekl'])
+df['lnearnc'] = np.log(df['dwweekc'])
+
+# Displacement year, j2j, and notice
+df['dyear'] = df['year'] - df['dwlastwrk']
+df['dyear'] = np.where(df['dwlastwrk'].isna(), np.nan, df['dyear'])
+df['j2j'] = np.where((df['dwwksun'] == 0) & (df['dwjobsince'] > 0), 1, 0)
+df['j2j'] = np.where(df['dwjobsince'].isnull(), np.nan, df['j2j'])
+df['notice'] = Indicator(df['dwnotice'], 4)
+
+# Indicator for extended benefits
 df = df.assign(ext = np.where((df['dyear'] >= 2001) & (df['dyear'] <= 2004) | 
                  (df['dyear'] >= 2008) & (df['dyear'] <= 2013), 1, 0))
 
-################################################################
+# Convert race to 1 digit
+df['race'] = df['race'].apply(lambda x: int(str(x)[0]))
+
+# Generate education categories
+df['educ_cat'] = np.where(df['educ'] <= 72, 'Less than HS', np.nan) 
+df['educ_cat'] = np.where(df['educ'] == 73, 'HS Degree', df['educ_cat'])
+df['educ_cat'] = np.where((80 <= df['educ']) & (df['educ'] <= 110), 'Some College', df['educ_cat']) 
+df['educ_cat'] = np.where(df['educ']==111, 'College', df['educ_cat']) 
+df['educ_cat'] = np.where(df['educ']>111, 'Graduate Degree', df['educ_cat']) 
+df['educ_cat'] = np.where(df['educ']==999, np.nan, df['educ_cat']) 
+
+##########################################################
 # Unemployment duration
-################################################################
+##########################################################
 
 # Generate observed duration variable
-df['censdur'] = np.where(df['jf'] == 1, df['dwwksun'], df['durunemp'])
+df['obsdur'] = np.where(df['jf'] == 1, df['dwwksun'], df['durunemp'])
 
 # Function to group duration
 def group_dur(dur_var, interval):
@@ -159,26 +190,26 @@ def group_dur(dur_var, interval):
     return dur
 
 # Generate duration 4, 9, and 12 week intervals
-df['dur'] = group_dur(df['censdur'], 12)
-df['dur_4week'] = group_dur(df['censdur'], 4)
-df['dur_9week'] = group_dur(df['censdur'], 9)
+df['dur'] = group_dur(df['obsdur'], 12)
+df['dur_4week'] = group_dur(df['obsdur'], 4)
+df['dur_9week'] = group_dur(df['obsdur'], 9)
 
 # Leaving in first interval indicator
-df['h0'] = (df['censdur'] == 0).astype(int)
+df['h0'] = (df['obsdur'] == 0).astype(int)
 df['h0to12'] = (df['dur'] == 6).astype(int)
 
-################################################################
+##########################################################
 # Occupation & Industry Categories
-################################################################
+##########################################################
 
 df['occ'] = df['dwocc1990'].apply(get_occ)
 df['occ_cat'] = df['occ'].apply(get_broad_occ)
 df['ind'] = df['dwind1990'].apply(get_ind)
 df['ind_cat'] = df['ind'].apply(get_broad_ind)
 
-################################################################
+##########################################################
 # Sample selection
-################################################################
+##########################################################
 
 # Sample selection 
 dws = df[df['dws'] == 1]
@@ -188,22 +219,27 @@ sample = sample[(sample['age'] >= 21) & (sample['age'] <= 65)]
 sample = sample[(sample['dwfulltime'] == 2)]                    
 sample = sample[(sample['dwclass'] <= 3)]                       
 sample = sample[(sample['dwrecall'] != 2)]                     
-sample = sample[(sample['nilf'] == 0) | (sample['jf'] == 1)]    
-sample = sample[sample['dwjobsince'].isnull()==False]           
-sample = sample[(sample['jf'] == 0) | (sample['dwwksun'].isnull()==False)] 
+#tmp = sample[(sample['nilf'] == 0) | (sample['jf'] == 1)]    
 sample = sample[(sample['dwnotice'] >= 1) & (sample['dwnotice'] <= 4)]
 
 # Remove missing values
-#sample = sample.dropna(subset=['lnearnl', 'dwyears'])
-#sample = sample[sample['ind_cat'] != "Unknown"]
-#sample = sample[sample['occ_cat'] != "Unknown"]
+print(sample.isnull().sum()[sample.isnull().sum() != 0])
+varlist = ['dwlastwrk', 'dwunion', 'dwhi', 'dwyears', 'dwweekl',
+           'dwjobsince', 'ind', 'occ', 'obsdur']
+sample = sample.dropna(subset=varlist)
+print(sample.isnull().sum()[sample.isnull().sum() != 0])
 
-################################################################
+# Note obsdur is missing when jf=1 & dwwksun is missing
+
+# Are there individuals who haven't found a job and left lf?
+sample[(sample['jf'] == 0)]['nilf'].value_counts()
+
+##########################################################
 # Save data
-################################################################
+##########################################################
 
 sample.to_csv(f'{data_dir}/sample.csv', index=False)
 dws.to_csv(f'{data_dir}/dws.csv', index=False)
 df.to_csv(f'{data_dir}/cps.csv', index=False)
 
-################################################################
+##########################################################

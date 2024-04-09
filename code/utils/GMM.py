@@ -24,13 +24,13 @@ def ModelMoments(psiM, mu):
 # Function unpacks model parameters from a stacked vector
 ##########################################################
 
-def Unstack(T, x, nrm):
+def Unstack(T, J, x, nrm):
     psi = x[:T-1]
     mu = np.ones(T)
     mu[0] = nrm
     mu[1:] = x[T-1:2*T-2]
     psin = x[2*T-2:]
-    psiM = np.array([np.append(psin[0], psi), np.append(psin[1], psi)]).T
+    psiM = np.array([np.append(psin[j], psi) for j in range(J)]).T
     return psiM, mu
 
 ##########################################################
@@ -39,8 +39,8 @@ def Unstack(T, x, nrm):
 ##########################################################
 
 def Distance(x, nrm, g_data, W = None):
-    T = len(g_data)
-    psiM, mu = Unstack(T, x, nrm)
+    T, J = g_data.shape
+    psiM, mu = Unstack(T, J,  x, nrm)
     g_model = ModelMoments(psiM, mu)
     mdiff = (g_model-g_data).reshape(-1)
     W = np.eye(g_data.size) if W is None else W
@@ -61,7 +61,7 @@ def GMM(g, nrm=0.5, unstack = False):
                       jac=NumGrad, options=opts)
     x_hat = result.x
     if unstack:
-        psiM, mu = Unstack(T, x_hat, nrm)
+        psiM, mu = Unstack(T, J, x_hat, nrm)
         return psiM, mu
     else:
         return x_hat

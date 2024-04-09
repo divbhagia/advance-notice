@@ -6,7 +6,8 @@ __pychache__/
 myenv/
 code/utils/__pycache__/
 data/
-
+logs/
+output/
 
 
 

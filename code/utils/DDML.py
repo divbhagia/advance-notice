@@ -25,7 +25,7 @@ def DensityFromHazard(h):
 
 def PredProbs(Y, X, X_c, model = 'logit', coefs = False):
     if model == 'best':
-        model = BestModel(X, Y, print_opt = 'quiet')
+        model = BestModel(X, Y, print_opt = 'verbose')
     else:
         model, _ = ModelParams(model)
         model.fit(X, Y)
@@ -54,6 +54,62 @@ def PredExitProbs(dur, cens, notice, X, X_c, model='logit'):
     return h_i
 
 ##########################################################
+# Inverse Probability Weighting 
+##########################################################
+
+def IPW(data, model_ps ='logit', folds = None):
+
+    # Initialize
+    folds = np.zeros(len(data)) if folds is None else folds
+    nfolds = np.unique(folds).shape[0]
+    notice = data['notice']
+    n, J = len(data), len(notice.unique())
+    notX_vars = ['dur', 'cens', 'notice', 'cens_ind']
+    X = data[[col for col in data.columns if col not in notX_vars]]
+
+    # If nfolds = 1, IPW on full sample
+    if nfolds == 1:
+        ps = PredProbs(notice, X, X, model_ps)
+        return ps
+    
+    # If nfolds>1, Cross-fitting, fit model on f complement & predict on f
+    ps = np.zeros((n, J))
+    for f in range(nfolds):
+        ps[folds==f, :] = PredProbs(notice[folds!=f], X[folds!=f], X[folds==f], model_ps)
+    
+    return ps
+
+##########################################################
+# Regression Adjustment
+##########################################################
+
+def RegAdj(data, model_ra ='logit', folds=None):
+
+    # Initialize
+    folds = np.zeros(len(data)) if folds is None else folds
+    nfolds = np.unique(folds).shape[0]
+    dur = data['dur']
+    cens = data['cens']
+    notice = data['notice']
+    notX_vars = ['dur', 'cens', 'notice', 'cens_ind']
+    X = data[[col for col in data.columns if col not in notX_vars]]
+
+    # If nfolds = 1, RA on full sample
+    if nfolds == 1:
+        h_i = PredExitProbs(dur, cens, notice, X, X, model_ra)
+        return h_i
+    
+    # If nfolds>1, Cross-fitting, fit model on f complement & predict on f
+    T, J, n = len(dur.unique()), len(notice.unique()), len(data)
+    h_i = np.zeros((T, J, n))
+    for f in range(nfolds):
+        h_i[:, :, folds==f] = PredExitProbs(dur[folds!=f], cens[folds!=f], 
+                                           notice[folds!=f], X[folds!=f], 
+                                           X[folds==f], model_ra)
+    
+    return h_i
+
+##########################################################
 # Helper function for ImpliedMoms
 ##########################################################
 
@@ -67,65 +123,6 @@ def DR_Moments(x_ipw, x_ra, x_i, ps, notice):
             x_dr[d, j] = x_ipw[d, j] + x_ra[d, j] \
                 - np.mean((notInd/ps[:, j]) * x_i[d, j, :])
     return x_dr
-
-##########################################################
-# Double Machine Learning
-##########################################################
-
-def DDML(data, model_ps = 'logit', model_ra = 'logit', nrm = 0.5, fold=None):
-        
-    # Unpack data
-    fold = np.zeros(len(data)) if fold is None else fold
-    nfolds = np.unique(fold).shape[0]
-    dur = data['dur']
-    cens = data['cens']
-    notice = data['notice']
-    notX_vars = ['dur', 'cens', 'notice', 'cens_ind']
-    X = data[[col for col in data.columns if col not in notX_vars]]
-
-    #################################################
-    # If nfolds = 1, Double ML on full sample
-
-    if nfolds == 1:
-        psiM_hat, mu_hat = {}, {}
-        ps = None if model_ps is None else PredProbs(notice, X, X, model_ps)
-        h_i = None if model_ra is None else PredExitProbs(dur, cens, notice, X, X, model_ra)
-        g = ImpliedMoms(data, ps, h_i)[0]
-        for x in g.keys():
-            psiM_hat[x], mu_hat[x] = GMM(g[x], nrm, unstack = True)
-        return psiM_hat, mu_hat, ps, h_i
-    
-    #################################################
-    # If nfolds>1, Cross-fitting (Double-Debiased ML)
-
-    # Initialize arrays
-    T, J, n = len(dur.unique()), len(notice.unique()), len(data)
-    ps = np.zeros((n, J))
-    h_i = np.zeros((T, J, n))
-    psiM_hats, mu_hats = {}, {}
-    keys = ['dr', 'ra', 'ipw']
-    for x in keys:
-        psiM_hats[x] = np.zeros((T, J, nfolds))
-        mu_hats[x] = np.zeros((T, nfolds))
-
-    # Implement cross-fitting
-    for f in range(nfolds):
-
-        # Estimate nuisance parameters on f complement & predict on f
-        ps[fold==f, :] = PredProbs(notice[fold!=f], X[fold!=f], X[fold==f], model_ps)
-        h_i[:, :, fold==f] = PredExitProbs(dur[fold!=f], cens[fold!=f], 
-                                           notice[fold!=f], X[fold!=f], X[fold==f], model_ra)
-        
-        # Estimate hazard model on fold f
-        g_f = ImpliedMoms(data[fold==f], ps[fold==f], h_i[:, :, fold==f])[0]
-        for x in keys:
-            psiM_hats[x][:, :, f], mu_hats[x][:, f] = GMM(g_f[x], nrm, unstack = True)
-        psiM_hat = {x: psiM_hats[x].mean(axis=2) for x in keys}
-        mu_hat = {x: mu_hats[x].mean(axis=1) for x in keys}
-    
-    psiM_hat
-
-    return psiM_hat, mu_hat, ps, h_i
 
 ##########################################################
 # Outputs Data Moments 
@@ -181,6 +178,48 @@ def ImpliedMoms(data, ps=None, h_i=None):
         # g_dr, S_dr = DensityFromHazard(h_dr) # which is correct?
 
     return g, h, S
+
+##########################################################
+# Double Machine Learning
+##########################################################
+
+def DDML(data, model_ps ='logit', model_ra ='logit', folds=None,  nrm=0.5):
+        
+    # Unpack data
+    folds = np.zeros(len(data)) if folds is None else folds
+    nfolds = np.unique(folds).shape[0]
+    dur = data['dur']
+    notice = data['notice']
+
+    # IPW
+    ps = IPW(data, model_ps, folds)
+
+    # Regression Adjustment
+    h_i = RegAdj(data, model_ra, folds)
+
+    # If nfolds = 1, Double ML on full sample
+    if nfolds == 1:
+        psiM_hat, mu_hat = {}, {}
+        g = ImpliedMoms(data, ps, h_i)[0]
+        for x in g.keys():
+            psiM_hat[x], mu_hat[x] = GMM(g[x], nrm, unstack = True)
+        return psiM_hat, mu_hat, ps, h_i
+
+    # If nfolds>1, Cross-fitting (Double-Debiased ML)
+    T, J = len(dur.unique()), len(notice.unique())
+    psiM_hats, mu_hats = {}, {}
+    keys = ['dr', 'ra', 'ipw', 'raw']
+    for x in keys:
+        psiM_hats[x] = np.zeros((T, J, nfolds))
+        mu_hats[x] = np.zeros((T, nfolds))
+    for f in range(nfolds):
+        g_f = ImpliedMoms(data[folds==f], ps[folds==f], h_i[:, :, folds==f])[0]
+        for x in keys:
+            psiM_hats[x][:, :, f], mu_hats[x][:, f] = GMM(g_f[x], nrm, unstack = True)
+        psiM_hat = {x: psiM_hats[x].mean(axis=2) for x in keys}
+        mu_hat = {x: mu_hats[x].mean(axis=1) for x in keys}
+
+    return psiM_hat, mu_hat, ps, h_i
 
 ##########################################################
 

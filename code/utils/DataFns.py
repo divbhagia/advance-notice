@@ -4,6 +4,50 @@ from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 
 ##########################################################
+# Create new binary variables in pandas frames
+##########################################################
+
+# Create new binary variables in pandas frames
+def Indicator(var, values, opt='values'):
+
+    '''
+    This function creates a binary indicator variable based on 
+    the values of a given variable.
+
+    Parameters:
+    var (pandas.Series): A pandas Series object.
+    values (int or list): The values to use for the indicator.
+    opt (str): The type of indicator to create.
+
+    Options:
+    - 'values': Indicator if variable is equal to specific values.
+    - 'range': Indicator if variable is within a specific interval.
+    - 'greater': Indicator if variable is greater than a specific value.
+    - 'less': Indicator if variable is less than a specific value.
+    Default is 'values'.
+
+    Returns:
+    newvar (pandas.Series): A binary indicator variable.
+    '''
+
+    values = [values] if type(values) == int else values
+    if opt == 'values':
+        newvar = np.where(var.isnull(), np.nan, var.isin(values))
+    elif opt == 'range':
+        newvar = np.where(var.isnull(), np.nan, 
+                          np.where((var >= values[0]) & (var <= values[1]), 1, 0))
+    elif opt == 'greater':
+        newvar = np.where(var.isnull(), np.nan, 
+                          np.where(var >= values[0], 1, 0))
+    elif opt == 'less':
+        newvar = np.where(var.isnull(), np.nan, 
+                          np.where(var <= values[0], 1, 0))
+    else:
+        raise ValueError('Option not recognized. Please use: values, interval, greater, or less.')
+    
+    return newvar
+
+##########################################################
 # Custom Plot
 ##########################################################
 

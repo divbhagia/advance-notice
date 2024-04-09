@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from utils.SimFns import DGP, SimData
 from utils.DataFns import DurDistByNotice, CustomPlot
-from utils.DDML import DDML, ImpliedMoms
+from utils.DDML import DDML, ImpliedMoms, IPW, RegAdj
 from utils.GMM import Unstack, GMM, ModelMoments
 import matplotlib.pyplot as plt
 import multiprocessing as mp
@@ -49,14 +49,14 @@ CustomPlot(series1, legendlabs=labs, title='Structural Hazard')
 CustomPlot(series2, legendlabs=labs, title='Moments of nu')
 
 ##########################################################
-# Try DDML with default DGP
+# Try DDML with DGP: few_vars
 ##########################################################
 
 # DGP
 np.random.seed(1118)
 T, J = 4, 2
-n = 200000
-dgp_opt = 'default'
+n = 500000
+dgp_opt = 'fewvars'
 psiM, mu, nuP, betaL, betaPhi, x_means, cov_x1to3 = DGP(T, J, dgp_opt)
 nrm = mu[0]
 
@@ -75,13 +75,17 @@ if remove_sparse:
     data = pd.concat([data[not_X_vars], X], axis=1)
 
 # Estimate with nfolds=1
-psiM_hat1, mu_hat, ps, h_i = DDML(data, model_ps, model_ra, nrm) # nfold=1
+psiM_hat1, mu_hat, ps, h_i = DDML(data, model_ps, model_ra, nrm=nrm) # nfold=1
+ps_ = IPW(data, model_ps)
+h_i_ = RegAdj(data, model_ra)
 g1 = ImpliedMoms(data, ps, h_i)[0]
 psiM_hat2 = {x: GMM(g1[x], nrm, unstack=True)[0] for x in g1.keys()}
 
 # Estimate with nfolds=2
-fold = np.random.choice(2, len(data))
-psiM_hat3, mu_hat, ps, h_i = DDML(data, model_ps, model_ra, nrm, fold)
+folds = np.random.choice(2, len(data))
+psiM_hat3, mu_hat, ps, h_i = DDML(data, model_ps, model_ra, folds, nrm)
+ps_ = IPW(data, model_ps, folds)
+h_i_ = RegAdj(data, model_ra, folds)
 g2 = ImpliedMoms(data, ps, h_i)[0]
 psiM_hat4 = {x: GMM(g2[x], nrm, unstack=True)[0] for x in g2.keys()}
 

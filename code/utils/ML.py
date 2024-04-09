@@ -8,7 +8,7 @@ num_cores = round(mp.cpu_count()/1.5)
 # Models with parameters for different learners
 ##########################################################
 
-def ModelParams(learner, cv = 10, nj = -1):
+def ModelParams(learner, cv = 10, nj = 1):
 
     # Logistic regression
     if learner == 'logit':
