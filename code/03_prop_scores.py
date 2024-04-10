@@ -18,8 +18,8 @@ sample = pd.read_csv(f'{data_dir}/sample.csv')
 
 # Additional sample selection
 sample = sample[sample['dwyears'] >= 0.5]
-#sample = sample[sample['dwhi'] == 1]
-#sample = sample[sample['dwjobsince'] <= 2]
+sample = sample[sample['dwhi'] == 1]
+sample = sample[sample['dwjobsince'] <= 2]
 sample = sample[sample['dwnotice'] != 1]
 
 # Create additional variables
@@ -30,7 +30,7 @@ sample['notice'] = sample['dwnotice']
 cat_vars = ['year', 'statefip', 'metro', 'sex', 'marst', 'educ_cat', 'race', 
             'dwlastwrk', 'dwunion', 'dwhi', 'ind_cat', 'occ_cat', 'dwreas']
 cat_vars = ['year', 'statefip', 'metro', 'sex', 'marst', 'educ_cat', 'race', 
-            'dwunion', 'ind_cat', 'occ_cat', 'dwreas', 'dwhi']
+            'dwunion', 'ind_cat', 'occ_cat', 'dwreas']
 cont_vars = ['age', 'dwyears', 'dwweekl', 'ur', 'gdp']
 
 # Keeo only relevant variables
@@ -41,21 +41,21 @@ data[cat_vars].isnull().sum()
 data[cont_vars].isnull().sum()
 
 # Describe variables
-f = open(f'output/var_desc.txt', 'w')
-with f:
-    f.write(f'{data[cont_vars].describe()}\n\n')
-    f.write(f'{data['notice'].value_counts().sort_index()}\n\n')
-    f.write(f'{data['cens'].value_counts().sort_index()}\n\n')
-    f.write(f'{data['dur'].value_counts().sort_index()}\n\n')
-    for var in cat_vars:
-        f.write(f'{data[var].value_counts().sort_index()}\n\n')
-f.close()
+# f = open(f'output/var_desc.txt', 'w')
+# with f:
+#     f.write(f'{data[cont_vars].describe()}\n\n')
+#     f.write(f'{data['notice'].value_counts().sort_index()}\n\n')
+#     f.write(f'{data['cens'].value_counts().sort_index()}\n\n')
+#     f.write(f'{data['dur'].value_counts().sort_index()}\n\n')
+#     for var in cat_vars:
+#         f.write(f'{data[var].value_counts().sort_index()}\n\n')
+# f.close()
 
 ##########################################################
 # Double Machine Learning
 ##########################################################
 
-# Now automize above in a loop
+# Numbers as categories
 for var in ['educ_cat', 'ind_cat', 'occ_cat']:
     data.loc[:, f'{var}'] = pd.Categorical(data[var]).codes
     print(data[f'{var}'].value_counts().sort_index(), 
@@ -89,15 +89,16 @@ df = pd.concat([df, data[['dur', 'cens', 'notice']]], axis=1)
 #df = pd.concat([df, X_int], axis=1)
 # Create 2 folds
 np.random.seed(0)
-fold = np.random.choice(2, size=len(data))
-
+folds = np.random.choice(2, size=len(data))
+model_ra='best'
+model_ps='best'
 # IPW
 from utils.DDML import IPW
-ps = IPW(df, model_ps='best')
+ps = IPW(df, model_ps)
 
 # Regression Adjustment
 from utils.DDML import RegAdj
-h_i = RegAdj(df, model_ra='best')
+h_i = RegAdj(df, model_ra)
 
 # Raw data
 g, h, S = ImpliedMoms(data)
@@ -121,7 +122,15 @@ CustomPlot(series)
 
 from utils.GMM import GMM
 psiM_hat1, mu_hat1 = GMM(g['dr'][:-1,:], unstack=True)
-psiM_hat2, mu_hat2 = DDML(df, model_ra='best', model_ps='best')[0]
+psiM_hat2 = DDML(df, model_ra, model_ps, folds=folds)[0]
+
+# Plot psiM_hat
+plt.plot(psiM_hat1[:,1], label='DR-GMM')
+plt.plot(psiM_hat2['dr'][:-1,1], label='DR')
+plt.plot(g['raw'][:-1,1]/g['raw'][0,1], label='data')
+plt.plot(psiM_hat2['ipw'][:-1,1], label='IPW')
+plt.plot(psiM_hat2['ra'][:-1,1], label='RA')
+plt.legend()
 
 # Plot psiM with data
 #series = [(psiM_hat[1:,1]/psiM_hat[1,1]).flatten().tolist(), (g['raw'][1:-1,1]/g['raw'][1,1]).flatten().tolist()]

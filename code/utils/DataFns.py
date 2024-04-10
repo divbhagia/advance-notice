@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 ##########################################################
 
 # Create new binary variables in pandas frames
-def Indicator(var, values, opt='values'):
+def Indicator(var, values, opt='values', rm_na=False):
 
     '''
     This function creates a binary indicator variable based on 
@@ -32,19 +32,19 @@ def Indicator(var, values, opt='values'):
 
     values = [values] if type(values) == int else values
     if opt == 'values':
-        newvar = np.where(var.isnull(), np.nan, var.isin(values))
+        newvar = var.isin(values)
     elif opt == 'range':
-        newvar = np.where(var.isnull(), np.nan, 
-                          np.where((var >= values[0]) & (var <= values[1]), 1, 0))
+        newvar = (var >= values[0]) & (var <= values[1])
     elif opt == 'greater':
-        newvar = np.where(var.isnull(), np.nan, 
-                          np.where(var >= values[0], 1, 0))
+        newvar = (var >= values[0])
     elif opt == 'less':
-        newvar = np.where(var.isnull(), np.nan, 
-                          np.where(var <= values[0], 1, 0))
+        newvar = (var <= values[0])
     else:
         raise ValueError('Option not recognized. Please use: values, interval, greater, or less.')
     
+    if rm_na is False:
+        newvar = np.where(var.isnull(), np.nan, newvar)
+        
     return newvar
 
 ##########################################################

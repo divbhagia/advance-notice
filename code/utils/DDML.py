@@ -43,10 +43,10 @@ def PredExitProbs(dur, cens, notice, X, X_c, model='logit'):
     durvals = np.sort(dur.unique())
     notcats = np.sort(notice.unique())
     T, J = len(durvals), len(notcats)
-    h_i = np.zeros((T, J, X_c.shape[0]))
+    h_i = np.zeros((T-1, J, X_c.shape[0]))
     for j in range(J):
         notInd = (notice == notcats[j])
-        for d in range(T):
+        for d in range(T-1):
             exitInd = (dur == durvals[d]) & (cens == 0) & (notInd)
             survInd = (dur >= durvals[d]) & (notInd)
             h_i[d, j, :] = PredProbs(exitInd[survInd], 
@@ -101,7 +101,7 @@ def RegAdj(data, model_ra ='logit', folds=None):
     
     # If nfolds>1, Cross-fitting, fit model on f complement & predict on f
     T, J, n = len(dur.unique()), len(notice.unique()), len(data)
-    h_i = np.zeros((T, J, n))
+    h_i = np.zeros((T-1, J, n))
     for f in range(nfolds):
         h_i[:, :, folds==f] = PredExitProbs(dur[folds!=f], cens[folds!=f], 
                                            notice[folds!=f], X[folds!=f], 
@@ -133,7 +133,7 @@ def ImpliedMoms(data, ps=None, h_i=None):
     # Unpack data
     durvals = np.sort(data['dur'].unique())
     notcats = np.sort(data['notice'].unique())
-    T, J, n = len(durvals), len(notcats), len(data['dur'])
+    T, J, n = len(durvals), len(notcats), len(data)
     notice = data['notice']
     dur = data['dur']
     cens = data['cens']
@@ -143,16 +143,16 @@ def ImpliedMoms(data, ps=None, h_i=None):
 
     # If ps is specified compute balancing weights
     if ps is not None:
-        h['ipw'] = np.zeros((T, J))
+        h['ipw'] = np.zeros((T-1, J))
         #ps = np.clip(ps, 1e-6, 1-1e-6)
-        wts = np.zeros_like(notice)
+        wts = np.zeros(n)
         for j in range(J):
             wts[notice==notcats[j]] = 1/ps[notice==notcats[j], j]
 
     # Unadjusted and (if ps specified) IPW moments
-    h['raw'] = np.zeros((T, J))
+    h['raw'] = np.zeros((T-1, J))
     for j in range(J):
-        for d in range(T):
+        for d in range(T-1):
             notInd = (notice == notcats[j])
             exitInd = (dur == durvals[d]) & (cens == 0) & (notInd)
             survInd = (dur >= durvals[d]) & (notInd)
@@ -210,8 +210,8 @@ def DDML(data, model_ps ='logit', model_ra ='logit', folds=None,  nrm=0.5):
     psiM_hats, mu_hats = {}, {}
     keys = ['dr', 'ra', 'ipw', 'raw']
     for x in keys:
-        psiM_hats[x] = np.zeros((T, J, nfolds))
-        mu_hats[x] = np.zeros((T, nfolds))
+        psiM_hats[x] = np.zeros((T-1, J, nfolds))
+        mu_hats[x] = np.zeros((T-1, nfolds))
     for f in range(nfolds):
         g_f = ImpliedMoms(data[folds==f], ps[folds==f], h_i[:, :, folds==f])[0]
         for x in keys:

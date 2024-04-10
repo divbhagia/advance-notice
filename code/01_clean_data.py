@@ -215,12 +215,31 @@ df['ind_cat'] = df['ind'].apply(get_broad_ind)
 dws = df[df['dws'] == 1]
 sample = dws
 sample = sample[(sample['year'] >= 1996) & (sample['year'] <= 2020)]
-sample = sample[(sample['age'] >= 21) & (sample['age'] <= 65)]
+sample = sample[(sample['age'] >= 21) & (sample['age'] <= 64)]
 sample = sample[(sample['dwfulltime'] == 2)]                    
 sample = sample[(sample['dwclass'] <= 3)]                       
 sample = sample[(sample['dwrecall'] != 2)]                     
 #tmp = sample[(sample['nilf'] == 0) | (sample['jf'] == 1)]    
 sample = sample[(sample['dwnotice'] >= 1) & (sample['dwnotice'] <= 4)]
+
+###############################################
+# Just for matching old stuff purposes
+###############################################
+
+# Sample previous
+sample = pd.read_csv(f'{data_dir}/sample.csv')
+
+sample0 = sample.copy()
+sample0 = sample0[(sample0['dwyears'] >= 0.5)]
+sample0 = sample0[(sample0['dwhi'] == 2)]
+sample0 = sample0[(sample0['dwnotice'] >= 2) & (sample0['dwnotice'] <= 4)]
+#sample0 = sample0[(sample0['dwlastwrk'] == 2) | (sample0['dwlastwrk'] == 3)]
+#sample0 = sample0[(sample0['dwjobsince'] <= 2)]
+#sample0 = sample0[(sample0['jf'] == 1) | (sample0['obsdur'] >= 52)]
+varlist = ['dwweekl', 'obsdur', 'ind', 'occ']
+sample0 = sample0.dropna(subset=varlist)
+
+###############################################
 
 # Remove missing values
 print(sample.isnull().sum()[sample.isnull().sum() != 0])
@@ -239,6 +258,7 @@ sample[(sample['jf'] == 0)]['nilf'].value_counts()
 ##########################################################
 
 sample.to_csv(f'{data_dir}/sample.csv', index=False)
+sample0.to_csv(f'{data_dir}/sample0.csv', index=False) # remove later
 dws.to_csv(f'{data_dir}/dws.csv', index=False)
 df.to_csv(f'{data_dir}/cps.csv', index=False)
 
