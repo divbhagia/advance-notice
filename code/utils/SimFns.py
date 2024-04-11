@@ -21,7 +21,7 @@
 # Other options:
 #   'inchaz': decreasing structural hazard
 #   'nu_ind_X': nu independent of X
-#   'no_obs': no observables (betaL = betaPhi = 0)
+#   'exog': no observables (betaL = betaPhi = 0)
 #   'fewvars': only x6 & x7 affect exit and x5 & x6 affect notice
 #   'ps_non_lin': non-linear propensity score 
 
@@ -38,7 +38,7 @@ from utils.SimFnsOth import BetaMomsMixed, ComplexFunc
 # Function spits out the data generating process
 ##########################################################
 
-def DGP(T=8, J=2, opt = 'default', print_=True):
+def DGP(T=8, J=2, dgpOpt = 'default', print_=True):
         
     #############################
     # Default parameters
@@ -79,24 +79,26 @@ def DGP(T=8, J=2, opt = 'default', print_=True):
     #############################
 
     # Decreasing structural hazard
-    if opt == 'inchaz':
+    if 'inchaz' in dgpOpt:
         psiPar = [2.5, 1.25]
+        if print_:
+            print('Increasing structural hazard.')
 
     # nu is independent of X
-    if opt == 'nu_ind_X' or opt == 'no_obs':
+    if dgpOpt == 'nu_ind_X' or 'exog' in dgpOpt:
         if print_:
             print('nu is independent of X.')
         nu_P_pr = np.array([0, 0, 1])
 
     # No observables (betaL = betaPhi = 0)
-    if opt == 'no_obs':
+    if 'exog' in dgpOpt:
         if print_:
             print('betaL and betaPhi are set to 0.')
         betaL = np.zeros((K, J))
         betaPhi = np.zeros(K)
 
     # Only x6 & x7 affect exit and x5 & x6 affect notice
-    if opt == 'fewvars':
+    if dgpOpt == 'fewvars':
         if print_:
             print('Only x6 & x7 affect exit and x5 & x6 affect notice.')
         betaL = np.zeros((K, J))
@@ -118,7 +120,7 @@ def DGP(T=8, J=2, opt = 'default', print_=True):
     mu = BetaMomsMixed(T, nu_P, nu_P_pr)
 
     # betaL not used for for opt ps_non_lin
-    if print_ and opt == 'ps_non_lin':
+    if print_ and dgpOpt == 'ps_non_lin':
         print('For this opt betaL only identifies vars with no effect.')
 
     return psiM, mu, nu_P, betaL, betaPhi, x_means, cov_x1to3
@@ -127,30 +129,34 @@ def DGP(T=8, J=2, opt = 'default', print_=True):
 # Function that generates data using the above DGP
 ##########################################################
 
-def SimData(n=100000, T=8, J=2, opt = 'default', out='data', print_=False):
+def SimData(n=100000, T=8, J=2, dgpOpt = 'default', out='data', 
+            print_=False, scale=1):
 
     # Get DGP parameters
     if print_:
-        print(f'Simulating data for n={n} with T={T}, J={J} and DGP={opt}...')
-    psiM, _, nu_P, betaL, betaPhi, x_means, cov_x1to3 = DGP(T, J, opt, print_)
+        print(f'Simulating data for n={n} with T={T}, J={J} and DGP={dgpOpt}...')
+    psiM, _, nu_P, betaL, betaPhi, x_means, cov_x1to3 = DGP(T, J, dgpOpt, print_)
     K = betaL.shape[0]
 
     # Generate X variables
-    a4 = 3 # range for x4
-    means_x1to3 = x_means[1:4]
-    x_1_3 = np.random.multivariate_normal(mean=means_x1to3, cov=cov_x1to3, size=n)
-    x4 = np.random.uniform(-a4, a4, n)
-    x5 = np.random.chisquare(x_means[5], n)
-    x6 = np.random.binomial(1, x_means[6], n)
-    x7 = np.random.binomial(1, x_means[7], n)
-    x8 = np.random.poisson(x_means[8], n)
-    x9 = np.random.exponential(x_means[9], n)
-    X = np.column_stack((np.ones(n), x_1_3, x4, x5, x6, x7, x8, x9))
+    if 'exog' not in dgpOpt:
+        a4 = 3 # range for x4
+        means_x1to3 = x_means[1:4]
+        x_1_3 = np.random.multivariate_normal(mean=means_x1to3, cov=cov_x1to3, size=n)
+        x4 = np.random.uniform(-a4, a4, n)
+        x5 = np.random.chisquare(x_means[5], n)
+        x6 = np.random.binomial(1, x_means[6], n)
+        x7 = np.random.binomial(1, x_means[7], n)
+        x8 = np.random.poisson(x_means[8], n)
+        x9 = np.random.exponential(x_means[9], n)
+        X = np.column_stack((np.ones(n), x_1_3, x4, x5, x6, x7, x8, x9))
 
     # Generate propensity scores p(L|X)
-    if opt == 'ps_non_lin':
+    if dgpOpt == 'ps_non_lin':
         X_L = X[:, betaL.sum(axis=1)!=0] # using variables that enter
         pL_X = ComplexFunc(X_L, J)
+    if 'exog' in dgpOpt:
+        pL_X = np.repeat(np.array([1/J]*J).reshape(1, -1), n, axis=0)
     else:
         pL_X = np.exp(X @ betaL) / np.exp(X @ betaL).sum(axis=1, keepdims=True)
     
@@ -162,23 +168,27 @@ def SimData(n=100000, T=8, J=2, opt = 'default', out='data', print_=False):
         psi_id[i, :] = psiM[:, L[i]]
 
     # Specify phi(X)
-    phiX = 2*np.exp(X @ betaPhi)/(1 + np.exp(X @ betaPhi))
+    if 'exog' in dgpOpt:
+        phiX = np.ones(n)
+    else:
+        phiX = 2*np.exp(X @ betaPhi)/(1 + np.exp(X @ betaPhi))
     phiX = phiX.reshape(-1, 1)
 
     # Unobserved heterogeneity (nu is independent of L | X)
-    nu = np.zeros(n)
-    nu[x7==1] = np.random.beta(nu_P[0, 0], nu_P[0, 1], np.sum(x7==1))
-    nu[(x7==0) & (x6==1)] = np.random.beta(nu_P[1, 0], nu_P[1, 1], 
-                                           np.sum((x7==0) & (x6==1)))
-    nu[(x7==0) & (x6==0)] = np.random.beta(nu_P[2, 0], nu_P[2, 1], 
-                                           np.sum((x7==0) & (x6==0)))
-    if opt == 'nu_ind_X' or opt == 'no_obs':
+    if dgpOpt == 'nu_ind_X' or 'exog' in dgpOpt:
         nu = np.random.beta(nu_P[2, 0], nu_P[2, 1], n)
+    else:
+        nu = np.zeros(n)
+        nu[x7==1] = np.random.beta(nu_P[0, 0], nu_P[0, 1], np.sum(x7==1))
+        nu[(x7==0) & (x6==1)] = np.random.beta(nu_P[1, 0], nu_P[1, 1], 
+                                           np.sum((x7==0) & (x6==1)))
+        nu[(x7==0) & (x6==0)] = np.random.beta(nu_P[2, 0], nu_P[2, 1], 
+                                           np.sum((x7==0) & (x6==0)))
     nu = nu.reshape(-1, 1)
 
     # Exit probabilities & unemployment duration
     exited = np.array([0]*n)
-    exit_probs = psi_id * phiX * nu
+    exit_probs = scale*psi_id * phiX * nu
     crit = np.random.random((n, T))
     exit = (exit_probs > crit).astype(int) 
     for t in range(T):
@@ -196,8 +206,12 @@ def SimData(n=100000, T=8, J=2, opt = 'default', out='data', print_=False):
     cens_ind = (censtime > T_bar).astype(int)
 
     # Create pandas dataframe (return X, L, censored, obs_dur)
-    data = np.column_stack((obsdur, cens, L, cens_ind, X))
-    col_labs = ['dur', 'cens', 'notice', 'cens_ind'] +\
+    if 'exog' in dgpOpt:
+        data = np.column_stack((obsdur, cens, L, cens_ind))
+        col_labs = ['dur', 'cens', 'notice', 'cens_ind']
+    else:
+        data = np.column_stack((obsdur, cens, L, cens_ind, X))
+        col_labs = ['dur', 'cens', 'notice', 'cens_ind'] +\
           ['x'+str(i) for i in range(K)]
     data = pd.DataFrame(data, columns=col_labs)
     

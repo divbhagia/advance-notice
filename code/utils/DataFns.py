@@ -89,9 +89,13 @@ def CustomPlot(series, title = '', xlab = '', ylab = '',
         legendlabs = [f'Series {j+1}' for j in range(num_series)]
 
     # Y-axis limits
-    min_, max_ = np.min(series), np.max(series)
-    lb = min_ - 0.2*(max_ - min_)
-    ub = max_ + 0.2*(max_ - min_)
+    min_vals, max_vals = np.zeros(num_series), np.zeros(num_series)
+    for i in range(num_series):
+        min_vals[i] = np.min(series[i])
+        max_vals[i] = np.max(series[i])
+    min_val, max_val = np.min(min_vals), np.max(max_vals)
+    lb = min_val - 0.2*(max_val - min_val)
+    ub = max_val + 0.2*(max_val - min_val)
     yticks = np.arange(np.round(lb*10)/10, ub, ydist)
 
     # Plot figure

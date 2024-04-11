@@ -10,9 +10,9 @@ from utils.GMM import GMM
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 
-####################################################################
+##########################################################
 # Functions to simulate data & estimate model
-####################################################################
+##########################################################
 
 def RmSparseVars(data, dgp_opt):
     betaL, betaPhi = DGP(T, J, dgp_opt, print_=False)[3:5]

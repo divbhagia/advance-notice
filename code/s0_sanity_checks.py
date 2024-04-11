@@ -18,12 +18,12 @@ np.random.seed(1118)
 # DGP
 T, J = 4, 2
 n = 100000
-dgp_opt = 'no_obs' 
+dgp_opt = 'exog' 
 psiM, mu, nuP, betaL, betaPhi, x_means, cov_x1to3 = DGP(T, J, dgp_opt)
 
 # Simulate data
-data = SimData(n, T, J, dgp_opt)
-data, nu, pL_X, phiX = SimData(n, T, J, dgp_opt, out='all')
+data = SimData(n, T+1, J, dgp_opt)
+data, nu, pL_X, phiX = SimData(n, T+1, J, dgp_opt, out='all')
 
 # Compare data and model moments
 g_data = ImpliedMoms(data)[0]['raw']
@@ -31,22 +31,22 @@ g_model = ModelMoments(psiM, mu)
 
 # Plot to compare model and data moments
 labs = ['Data Moments', 'Model Moments']
-CustomPlot([g_data[:,0], g_model[:,0]], legendlabs=labs, ydist=0.1)
+CustomPlot([g_data[:,0], g_model[:,0]], legendlabs=labs)
 
 # Estimate the model directly using gmm
 nrm = mu[0]
 psiM_gmm, mu_gmm = GMM(g_data, nrm, unstack=True)
 
 # Implement DDML 
-psiM_hat, mu_hat, ps, h_i = DDML(data, nrm=nrm)
-g, h, S = ImpliedMoms(data, ps, h_i)
+#psiM_hat, mu_hat, ps, h_i = DDML(data, nrm=nrm)
+#g, h, S = ImpliedMoms(data, ps, h_i)
 
 # Plot estimates vs true 
-series1 = [psiM[1:,0], psiM_gmm[1:,0], psiM_hat['dr'][1:,0]]
-series2 = [mu, mu_gmm, mu_hat['dr']]
-labs = ['True', 'GMM', 'DDML']
+series1 = [psiM[1:,0], psiM_gmm[1:,0]]
+series2 = [mu, mu_gmm]
+labs = ['True', 'Estimate']
 CustomPlot(series1, legendlabs=labs, title='Structural Hazard')
-CustomPlot(series2, legendlabs=labs, title='Moments of nu')
+CustomPlot(series2, legendlabs=labs, title='Moments of nu', ydist=1)
 
 ##########################################################
 # Try DDML with DGP: few_vars
