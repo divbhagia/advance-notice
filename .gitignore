@@ -4,11 +4,8 @@ __pychache__/
 .DS_Store
 **/.DS_Store/*
 myenv/
-code/utils/__pycache__/
 data/
 logs/
 output/
 archive/
-
-
-
+utils/__pycache__/
