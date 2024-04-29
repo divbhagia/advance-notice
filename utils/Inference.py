@@ -1,16 +1,16 @@
 import numpy as np
-from utils.DataMoms import DataMoms
-from utils.EstHelpers import Unstack, ModelMoms, NumGrad
-from utils.DataDesc import PredPS
+from utils.datamoms import data_moms
+from utils.esthelpers import unstack, model_moms, numgrad
+from utils.datadesc import pred_ps
 
 ##########################################################
 # Individual moments incomplete
 ##########################################################
 
-def IndvMoms(thta, data, nrm, ffopt='np', ps = None):
+def indv_moms(thta, data, nrm, ffopt='np', ps = None):
     T, J = len(data['dur'].unique())-1, len(data['notice'].unique())
-    h_model = ModelMoms(*Unstack(T, J, thta, nrm, ffopt)[:2])
-    _, _, exit_i, surv_i = DataMoms(data, ps)
+    h_model = model_moms(*unstack(T, J, thta, nrm, ffopt)[:2])
+    _, _, exit_i, surv_i = data_moms(data, ps)
     m_i = exit_i - h_model * surv_i
     m_i = m_i.reshape(len(data), -1)
     return m_i
@@ -20,7 +20,7 @@ def IndvMoms(thta, data, nrm, ffopt='np', ps = None):
 ##########################################################
 # Only for IPW with logit model & two categories
 
-def IndvMomsIPW(thta_all, data, nrm, ffopt='np'):
+def indv_moms_ipw(thta_all, data, nrm, ffopt='np'):
 
     # Unpack data
     notice = data['notice']
@@ -41,12 +41,12 @@ def IndvMomsIPW(thta_all, data, nrm, ffopt='np'):
     coefs = thta_all[npars:]
 
     # All moments
-    ps = PredPS(data, coefs)[0]
+    ps = pred_ps(data, coefs)[0]
     psmoms = np.zeros((n, (J-1) * nvars))
     for j in range(1, J):
         psmoms[:, (j-1)*nvars:j*nvars] = \
             X * np.array((notice==notcats[j]) - ps[:, j]).reshape(-1,1)
-    m_i = np.column_stack([psmoms, IndvMoms(thta, data, nrm, ffopt, ps)])
+    m_i = np.column_stack([psmoms, indv_moms(thta, data, nrm, ffopt, ps)])
     
     return m_i
 
@@ -54,12 +54,12 @@ def IndvMomsIPW(thta_all, data, nrm, ffopt='np'):
 # Other functions for inference
 ##########################################################
 
-def AvgMomsInference(*args, MomsFunc, **kwargs):
+def avg_moms_inference(*args, MomsFunc, **kwargs):
     m_i = MomsFunc(*args, **kwargs)
     m = m_i.mean(axis=0)
     return m
 
-def OptimalWeightMat(*args, MomsFunc, **kwargs):
+def opt_wt_mat(*args, MomsFunc, **kwargs):
     m_i = MomsFunc(*args, **kwargs)
     n, nmoms = m_i.shape
     omega_i = np.zeros([n, nmoms, nmoms])
@@ -67,14 +67,15 @@ def OptimalWeightMat(*args, MomsFunc, **kwargs):
     for i in range(n):
         omega_i[i, :, :] = m_i[i, :, :] @ m_i[i, :, :].T
     omega = np.mean(omega_i, axis=0)
-    W = np.linalg.inv(omega)
+    W = np.linalg.pinv(omega)
     return W
 
-def StdErrors(*args, MomsFunc, **kwargs):
-    W = OptimalWeightMat(*args, MomsFunc=MomsFunc, **kwargs)
-    M = NumGrad(AvgMomsInference, *args, MomsFunc=MomsFunc, **kwargs)
-    V = np.linalg.inv(M.T @ W @ M)
-    se = np.sqrt(np.diag(V)/len(args[1]))
+def std_errs(*args, MomsFunc, **kwargs):
+    n = len(args[1])
+    W = opt_wt_mat(*args, MomsFunc=MomsFunc, **kwargs)
+    M = numgrad(avg_moms_inference, *args, MomsFunc=MomsFunc, **kwargs)
+    V = np.linalg.pinv(M.T @ W @ M)
+    se = np.sqrt(np.diag(V)/n)
     return se
 
 ##########################################################

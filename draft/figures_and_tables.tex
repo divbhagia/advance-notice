@@ -2,64 +2,132 @@
 \usepackage{pdflscape} % Package for landscape pages
 
 \begin{document}
-% \begin{table}[p]
-%     \setstretch{1.15}
-%     \caption{Descriptives by Notice Length}\label{tab_sum_stats}
-%     \begin{threeparttable}
-%     \begin{tabularx}{\textwidth}{p{0.245\textwidth}YYYp{0.15cm}YYY}
-%     \toprule
-%     & \multicolumn{3}{c}{Unbalanced} & & \multicolumn{3}{c}{Balanced} \\
-%     & Short &  Long & Diff. & & Short &  Long & Diff. \\
-%     & (1) & (2) & (2)-(1) & & (3) & (4) & (4)-(3) \\
-%     \midrule 
-%     \input{./../output/tab_sum_stats.tex} \addlinespace[1ex]
-%     \bottomrule
-%     \end{tabularx}
-%     %\begin{tablenotes}
-%     %\item \textit{Note:} The sample consists of respondents from the Displaced Worker Supplement (DWS) for the years 1996-2020, who were between ages \agecutoff, had worked full-time for at least six months at their previous job, received health insurance from their former employer, and did not expect to be recalled. The sample excludes workers who were laid off in the year immediately preceding the survey. Short notice refers to a notice period of less than a month or between one and two months, while long notice refers to a notice period exceeding two months. Columns (1) and (2) present raw averages for the sample, while columns (3) and (4) show weighted averages, where the weights correspond to the inverse of the estimated probabilities of receiving short or long notice.      
-%     %\end{tablenotes}
-%     \end{threeparttable}
-% \end{table}
 
-
-\begin{landscape}
-\begin{table}
-    \input{./../output/tab_sum_stats.tex}
+% Table 1: Descriptives by Notice Length
+\begin{table}[p]
+\setstretch{1.15}
+\caption{Descriptives by Notice Length}\label{tab_sum_stats}
+\begin{threeparttable}
+\begin{tabularx}{\textwidth}{p{0.245\textwidth}YYYp{0.15cm}YYY}
+\toprule
+& \multicolumn{3}{c}{Unbalanced} & & \multicolumn{3}{c}{Balanced} \\
+& Short &  Long & Diff. & & Short &  Long & Diff. \\
+& (1) & (2) & (2)-(1) & & (3) & (4) & (4)-(3) \\
+\midrule 
+\input{./../output/tab_sum_stats.tex} \addlinespace[1ex]
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}
+\item \textit{Note:} The sample consists of respondents from the Displaced WorkerSupplement (DWS) for the years 1996-2020, who were between ages 21 to 64, had workedfull-time for at least six months at their previous job, received health insurancefrom their former employer, and did not expect to be recalled. Short notice refersto a notice period of one and two months, while long notice refers to a noticeperiod exceeding two months. Columns (1) and (2) present raw averages for thesample, while columns (3) and (4) show weighted averages, where the weightscorrespond to the inverse of the estimated probabilities of receiving short or longnotice.      
+\end{tablenotes}
+\end{threeparttable}
 \end{table}
-\end{landscape}
 
-\begin{figure}[t]\caption{IPW}
+% TABLE 2: Regression First 12 Weeks
+\begin{table}[t]
+\begin{threeparttable}
+\caption{Observed Exit Rate -- Early in the Spell}\label{tab_init_hazard}
+\begin{tabularx}{\textwidth}{p{0.225\textwidth}YYYY}
+\toprule
+& (1) & (2) & (3) & (4) \\
+\midrule \addlinespace[1ex]
+ \multicolumn{5}{c}{\underline{\sc{Panel A. $\I\{\text{Unemployment duration $=0$ weeks}\}$}}} \\ \addlinespace[2ex]
+\input{./../output/tab_reg_init_hazardA.tex} \addlinespace[3ex]
+ \multicolumn{5}{c}{\underline{\sc{Panel B. $\I\{\text{Unemployment duration $\leq 12$ weeks}\}$}}} \\ \addlinespace[2ex]
+\input{./../output/tab_reg_init_hazardB.tex} \addlinespace[2ex]
+Controls   &  No & Yes  & No & Yes \\
+Weights   & No  & No   & Yes & Yes \\
+\midrule
+\input{./../output/tab_reg_init_hazardC}
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}
+\item \textit{Note:} The table presents estimates from linear regression models, where the main independent variable is an indicator variable that takes a value of 1 if the individual received a notice of more than 2 months, and 0 if they received a notice of 1-2 months. The dependent variable is an indicator for reporting an unemployment duration of 0 weeks (Panel A) or less than 12 weeks (Panel B). The weights are generated using inverse probability weighting (IPW). Robust standard errors are reported in the parenthesis. 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+
+% % \begin{landscape}
+% % \begin{table}
+% %     \input{./../output/tab_sum_stats.tex}
+% % \end{table}
+% % \end{landscape}
+
+% FIGURE: Exit and Survival Rate --- Later in the Spell
+\begin{figure}[t]\caption{Exit and Survival Rate --- Later in the Spell}
 \vspace{-0.5em}
 \centering
 \begin{subfigure}{.525\textwidth}
 \centering
-\includegraphics{./../output/hazard_ipw.pdf}
+\includegraphics{./../output/fig_hazard_ipw.pdf}
 \subcaption{Exit Rate}
 \end{subfigure}
 \begin{subfigure}{.45\textwidth}
 \centering
-\includegraphics{./../output/est_ipw.pdf}
-\subcaption{Estimates}
-\end{subfigure}
-\vspace{-0.75em}
-%\floatfoot{\textit{Note:} Short notice refers to a notice of less than 2 months, and long notice refers to a notice of more than 2 months. Panel A presents the weighted proportion of individuals exiting unemployment in each interval amongst those who were still unemployed at the beginning of the interval. Panel B presents the weighted proportion of individuals who are unemployed at the beginning of each interval. Error bars represent 90\% confidence intervals.}
-\end{figure}
-
-\begin{figure}[t]\caption{Raw}
-\vspace{-0.5em}
-\centering
-\begin{subfigure}{.525\textwidth}
-\centering
-\includegraphics{./../output/hazard_raw.pdf}
-\subcaption{Exit Rate}
-\end{subfigure}
-\begin{subfigure}{.45\textwidth}
-\centering
-\includegraphics{./../output/est_raw.pdf}
+\includegraphics{./../output/fig_survival_ipw.pdf}
 \subcaption{Survival Rate}
 \end{subfigure}
 \vspace{-0.75em}
-%\floatfoot{\textit{Note:} Short notice refers to a notice of less than 2 months, and long notice refers to a notice of more than 2 months. Panel A presents the weighted proportion of individuals exiting unemployment in each interval amongst those who were still unemployed at the beginning of the interval. Panel B presents the weighted proportion of individuals who are unemployed at the beginning of each interval. Error bars represent 90\% confidence intervals.}
+\floatfoot{\textit{Note:} Short notice refers to a notice of less than 2 months, and long notice refers to a notice of more than 2 months. Panel A presents the weighted proportion of individuals exiting unemployment in each interval amongst those who were still unemployed at the beginning of the interval. Panel B presents the weighted proportion of individuals who are unemployed at the beginning of each interval. Error bars represent 90\% confidence intervals.}
 \end{figure}
+
+% TABLE: Baseline Estimates
+\begin{table}[t]
+    \begin{threeparttable}
+    \caption{Estimation Results}\label{tab_baseline_estimates}
+    \begin{tabularx}{\linewidth}{Yp{0.5\textwidth}YY}
+    \toprule
+    Parameter & Explanation & Estimate & SE \\
+    \midrule  \addlinespace[1ex]
+    \multicolumn{4}{l}{\textit{Panel A: Estimated Parameters}}  \\ \addlinespace[1ex]
+    \input{./../output/tab_baseline_estsA} \addlinespace[1ex]
+    \multicolumn{4}{l}{\textit{Panel B: Duration Dependence}}  \\ \addlinespace[1ex]
+    \input{./../output/tab_baseline_estsB}   \\ 
+    \end{tabularx}
+    \begin{tabularx}{\linewidth}{p{1cm}XX}
+    \multicolumn{3}{l}{\textit{Hansen-Sargan Test}}  \\ \addlinespace[1ex]
+    \input{./../output/tab_baseline_estsC}   
+    \bottomrule
+    \end{tabularx}
+    \begin{tablenotes}
+    \item \textit{Note:} The table presents estimates from the Mixed Hazard model. The first weighted moment is normalized to one, and structural duration dependence is specified by equation (\ref{eqn_functional_form}). Panel A shows the estimated parameters from the model, and panel B presents structural hazards implied by the estimated parameters. The standard errors for the structural hazards are calculated using the delta method.
+    \end{tablenotes}
+    \end{threeparttable}
+    \end{table}
+    
+% FIGURE: Baseline Estimates
+\begin{figure}[t]\caption{Baseline Estimates}\label{fig_baseline_estimates}
+    \centering
+    %\vspace{-1.25em}
+    \begin{subfigure}{.49\linewidth}
+    \raggedleft
+    \includegraphics{./../output/fig_baseline_estsA}
+    \subcaption{Structural Hazard}
+    \end{subfigure} \hfill
+    \begin{subfigure}{.49\linewidth}
+    \includegraphics{./../output/fig_baseline_estsB}
+    \subcaption{Average Type}
+    \end{subfigure} 
+    \vspace{-0.75em}
+    \floatfoot{\textit{Note:} Solid line in panel A presents estimates for structural hazards as implied by the estimated parameters in panel A of Table \ref{tab_baseline_estimates}. The dotted line in panel A presents the observed exit rate from the data, averaged across workers with short and long notice. Panel B presents the implied average type at each duration for those with short and long notice. Error bars represent 90\% confidence intervals.}
+    \end{figure}
+
+    % FIGURE: Non-Parametric Estimates
+\begin{figure}[t]\caption{Non-Parametric Estimates}\label{fig_np_estimates}
+    \centering
+    %\vspace{-1.25em}
+    \begin{subfigure}{.49\linewidth}
+    \raggedleft
+    \includegraphics{./../output/fig_np_estsA}
+    \subcaption{Structural Hazard}
+    \end{subfigure} \hfill
+    \begin{subfigure}{.49\linewidth}
+    \includegraphics{./../output/fig_np_estsB}
+    \subcaption{Average Type}
+    \end{subfigure} 
+    \vspace{-0.75em}
+    \floatfoot{\textit{Note:} Solid line in panel A presents estimates for structural hazards as implied by the estimated parameters in panel A of Table \ref{tab_baseline_estimates}. The dotted line in panel A presents the observed exit rate from the data, averaged across workers with short and long notice. Panel B presents the implied average type at each duration for those with short and long notice. Error bars represent 90\% confidence intervals.}
+    \end{figure}
 
 \end{document}

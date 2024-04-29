@@ -6,7 +6,7 @@ import numpy as np
 
 # Note: Var(XY) = X^2Var(Y) + Y^2Var(X) + Var(X)Var(Y)
 
-def seProd(X, Y, se_X, se_Y):
+def se_product(X, Y, se_X, se_Y):
     var_X, var_Y = se_X**2, se_Y**2
     var_XY = (X**2)*var_Y + (Y**2)*var_X + var_X*var_Y
     return np.sqrt(var_XY)
@@ -15,7 +15,7 @@ def seProd(X, Y, se_X, se_Y):
 # Outputs Data Moments 
 ##########################################################
 
-def DataMoms(data, ps=None, purpose = 'est'):
+def data_moms(data, ps=None, purpose = 'est'):
 
     # Unpack data
     L, D, C = data['notice'], data['dur'], data['cens']
@@ -25,8 +25,8 @@ def DataMoms(data, ps=None, purpose = 'est'):
 
     # Initialize arrays
     h = np.zeros((T, J))
-    S, S_se = np.zeros((T, J)), np.zeros((T, J))
-    exit, surv = np.zeros((T, J)), np.zeros((T, J))
+    S, S_se = np.zeros((T+1, J)), np.zeros((T+1, J))
+    exits, surv = np.zeros((T, J)), np.zeros((T, J))
     exit_i, surv_i = np.zeros((n, T, J)), np.zeros((n, T, J))
 
     # Raw unadjusted moments
@@ -43,20 +43,20 @@ def DataMoms(data, ps=None, purpose = 'est'):
             surv_i[:, :, j] = surv_i[:, :, j] / ps[:, j]
     
     # Exits, Survivors, and Hazard rate
-    exit = np.mean(exit_i, axis=0)
+    exits = np.mean(exit_i, axis=0)
     surv = np.mean(surv_i, axis=0)
-    h = exit/surv
+    h = exits/surv
     h_se = np.sqrt(h * (1-h) / np.sum(surv_i, axis=0)) # move den by 1 t
 
     # Survival rate
     S[0, :] = 1
-    for d in range(T-1):
+    for d in range(T):
         S[d+1, :] = S[d, :] * (1 - h[d, :])
-        S_se[d+1, :] = seProd(1-h[d, :], S[d, :], h_se[d, :], S_se[d, :])
+        S_se[d+1, :] = se_product(1-h[d, :], S[d, :], h_se[d, :], S_se[d, :])
 
     # Return
     if purpose == 'est':
-        return exit, surv, exit_i, surv_i
+        return exits, surv, exit_i, surv_i
     elif purpose == 'output':
         return h, h_se, S, S_se
     else:

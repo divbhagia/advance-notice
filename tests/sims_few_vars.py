@@ -1,6 +1,6 @@
-from utils.SimFunctions import SimData
-from utils.EstGMM import Estimate
-from utils.DataDesc import CustomPlot
+from utils.simfuncs import sim_data
+from utils.estgmm import estimate
+from utils.datadesc import custom_plot
 import multiprocessing as mp
 import numpy as np
 
@@ -10,8 +10,8 @@ import numpy as np
 
 def SimOnce(n, T, J, dgpopt, nrm, ffopt, adj, seed):
     np.random.seed(seed)
-    data = SimData(n, T+1, J, dgpopt)
-    r = Estimate(data, nrm, ffopt, adj)
+    data = sim_data(n, T+1, J, dgpopt)
+    r = estimate(data, nrm, ffopt, adj)
     return r
 
 def SimMulti(n, T, J, dgpopt, nrm, ffopt, adj, seeds):
@@ -31,17 +31,17 @@ if __name__ == '__main__':
 
     # Import packages
     import matplotlib.pyplot as plt
-    from utils.SimFunctions import DGP, MomsFewVarsDGP
+    from utils.simfuncs import dgp, moms_fewvars
 
     # DGP
     seed = 1118
     np.random.seed(seed)
     T, J = 4, 2
-    n = 50000
+    n = 100000
     dgpopt = 'fewvars'
-    psiMtrue, mu_tr, nuP, betaL, betaPhi, xmeans, covx1to3, pL = DGP(T, J, dgpopt)
+    psiMtrue, mu_tr, nuP, betaL, betaPhi, xmeans, covx1to3, pL = dgp(T, J, dgpopt)
     psi_true = psiMtrue @ pL
-    avg_moms_X = MomsFewVarsDGP(T)
+    avg_moms_X = moms_fewvars(T)
 
     # Parameters for estimation
     nrm = avg_moms_X[0]
@@ -62,15 +62,15 @@ if __name__ == '__main__':
     # Plots 
 
     # Plot structural hazard
-    CustomPlot([psi_true, avg['psi']], [None, avg['psiSE']],
+    custom_plot([psi_true, avg['psi']], [None, avg['psiSE']],
            legendlabs=['True', 'Est'], title = 'Structural Hazard')
     
     # Comparing SEs
-    CustomPlot([avg['psiSE'], se_iters['psi']], 
+    custom_plot([avg['psiSE'], se_iters['psi']], 
                legendlabs=['Anal SEs', 'Iter SEs'], ydist=0.01)
     
     # Plot Average Type Moments
-    CustomPlot([avg_moms_X, avg['mu']], [None, avg['muSE']], ylims=[0, 1],
+    custom_plot([avg_moms_X, avg['mu']], [None, avg['muSE']], ylims=[0, 1],
                legendlabs=['True', 'Est'], title = 'Average Type Moments')
 
 ##########################################################

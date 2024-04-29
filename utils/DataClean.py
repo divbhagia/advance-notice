@@ -5,7 +5,7 @@ import numpy as np
 ##########################################################
 
 # Create new binary variables in pandas frames
-def Indicator(var, values, opt='values', rm_na=False):
+def indicator(var, values, opt='values', rm_na=True):
 
     '''
     This function creates a binary indicator variable based on 
@@ -39,7 +39,7 @@ def Indicator(var, values, opt='values', rm_na=False):
     else:
         raise ValueError('Option not recognized. Please use: values, interval, greater, or less.')
     
-    if rm_na is False:
+    if rm_na:
         newvar = np.where(var.isnull(), np.nan, newvar)
         
     return newvar
@@ -68,7 +68,7 @@ occ_map = {
     (803, 899): 17 # Transportation and Material Moving
 }
 
-def GetOcc(var):
+def get_occ(var):
     for (start, end), category in occ_map.items():
         if start <= var <= end:
             return category
@@ -78,7 +78,7 @@ def GetOcc(var):
 # Broad Occupation Categories Labelled
 ################################################################
 
-def GetBroadOcc(var):
+def get_broad_occ(var):
     if 1 <= var <= 3:
         return "Executive, Managerial, Professional"
     elif 4 <= var <= 6:
@@ -117,7 +117,7 @@ ind_map = {
     (940, 960): 14  # Military
 }
 
-def GetInd(var):
+def get_ind(var):
     for (start, end), category in ind_map.items():
         if start <= var <= end:
             return category
@@ -127,7 +127,7 @@ def GetInd(var):
 # Broad Industry Categories Labelled
 ################################################################
 
-def GetBroadInd(var):
+def get_broad_ind(var):
     if var == 1:
         return "Construction"
     elif var == 4:

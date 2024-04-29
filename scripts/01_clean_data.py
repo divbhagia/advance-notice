@@ -7,31 +7,27 @@ import numpy as np
 import pandas as pd
 
 # Import custom functions
-from utils.DataClean import GetOcc, GetBroadOcc
-from utils.DataClean import GetInd, GetBroadInd
-from utils.DataClean import Indicator
+from utils.dataclean import get_occ, get_broad_occ
+from utils.dataclean import get_ind, get_broad_ind
+from utils.dataclean import indicator
 
-# Specify directories & parameters
-ipums_dir = 'data/raw/IPUMS-Extract'
-cpi_file = 'data/raw/cpi99.txt'
-gdp_file = 'data/raw/gdp_1977_2022_long.csv'
-unemp_file = 'data/raw/yearly_state_ur.csv'
-data_dir = 'data'
-extract_ipums = False
+# Import parameters
+from utils.config import EXTRACT_IPUMS, IPUMS_DIR, DATA_DIR
+from utils.config import RAW_DATA_DIR, SELECTED_VARS
 
 ##########################################################
 # Extract IPUMS data or load previously extracted data
 ##########################################################
 
 # Extract IPUMS data or load previously extracted data
-if extract_ipums:
+if EXTRACT_IPUMS:
     from ipumspy import readers # type: ignore
-    ddi = readers.read_ipums_ddi(f'{ipums_dir}/cps_00039.xml')
-    df = readers.read_microdata(ddi, f'{ipums_dir}/cps_00039.dat')
+    ddi = readers.read_ipums_ddi(f'{IPUMS_DIR}/cps_00039.xml')
+    df = readers.read_microdata(ddi, f'{IPUMS_DIR}/cps_00039.dat')
     df.columns = df.columns.str.lower()
-    df.to_csv(f'{ipums_dir}/cps_raw.csv')
+    df.to_csv(f'{IPUMS_DIR}/cps_raw.csv')
 else:
-    df = pd.read_csv(f'{ipums_dir}/cps_raw.csv')
+    df = pd.read_csv(f'{IPUMS_DIR}/cps_raw.csv')
 
 ##########################################################
 # Remove armed forces and keep select variables 
@@ -43,41 +39,11 @@ df = df[df['popstat']==1]
 # Indicator for dws
 df['dws'] = np.where((df['dwstat']==1) & (df['dwresp']==2), 1, 0)
 
-# Select variables from cps
-cps_oth_vars = ['serial', 'cpsid', 'mish', 'pernum', 'hwtfinl', 'wtfinl']
-cps_cat_vars = ['year', 'month', 'statefip', 'metro', 'metarea', 'county', 
-                'faminc', 'sex', 'marst', 'empstat', 'labforce', 'occ1990', 
-                'ind1990', 'classwkr', 'numjob', 'educ', 'race', 'durunem2']
-cps_cont_vars = ['age', 'uhrsworkt', 'uhrswork1', 'durunemp']
+# Keep selected variables (optional)
+df = df[SELECTED_VARS]
 
-# Select variables from dws
-dws_oth_vars = ['dwstat', 'dwresp', 'dwrecall', 'dwfulltime', 'dwclass', 
-                'dwsuppwt', 'dws']
-dws_cat_vars = ['dwreas', 'dwnotice', 'dwlastwrk', 'dwunion', 'dwben', 
-                'dwexben', 'dwhi', 'dwind1990', 'dwocc1990', 
-                'dwmove', 'dwhinow']
-dws_cont_vars = ['dwyears', 'dwweekl', 'dwweekc', 'dwjobsince', 
-                 'dwhrswkc', 'dwwksun']
-
-# Keep selected variables
-df = df[cps_oth_vars + cps_cat_vars + cps_cont_vars + \
-        dws_oth_vars + dws_cat_vars + dws_cont_vars]
-
-# Declare all variables as intergers
-df = df.astype(int, errors='ignore')
-
-##########################################################
-# Merge state-year level unemployment rate & GDP data 
-##########################################################
-
-unemp = pd.read_csv(unemp_file)
-gdp = pd.read_csv(gdp_file)
-df = pd.merge(df, unemp, on=['year', 'statefip'], how='left')
-df = pd.merge(df, gdp, on=['year', 'statefip', 'state'], how='left')
-
-# Tabulate missing values
-df[df['ur'].isnull()]['year'].value_counts()
-df[df['gdp'].isnull()]['year'].value_counts()
+# Declare all variables as float
+df = df.astype(float, errors='ignore')
 
 ##########################################################
 # Missing values & top codes for continous variables
@@ -114,6 +80,7 @@ df['dwreas'] = np.where(df['dwreas'] >= 95, np.nan, df['dwreas'])
 ##########################################################
 
 # Load CPI data
+cpi_file = RAW_DATA_DIR + '/cpi99.txt'
 cpi99 = pd.read_csv(cpi_file, sep="\t", header=None, 
                     comment="#", usecols=[0, 3])
 cpi99.columns = ['year', 'cpi99']
@@ -131,18 +98,19 @@ df['faminc'] = df['faminc'] * df['cpi99']
 ##########################################################
 
 # Create new binary variables (preserves missing values)
-df['female'] = Indicator(df['sex'], 2)
-df['black'] = Indicator(df['race'], 200)
-df['married'] = Indicator(df['marst'], [1, 2])
-df['col'] = Indicator(df['educ'], 110, 'greater')
-df['pc'] = Indicator(df['dwreas'], 1)
-df['union'] = Indicator(df['dwunion'], 2)
-df['hi'] = Indicator(df['dwhi'], 2)
-df['jf'] = Indicator(df['dwjobsince'], 1, 'greater')
-df['in_metro'] = Indicator(df['metro'], [2, 3, 4])
-df['emp'] = Indicator(df['empstat'], [10, 11, 12])
-df['unemp'] = Indicator(df['empstat'], [20, 21, 22])
-df['nilf'] = Indicator(df['empstat'], [30, 36], 'range')
+df['female'] = indicator(df['sex'], 2)
+df['black'] = indicator(df['race'], 200)
+df['married'] = indicator(df['marst'], [1, 2])
+df['col'] = indicator(df['educ'], 110, 'greater')
+df['pc'] = indicator(df['dwreas'], 1)
+df['union'] = indicator(df['dwunion'], 2)
+df['hi'] = indicator(df['dwhi'], 2)
+df['jf'] = indicator(df['dwjobsince'], 1, 'greater')
+df['cens'] = 1-df['jf']
+df['in_metro'] = indicator(df['metro'], [2, 3, 4])
+df['emp'] = indicator(df['empstat'], [10, 11, 12])
+df['unemp'] = indicator(df['empstat'], [20, 21, 22])
+df['nilf'] = indicator(df['empstat'], [30, 36], 'range')
 
 # Log earnings
 df['lnearnl'] = np.log(df['dwweekl'])
@@ -153,11 +121,7 @@ df['dyear'] = df['year'] - df['dwlastwrk']
 df['dyear'] = np.where(df['dwlastwrk'].isna(), np.nan, df['dyear'])
 df['j2j'] = np.where((df['dwwksun'] == 0) & (df['dwjobsince'] > 0), 1, 0)
 df['j2j'] = np.where(df['dwjobsince'].isnull(), np.nan, df['j2j'])
-df['notice'] = Indicator(df['dwnotice'], 4)
-
-# Indicator for extended benefits
-df = df.assign(ext = np.where((df['dyear'] >= 2001) & (df['dyear'] <= 2004) | 
-                 (df['dyear'] >= 2008) & (df['dyear'] <= 2013), 1, 0))
+df['notice'] = indicator(df['dwnotice'], 4)
 
 # Convert race to 1 digit
 df['race'] = df['race'].apply(lambda x: int(str(x)[0]))
@@ -191,56 +155,21 @@ df['dur'] = group_dur(df['obsdur'], 12)
 df['dur_4week'] = group_dur(df['obsdur'], 4)
 df['dur_9week'] = group_dur(df['obsdur'], 9)
 
-# Leaving in first interval indicator
-df['h0'] = (df['obsdur'] == 0).astype(int)
-df['h0to12'] = (df['dur'] == 6).astype(int)
-
 ##########################################################
 # Occupation & Industry Categories
 ##########################################################
 
-df['occ'] = df['dwocc1990'].apply(GetOcc)
-df['occ_cat'] = df['occ'].apply(GetBroadOcc)
-df['ind'] = df['dwind1990'].apply(GetInd)
-df['ind_cat'] = df['ind'].apply(GetBroadInd)
-
-##########################################################
-# Sample selection
-##########################################################
-
-# Sample selection 
-dws = df[df['dws'] == 1]
-sample = dws
-sample = sample[(sample['year'] >= 1996) & (sample['year'] <= 2020)]
-sample = sample[(sample['age'] >= 21) & (sample['age'] <= 64)]
-sample = sample[(sample['dwfulltime'] == 2)]                    
-sample = sample[(sample['dwclass'] <= 3)]                       
-sample = sample[(sample['dwrecall'] != 2)]                     
-sample = sample[(sample['dwnotice'] >= 1) & (sample['dwnotice'] <= 4)]
-
-##########################################################
-# Remove missing values
-##########################################################
-
-rm_missing = False
-if rm_missing:
-    print(sample.isnull().sum()[sample.isnull().sum() != 0])
-    varlist = ['dwlastwrk', 'dwunion', 'dwhi', 'dwyears', 
-               'dwweekl','dwjobsince', 'ind', 'occ', 'obsdur']
-    sample = sample.dropna(subset=varlist)
-    print(sample.isnull().sum()[sample.isnull().sum() != 0])
-
-# Note obsdur is missing when jf=1 & dwwksun is missing
-
-# Are there individuals who haven't found a job and left lf?
-sample[(sample['jf'] == 0)]['nilf'].value_counts()
+df['occ'] = df['dwocc1990'].apply(get_occ)
+df['occ_cat'] = df['occ'].apply(get_broad_occ)
+df['ind'] = df['dwind1990'].apply(get_ind)
+df['ind_cat'] = df['ind'].apply(get_broad_ind)
 
 ##########################################################
 # Save data
 ##########################################################
 
-sample.to_csv(f'{data_dir}/sample.csv', index=False)
-dws.to_csv(f'{data_dir}/dws.csv', index=False)
-df.to_csv(f'{data_dir}/cps.csv', index=False)
+dws = df[df['dws'] == 1].copy()
+dws.to_csv(f'{DATA_DIR}/dws.csv', index=False)
+df.to_csv(f'{DATA_DIR}/cps.csv', index=False)
 
 ##########################################################

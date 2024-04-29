@@ -6,12 +6,12 @@
 import numpy as np
 
 # Import custom functions
-from utils.DataDesc import CustomPlot, PredPS
-from utils.SimFunctions import DGP, SimData, MomsFewVarsDGP
-from utils.DataMoms import DataMoms
-from utils.EstHelpers import ModelMoms, UnstackAll
-from utils.EstGMM import GMM, Estimate
-from utils.Inference import IndvMoms, IndvMomsIPW, StdErrors
+from utils.datadesc import custom_plot, pred_ps
+from utils.simfuncs import dgp, sim_data, moms_fewvars
+from utils.datamoms import data_moms
+from utils.esthelpers import model_moms, unstack_all
+from utils.estgmm import gmm, estimate
+from utils.inference import indv_moms_ipw, indv_moms, std_errs
 
 # Other options
 np.set_printoptions(precision=4, suppress=True)
@@ -22,20 +22,20 @@ np.random.seed(1118)
 ##########################################################
 
 # DGP
-T, J = 6, 2
-n = 500000
+T, J = 4, 2
+n = 1000000
 dgpopt = 'fewvars'
-psiMtr, mu_tr, nuP, betaL, betaPhi, xmeans, covx1to3, pL = DGP(T, J, dgpopt)
+psiMtr, mu_tr, nuP, betaL, betaPhi, xmeans, covx1to3, pL = dgp(T, J, dgpopt)
 psi_true = psiMtr @ pL
 
 # Average nu-moments for the DGP
-avg_moms_X = MomsFewVarsDGP(T)
+avg_moms_X = moms_fewvars(T, pull_prev=True)
 
 # Model moments
-h_model, exit_mdl, surv_mdl = ModelMoms(psiMtr, avg_moms_X, out='all')
+h_model, exit_mdl, surv_mdl = model_moms(psiMtr, avg_moms_X, out='all')
 
 # Simulate data
-data, nu, pL_X, phiX = SimData(n, T+1, J, dgpopt, _print=True, out='all')
+data, nu, pL_X, phiX = sim_data(n, T+1, J, dgpopt, _print=True, out='all')
 nL = data['notice'].value_counts().sort_index().values
 
 ##########################################################
@@ -43,15 +43,15 @@ nL = data['notice'].value_counts().sort_index().values
 ##########################################################
 
 # Propensity scores & adjusted & unadjusted moments
-ps, coefs = PredPS(data)
-h, h_se, *_ = DataMoms(data, ps, purpose='output')
-h_unadj, *_ = DataMoms(data, purpose='output')
+ps, coefs = pred_ps(data)
+h, h_se, *_ = data_moms(data, ps, purpose='output')
+h_unadj, *_ = data_moms(data, purpose='output')
 
 # (Check) Compare model and data moments
-CustomPlot([h_model[:,1], h[:,1]], legendlabs=['Model', 'Data'])
+custom_plot([h_model[:,1], h[:,1]], legendlabs=['Model', 'Data'])
 
 # Plot data moments
-CustomPlot([h[:, j] for j in range(J)], 
+custom_plot([h[:, j] for j in range(J)], 
             [h_se[:, j] for j in range(J)])
 
 ##########################################################
@@ -60,23 +60,23 @@ CustomPlot([h[:, j] for j in range(J)],
 
 # Specify options
 nrm = avg_moms_X[0]
-ffopt = 'baseline'
+ffopt = 'np'
 se_adj = True
 
 # Estimate
-thta_hat = GMM(data, nrm, ffopt, ps)
+thta_hat = gmm(data, nrm, ffopt, ps)
 
 # Inference
 thta_all = np.append(thta_hat, coefs)
 if se_adj:
-    se = StdErrors(thta_all, data, nrm, ffopt, MomsFunc=IndvMomsIPW)
+    se, Jtest = std_errs(thta_all, data, nrm, ffopt, MomsFunc=indv_moms_ipw)
     se = se[:len(thta_hat)]
 else:
-    se = StdErrors(thta_hat, data, nrm, ffopt, MomsFunc=IndvMoms)
+    se, Jtest = std_errs(thta_hat, data, nrm, ffopt, ps, MomsFunc=indv_moms)
 
 # Unstack standard errors and parameters
 psin, psi, par, mu, psinSE, psiSE, parSE, muSE = \
-    UnstackAll(T, J, nL, thta_hat, se, nrm, ffopt)
+    unstack_all(T, J, nL, thta_hat, se, nrm, ffopt)
 
 ##########################################################
 # Alternatively Step 1 & 2 together
@@ -84,7 +84,7 @@ psin, psi, par, mu, psinSE, psiSE, parSE, muSE = \
 
 direct = False
 if direct:
-    r = Estimate(data, nrm, ffopt, adj='ipw')
+    r = estimate(data, nrm, ffopt, adj='ipw')
 
 ##########################################################
 # Plot
@@ -95,12 +95,12 @@ h_avg = h @ nL/nL.sum()
 h_avg = psi[0] * h_avg/h_avg[0]
 
 # Plot structural hazard
-CustomPlot([psi_true, psi, h_avg], [None, psiSE, None],
+custom_plot([psi_true, psi, h_avg], [None, psiSE, None],
            legendlabs=['True', 'Est', 'Data'], 
            xlab='Duration', ylab='Hazard Rate')
 
 # Estimated moments (mu)
-CustomPlot([avg_moms_X, mu], [None, None], legendlabs=['True', 'Est'], 
+custom_plot([avg_moms_X, mu], [None, None], legendlabs=['True', 'Est'], 
            xlab='Duration', ylab='$E[\\phi(X)^dE(\\nu^d|X)]$', ydist=0.3)
 
 ##########################################################

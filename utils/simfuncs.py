@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from utils.SimHelpers import BetaMomsMixed, ComplexFunc, RemoveSparse
-from utils.EstHelpers import PsiBaseline
+from utils.simhelpers import beta_moms_mixed, complex_ps, remove_sparse
+from utils.esthelpers import psi_baseline
 
 ##########################################################
 
@@ -34,7 +34,7 @@ from utils.EstHelpers import PsiBaseline
 # Function spits out the data generating process
 ##########################################################
 
-def DGP(T=8, J=2, dgpopt = 'default', _print=True):
+def dgp(T=8, J=2, dgpopt = 'default', _print=True):
         
     #############################
     # Default parameters
@@ -99,21 +99,21 @@ def DGP(T=8, J=2, dgpopt = 'default', _print=True):
         betaPhi = np.zeros(K)
         betaPhi[6], betaPhi[7] = 0.5, 0.2
         betaL[6, 1] = 0.8
-        betaL, betaPhi = RemoveSparse(betaL, betaPhi)
+        betaL, betaPhi = remove_sparse(betaL, betaPhi)
 
     #############################
     # Implied objects
     #############################
 
     # Structural hazard
-    psi = PsiBaseline(psiPar, T)
+    psi = psi_baseline(psiPar, T)
     #psi = psi_fun(2 + np.array(range(T-1)), psiPar[0], psiPar[1])
     psiM = np.zeros((T, J))
     psiM[0, :] = psin[:J]
     psiM[1:, :] = np.repeat(psi.reshape(-1, 1), J, axis=1)
 
     # Implied moments of nu
-    mu = BetaMomsMixed(T, nu_P, nu_P_pr)
+    mu = beta_moms_mixed(T, nu_P, nu_P_pr)
 
     # Out pL for dgpopt = fewvars
     if dgpopt == 'fewvars':
@@ -142,12 +142,12 @@ def DGP(T=8, J=2, dgpopt = 'default', _print=True):
 # Function that generates data using the above DGP
 ##########################################################
 
-def SimData(n=100000, T=8, J=2, dgpopt = 'default', out='data', _print=False):
+def sim_data(n=100000, T=8, J=2, dgpopt = 'default', out='data', _print=False):
 
     # Get DGP parameters
     if _print:
         print(f'Simulating data for n={n} with T={T}, J={J} and DGP={dgpopt}...')
-    psiM, _, nu_P, betaL, betaPhi, xmeans, cov_x1to3, _ = DGP(T, J, dgpopt, _print)
+    psiM, _, nu_P, betaL, betaPhi, xmeans, cov_x1to3, _ = dgp(T, J, dgpopt, _print)
 
     # Generate X variables
     if dgpopt == 'fewvars':
@@ -170,7 +170,7 @@ def SimData(n=100000, T=8, J=2, dgpopt = 'default', out='data', _print=False):
     # Generate propensity scores p(L|X)
     if dgpopt == 'ps_non_lin':
         X_L = X[:, betaL.sum(axis=1)!=0] # using variables that enter
-        pL_X = ComplexFunc(X_L, J)
+        pL_X = complex_ps(X_L, J)
     else:
         pL_X = np.exp(X @ betaL) / np.exp(X @ betaL).sum(axis=1, keepdims=True)
     
@@ -235,7 +235,7 @@ def SimData(n=100000, T=8, J=2, dgpopt = 'default', out='data', _print=False):
 # Function to remove sparse variables
 ##########################################################
 
-def MomsFewVarsDGP(T, pull_prev = True):
+def moms_fewvars(T, pull_prev = True):
 
     # If already saved pull from file
     if pull_prev:
@@ -245,9 +245,9 @@ def MomsFewVarsDGP(T, pull_prev = True):
 
     # Initialize
     n = 5000000
-    T = 18
+    T_bar = 18
     J = 2
-    df, nu, _, phiX = SimData(n, T+1, J, 'fewvars', 'all')
+    df, nu, _, phiX = sim_data(n, T_bar+1, J, 'fewvars', 'all')
     df['phiX'], df['nu'] = phiX, nu
 
     # Create cases for [x6, x7]
@@ -258,20 +258,20 @@ def MomsFewVarsDGP(T, pull_prev = True):
     freq_grpX = df['grpX'].value_counts(normalize=True).sort_index()
 
     # Create nu^2, nu^3, ... nu^T in df
-    for k in range(1, T+1):
+    for k in range(1, T_bar+1):
         df[f'nu{k}'] = df['nu'] ** k
 
     # Calculate average moments phi(X)^k E[nu^k|X] for k=1,2,..T for each group
     phi_X = df.groupby('grpX')['phiX'].mean()
-    avg_moms_X = np.zeros((4, T))
-    for k in range(1, T+1):
+    avg_moms_X = np.zeros((4, T_bar))
+    for k in range(1, T_bar+1):
         avg_moms_X[:, k-1] = df.groupby('grpX')[f'nu{k}'].mean() * (phi_X**k)
     avg_moms_X = avg_moms_X.T @ freq_grpX
 
     # Save and return
     np.save('tests/quants/moms_fewvars.npy', avg_moms_X)
 
-    return avg_moms_X
+    return avg_moms_X[:T]
 
 ##########################################################    
 

@@ -4,7 +4,7 @@ import numpy as np
 # Calculates the numerical gradient or Jacobian
 ##########################################################
 
-def NumGrad(f, x, *args, **kwargs):
+def numgrad(f, x, *args, **kwargs):
 
     # Initialize
     eps = 1e-6
@@ -37,7 +37,7 @@ def NumGrad(f, x, *args, **kwargs):
 # Function outputs model implied hazard  
 ##########################################################
 
-def ModelMoms(psiM, mu, out='h'):
+def model_moms(psiM, mu, out='h'):
 
     # Initialize
     T, J = psiM.shape
@@ -72,7 +72,7 @@ def ModelMoms(psiM, mu, out='h'):
 # Define psi functional form for ffopt = 'baseline'
 ##########################################################
 
-def PsiBaseline(par, T):
+def psi_baseline(par, T):
     alph1, alph2 = par[0], par[1]
     psi = np.zeros(T-1)
     for d in range(1, T):
@@ -83,7 +83,7 @@ def PsiBaseline(par, T):
 # Function unpacks model parameters from a stacked vector
 ##########################################################
 
-def Unstack(T, J, x, nrm, ffopt = 'np'):
+def unstack(T, J, x, nrm, ffopt = 'np'):
 
     # Non parametric
     if ffopt == 'np':
@@ -101,12 +101,12 @@ def Unstack(T, J, x, nrm, ffopt = 'np'):
         mu[0] = nrm
         mu[1:T] = x[J:J+T-1]
         par = x[J+T-1:]
-        psi = PsiBaseline(par, T)
+        psi = psi_baseline(par, T)
         psiM = np.array([np.append(psin[j], psi) for j in range(J)]).T
         return psiM, mu, par
 
-# Unstack PsiM further (including SEs)
-def UnstackPsiM(nL, psiM, psiSE=None):
+# Unstack PsiM further (including SEs) (Remove if not used)
+def unstack_psiM(nL, psiM, psiSE=None):
     n, pi = nL.sum(), nL/nL.sum()
     psin = psiM[0, :]
     psi = np.sum(pi * psiM, axis=1)
@@ -123,7 +123,7 @@ def UnstackPsiM(nL, psiM, psiSE=None):
 # Unstack standard errors
 ##########################################################
 
-def UnstackAll(T, J, nL, thta, se, nrm, ffopt = 'np'):
+def unstack_all(T, J, nL, thta, se, nrm, ffopt = 'np'):
 
     # Initialize
     n, pi = nL.sum(), nL/nL.sum()
@@ -133,9 +133,9 @@ def UnstackAll(T, J, nL, thta, se, nrm, ffopt = 'np'):
 
     # Unstack parameters
     if ffopt == 'np':
-        psiM, mu = Unstack(T, J, thta, nrm, ffopt)
+        psiM, mu = unstack(T, J, thta, nrm, ffopt)
     elif ffopt == 'baseline':
-        psiM, mu, par = Unstack(T, J, thta, nrm, ffopt)
+        psiM, mu, par = unstack(T, J, thta, nrm, ffopt)
     
     # Unstack parameters further
     psin = psiM[0, :]
@@ -152,7 +152,7 @@ def UnstackAll(T, J, nL, thta, se, nrm, ffopt = 'np'):
     elif ffopt == 'baseline':
         parSE = se[J+T-1:]
         parVar = parSE**2
-        dpsi_dpar = NumGrad(PsiBaseline, par, T)
+        dpsi_dpar = numgrad(psi_baseline, par, T)
         for t in range(1, T):
             psiSE[t] = np.sqrt(dpsi_dpar[t-1]**2 @ parVar)
 

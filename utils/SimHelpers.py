@@ -9,7 +9,7 @@ import pandas as pd
 ##########################################################
 
 # Gives num moments of Beta distribution given parameters
-def BetaMoms(num, a, b):
+def beta_moms(num, a, b):
     moms = np.zeros(num)
     cent_moms = np.zeros(num)
     norm_moms = np.zeros(num)
@@ -22,14 +22,14 @@ def BetaMoms(num, a, b):
     return moms, cent_moms, norm_moms
 
 # Gives implied moments if nu is from different Beta distributions
-def BetaMomsMixed(num, pars, probs):
+def beta_moms_mixed(num, pars, probs):
     '''
     pars: M x 2 array with parameters for M different Beta distributions
     probs: M x 1 array with probabilities of each distribution
     '''
     moms_mat = np.zeros((num, len(pars)))
     for j in range(len(pars)):
-        moms_mat[:, j] = BetaMoms(num, pars[j][0], pars[j][1])[0]
+        moms_mat[:, j] = beta_moms(num, pars[j][0], pars[j][1])[0]
         for k in range(num):
             moms_mat[k, j] *= probs[j]**(k+1)
     moms = moms_mat.sum(axis=1)
@@ -39,7 +39,7 @@ def BetaMomsMixed(num, pars, probs):
 # Function to plot true and estimated coefficients
 #############################################################
 
-def CoefPlot(true_coef, est_coef, title='Coefficients'):
+def coef_plot(true_coef, est_coef, title='Coefficients'):
     lb = min(np.min(true_coef), np.min(est_coef))
     ub = max(np.max(true_coef), np.max(est_coef))
     lb, ub = 0.9*lb, 1.1*ub
@@ -59,7 +59,7 @@ def CoefPlot(true_coef, est_coef, title='Coefficients'):
 # Function to remove sparse variables
 #############################################################
 
-def RemoveSparse(betaL, betaPhi, data=None):
+def remove_sparse(betaL, betaPhi, data=None):
     betaL_ = betaL[(betaL[:,1] != 0) | (betaPhi != 0)]
     betaPhi = betaPhi[(betaL[:,1] != 0) | (betaPhi != 0)]
     betaL = betaL_
@@ -75,7 +75,7 @@ def RemoveSparse(betaL, betaPhi, data=None):
 # Complex non-linear function to generate p(L|X)
 ##########################################################
 
-def ComplexFunc(X, J):
+def complex_ps(X, J):
     
     # Initialize
     n = X.shape[0]
@@ -94,7 +94,7 @@ def ComplexFunc(X, J):
         return ps
     
     # Min max normalization to return p b/w 0 and 1
-    def MinMaxNorm(ps):
+    def minmaxnorm(ps):
         ps = np.array(ps)
         ps[np.isnan(ps)] = 0.5
         return (ps - min(ps))/(max(ps) - min(ps))
@@ -107,7 +107,7 @@ def ComplexFunc(X, J):
     ps1[jump1] = ps1[jump1] + 2*ps1.mean()
     jump2 = (x2 > np.percentile(x2, 25)) & (x4 > np.percentile(x4, 50))
     ps1[jump2] = ps1[jump2]- 4*np.sqrt(ps1.var())
-    ps1 = MinMaxNorm(ps1)
+    ps1 = minmaxnorm(ps1)
 
     # If J = 2, stack & return
     if J == 2:
@@ -120,7 +120,7 @@ def ComplexFunc(X, J):
         ps2 = x2*(0.5*x0 + 0.3*x1 + 2*(x4 * x5 * x6)) + 0.5*x5
         ps2 = np.sin(ps2)
         ps2 = f2(ps2)
-        ps2 = MinMaxNorm(ps2)
+        ps2 = minmaxnorm(ps2)
         ps2[ps1 + ps2 > 1] = 1 - ps1[ps1 + ps2 > 1]
         ps3 = 1 - ps1 - ps2
         ps = np.column_stack((ps1, ps2, ps3))
