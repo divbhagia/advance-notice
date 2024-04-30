@@ -140,13 +140,12 @@ def custom_plot(series, se = None, xlab = '', ylab = '', title = '',
     assert len(se) == num_series, 'Length of standard errors must match series'
 
     # Fonts for elements
-    font_base = {'family': 'Charter', 'size': 9}
-    #font_base = {'family': 'Arial', 'size': 9}
+    plt.rcParams['font.serif'] = 'Charter'
+    font_base = {'family': 'sans-serif', 'size': 9}
     font_title = font_base.copy()
     font_axis_labs = font_base.copy()
     font_legend = font_base.copy()
-    #font_axis_ticks = font_base.copy()
-    font_axis_ticks = {'family': 'Charter', 'size': 8}
+    font_axis_ticks = {'family': 'sans-serif', 'size': 8}
 
     # Custom font changes
     font_title['size'] = 10 

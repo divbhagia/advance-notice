@@ -154,7 +154,8 @@ def avg_opt(*args, nu, p=None):
 # Simulate data from the search model and estimate DTHM
 ######################################################
 
-def sim_search_model(Tb, n, nu, p, pi, dlta0, dlta1, ffopt, seed=0):
+def sim_search_model(Tb, n, nu, p, pi, dlta0, dlta1, 
+                     ffopt, nrm, seed=0):
     
     # Initialize
     np.random.seed(seed)
@@ -162,26 +163,35 @@ def sim_search_model(Tb, n, nu, p, pi, dlta0, dlta1, ffopt, seed=0):
     othpars = parameters(T, Tb)
     nu_i = np.random.choice(nu, size=n, p=p)
     notice = np.random.choice([0, 1], size=n, p=pi)
-    dlta = notice[:, np.newaxis] * (dlta1 - dlta0) + dlta0
-
-    # Exit probability and unemployment duration
-    exit_prob = np.zeros((n, T))
+    dlta = np.array([dlta0, dlta1])
+    
+    # Exit probabilities (fastens code this way)
+    def exitprob(notice, nu):
+        _, exit_prob, *_ = worker_opt(T, *othpars, dlta[notice], nu)
+        return exit_prob
+    exit_prob = np.zeros((2, 2, T))
+    exit_prob[0, 0, :] = exitprob(0, nu[0])
+    exit_prob[1, 0, :] = exitprob(1, nu[0])
+    exit_prob[0, 1, :] = exitprob(0, nu[1])
+    exit_prob[1, 1, :] = exitprob(1, nu[1])
+    nucat = (nu_i == nu[1]).astype(int)
+    exit_prob_i = np.zeros((n, T))
     for i in range(n):
-        _, exit_prob[i, :], *_ = worker_opt(T, *othpars, dlta[i], nu_i[i])
+        exit_prob_i[i, :] = exit_prob[notice[i], nucat[i]]
+ 
+    # Exit rate and unemployment duration
     crit = np.random.random((n, T))
-    exitd = (exit_prob > crit).astype(int) 
+    exitd = (exit_prob_i > crit).astype(int) 
     exited = np.zeros(n)    
     for t in range(T):
         exited += exitd[:, t]
         exitd[exited != 0, t+1:] = 0
-    dur = np.argmax(exitd, axis=1).astype(float)
-    
-    # Create data for estimation
-    cens = np.zeros(n)
-    data = pd.DataFrame({'notice': notice, 'cens': cens, 'dur': dur})
+    dur = np.argmax(exitd, axis=1).astype(int)
+    cens = np.where(exited == 0, 1, 0)
+    dur = np.where(cens == 1, T, dur)
 
-    # Estimate using gmm 
-    nrm = 1
+    # Create data for estimation & estimate
+    data = pd.DataFrame({'notice': notice, 'cens': cens, 'dur': dur})
     r = estimate(data, nrm, ffopt, adj='none')
 
     return r
