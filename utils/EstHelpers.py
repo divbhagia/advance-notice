@@ -73,10 +73,10 @@ def model_moms(psiM, mu, out='h'):
 ##########################################################
 
 def psi_baseline(par, T):
-    alph1, alph2 = par[0], par[1]
+    a1, a2 = par[0], par[1]
     psi = np.zeros(T-1)
     for d in range(1, T):
-        psi[d-1] = (alph2/alph1) * (d/alph1)**(alph2-1) / (1 + (d/alph1)**alph2)
+        psi[d-1] = (a2/a1) * (d/a1)**(a2-1) / (1 + (d/a1)**a2)
     return psi
 
 ##########################################################

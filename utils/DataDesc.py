@@ -149,7 +149,7 @@ def custom_plot(series, se = None, xlab = '', ylab = '', title = '',
     font_axis_ticks = {'family': 'Charter', 'size': 8}
 
     # Custom font changes
-    font_title['size'] = 12 
+    font_title['size'] = 10 
     font_title['weight'] = 'medium'
 
     # Default colors & linestyles

@@ -40,10 +40,12 @@ T, J = len(sample['dur'].unique())-1, len(sample['notice'].unique())
 # Data moments for comparison
 h, *_ = data_moms(data_for_est, ps, purpose='output')
 h_avg = h @ nL / nL.sum()
+np.save(f'{QUANTS_DIR}/h_avg_ipw.npy', h_avg)
 
 # Baseline estimates
 nrm = 1
 r = estimate(data_for_est, nrm, ffopt='baseline', adj='ipw')
+np.save(f'{QUANTS_DIR}/baseline_est_out.npy', r)
 
 # Verify ps & coefs same as saved
 if r['ps'] is not None and r['coefs'] is not None:
