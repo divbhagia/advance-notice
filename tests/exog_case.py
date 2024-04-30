@@ -12,7 +12,7 @@ from utils.datadesc import custom_plot
 from utils.datamoms import data_moms
 from utils.esthelpers import model_moms, unstack, unstack_psiM, numgrad
 from utils.estgmm import avg_moms, objfun, gmm
-from utils.Inference import IndvMoms, AvgMomsInference, OptimalWeightMat, StdErrors
+from utils.inference import IndvMoms, AvgMomsInference, OptimalWeightMat, StdErrors
 
 # from utils.Inference import IndvMoms, StdErrors
 # from utils.EstNuisancePars import PredPS, RegAdj
