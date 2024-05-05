@@ -1,5 +1,18 @@
 import numpy as np
 
+
+##########################################################
+# Function to group duration
+##########################################################
+
+def group_dur(dur_var, interval):
+    dur = 0
+    for i in range(0, 53, interval):
+        dur = np.where((dur_var >= i) & (dur_var < i + interval),
+                        i + 0.5 * interval, dur)
+    dur = np.where(dur_var > i, i + 0.5 * interval, dur)
+    return dur
+
 ##########################################################
 # Create new binary variables in pandas frames
 ##########################################################
@@ -92,7 +105,7 @@ def get_broad_occ(var):
     elif 15 <= var <= 16:
         return "Production"
     elif var == 17:
-        return "Transportation and Material Moving"
+        return "Transportation"
     else:
         return "Unknown"
     

@@ -15,11 +15,20 @@ QUANTS_DIR = 'scripts/quants'
 TEST_QUANTS_DIR = 'tests/quants'
 DIRS = [DATA_DIR, OUTPUT_DIR, QUANTS_DIR, TEST_QUANTS_DIR]
 
+# Specify font for plots
+FONT = {'family': 'serif', 'font': 'Lato', 'size': 9}
+
+# Critical value for confidence intervals
+CRIT = 1.645 # 90% confidence interval
+
 # Colors
 class Colors:
-    RED = '#d40404'
-    BLACK = '#000000'
-    BLUE = '#0303B6'
+    RED = (0.7, 0.1, 0.2)
+    BLACK = (0, 0, 0)
+    GREY = (0.5, 0.5, 0.5)
+    BLUE = (0.2, 0.2, 0.65)
+    GREEN = (0.2, 0.5, 0.3)
+    WHITE = (1, 1, 1)
 
 # Variables to keep
 cpsvars = ['serial', 'cpsid', 'mish', 'pernum', 'hwtfinl', 'wtfinl', 

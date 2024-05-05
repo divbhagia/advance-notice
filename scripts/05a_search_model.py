@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.optimize import minimize
-from utils.datadesc import custom_plot
+from utils.customplot import custom_plot
 from utils.searchmodel import parameters, avg_opt
-from utils.config import QUANTS_DIR
+from utils.config import QUANTS_DIR, OUTPUT_DIR, Colors
 
 ######################################################
 # Initialization
@@ -15,7 +15,7 @@ dlta0 = 1
 
 # Load observed h and estimated psiH
 h_data = np.load(f'{QUANTS_DIR}/h_avg_ipw.npy')
-est = np.load(f'{QUANTS_DIR}/baseline_est_out.npy', allow_pickle=True)
+est = np.load(f'{QUANTS_DIR}/baseline_ests.npy', allow_pickle=True)
 est = est.item()
 psiH = est['psi']
 
@@ -67,19 +67,50 @@ r2 = avg_opt(T, sgma, beta, rho, thta, w, b, a, dlta2, nu=nu2, p=p2)
 # Assess model fit
 ######################################################
 
+# Panel A
+xticklabs = ['0-12', '12-24', '24-36', '36-48']
+xlab = 'Weeks since unemployed'
+labs = ['Data', 'No heterogeneity', '2-types of workers']
+colors = [Colors.BLACK, Colors.RED, Colors.BLUE]
+linestyles = ['-', ':', '--']
+linewidths = [1.5, 3, 1.5]
+savepath = f'{OUTPUT_DIR}/search_model_fitA.pdf'
 custom_plot([h_data, r1['h_obs'], r2['h_obs']], 
-            legendlabs=['Observed', 'Calibration 1', 'Calibration 2'])
+            colors=colors, xticklabs=xticklabs, xlab = xlab,
+            linestyles=linestyles, linewidths=linewidths,
+            legendlabs=labs, savepath=savepath)
 
+# Panel B
+colors = [Colors.BLACK, Colors.BLUE]
+linestyles = ['-', '--']
+labs = ['MH Estimate', '2-types of workers']
+savepath = f'{OUTPUT_DIR}/search_model_fitB.pdf'
+custom_plot([psiH, r2['h_str']], colors=colors, 
+            xticklabs=xticklabs, xlab = xlab,
+            linestyles=linestyles, legendlabs=labs, 
+            ylims=[0.19, 0.81], ydist=0.2, savepath=savepath)
 
 ######################################################
-# Plots
+# Main figure
 ######################################################
 
-labs = ['2-types of workers', 'No heterogeneity']
+labs = ['No heterogeneity', '2-types of workers']
+linestyles = ['--', '-']
+colors = [Colors.BLACK, Colors.BLUE]
 
-custom_plot([dlta2, dlta1], legendlabs=labs)
-custom_plot([r2['s_str']/r2['s_str'][0], r1['s_str']/r1['s_str'][0]],
-             legendlabs=labs)
+# Panel A
+custom_plot([dlta1, dlta2], legendlabs=labs, xticklabs=xticklabs, 
+            xlab=xlab, ylab='Offer Arrival Rate', colors=colors,
+            linestyles=linestyles, legendpos='lower left', 
+            ylims=[0.4, 1.01], savepath=f'{OUTPUT_DIR}/fig_calib_offer.pdf')
+
+# Panel B
+custom_plot([r1['s_str']/r1['s_str'][0], r2['s_str']/r2['s_str'][0]],
+            legendlabs=labs, xticklabs=xticklabs, 
+            ylims = [0.59, 1.41], ydist = 0.2, colors=colors,
+            ylab = 'Search Effort', linestyles=linestyles,
+            legendpos='lower left', xlab=xlab,
+            savepath=f'{OUTPUT_DIR}/fig_calib_search.pdf')
 
 ######################################################
 

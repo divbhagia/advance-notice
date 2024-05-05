@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from utils.searchmodel import parameters, avg_opt, sim_search_model
 import multiprocessing as mp
-from utils.datadesc import custom_plot
-from utils.config import QUANTS_DIR, Colors
+from utils.customplot import custom_plot
+from utils.config import QUANTS_DIR, OUTPUT_DIR, Colors
 
 # np print options
 np.set_printoptions(precision=4, suppress=True)
@@ -68,27 +68,37 @@ if __name__ == '__main__':
     psiSE = np.array([results[i]['psiSE'] for i in range(iters)])
     psiSE = np.mean(psiSE, axis=0)
 
-    # Plot estimates
+    # Plot average estimate
     labs =['Estimate', '$E[h(d|\\nu)]$', 'Observed']
+    xticklabs = ['1', '2', '3', '4']
     custom_plot([h_obs[0]*psi/psi[0], 
-                 h_obs[0]*h_str/h_str[0], h_obs],
-                legendlabs=labs, ylims=[0.225, 0.4], ydist=0.05,
-                xlab='Time since unemployed', ylab='Hazard',)
+                 h_obs[0]*h_str/h_str[0], h_obs], legendpos='lower left',
+                legendlabs=labs, ylims=[0.2, 0.385], ydist=0.05,
+                xlab='Time since unemployed', ylab='Hazard', 
+                figsize= [4.5, 3], xticklabs=xticklabs,
+                savepath=f'{OUTPUT_DIR}/fig_sm_sim_avgpred.pdf')
+    
+    # x and y to superimpose standard normal distribution
+    x = np.linspace(-4, 4, 1000)
+    y = np.exp(-0.5*x**2) / (2*np.pi)**0.5
     
     # Plot distribution of estimates
-    figopts = {'bins': 30, 'color': Colors.BLACK, 'alpha': 0.1,
+    figopts = {'bins': 25, 'color': Colors.BLACK, 'alpha': 0.1,
                'edgecolor': Colors.BLACK, 'linewidth': 0.75,
                'stat': 'density'}
-    plt.figure(figsize=(6.25, 6))
+    psi_nrm = (psi_all - psi_all.mean(axis=0))/psi_all.std(axis=0)
     for t in range(T):
-        plt.subplot(2, 2, t+1)
-        plt.axvline(0, color=Colors.RED, linewidth=0.75)
-        sns.histplot(psi_all[:, t]-psi[t], **figopts)
-        sns.kdeplot(psi_all[:, t]-psi[t], color='black', linewidth=0.75)
+        plt.figure(figsize=(2.55, 2.25))
+        plt.axvline(psi_nrm[:,t].mean(), 
+                    color=Colors.RED, linewidth=1)
+        sns.histplot(psi_nrm[:,t], **figopts)
+        plt.plot(x, y, color=Colors.BLACK, linewidth=1)
         sns.despine()
-        me = np.round(4 * psiSE[t], 2)
-        plt.xticks(np.arange(-2, 2, 0.1))
-        plt.xlim(-me, me)
+        plt.xlim(-4, 4)
+        plt.tight_layout(pad=0.75)
+        plt.ylim(0, 0.52)
         plt.ylabel('')
+        plt.savefig(f'{OUTPUT_DIR}/fig_sm_sim_dist{t+1}.pdf', 
+                    dpi=300, format='pdf')
 
 ######################################################

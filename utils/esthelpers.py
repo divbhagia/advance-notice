@@ -69,15 +69,26 @@ def model_moms(psiM, mu, out='h'):
         return h
     
 ##########################################################
-# Define psi functional form for ffopt = 'baseline'
+# Other helper functions
 ##########################################################
 
 def psi_baseline(par, T):
     a1, a2 = par[0], par[1]
     psi = np.zeros(T-1)
-    for d in range(1, T):
-        psi[d-1] = (a2/a1) * (d/a1)**(a2-1) / (1 + (d/a1)**a2)
+    with np.errstate(invalid='ignore'): 
+        for d in range(1, T):
+            psi[d-1] = (a2/a1) * (d/a1)**(a2-1) / (1 + (d/a1)**a2)
     return psi
+# Note: ignoring error as it occurs due to initial values during optimization
+
+def meanshiftkappa(k0, mu):
+    k = np.zeros((4, 2))
+    k[0, 1] = k0
+    k[1, 1] = k0 * (k0**1 + 2 * mu[0])
+    k[2, 1] = k0 * (k0**2 + 3 * mu[0] * k0 + 3 * mu[1])
+    k[3, 1] = k0 * (k0**3 + 4 * mu[0] * k0**2 \
+                    + 6 * mu[1] * k0 + 4 * mu[2])
+    return k
 
 ##########################################################
 # Function unpacks model parameters from a stacked vector
@@ -85,39 +96,65 @@ def psi_baseline(par, T):
 
 def unstack(T, J, x, nrm, ffopt = 'np'):
 
-    # Non parametric
-    if ffopt == 'np':
+    # Initialize
+    muM = np.zeros((T, J))
+    psiM = np.zeros((T, J))
+    gamma = np.ones((T-1, J))
+    kappa = np.zeros((T, J))
+    opt = ffopt if isinstance(ffopt, str) else ffopt['opt']
+
+    # Unpack parameters
+    if isinstance(ffopt, dict):
+        if 'gamma' in ffopt.keys():
+            gamma = ffopt['gamma']
+        if 'kappa' in ffopt.keys():
+            kappa = ffopt['kappa']
+
+    # Non-parametric
+    if opt == 'np':
         psin = x[:J]
         mu = np.zeros(T)
         mu[0] = nrm
         mu[1:T] = x[J:J+T-1]
         psi = x[J+T-1:]
-        psiM = np.array([np.append(psin[j], psi) for j in range(J)]).T
-        return psiM, mu
+        if 'kappa0' in ffopt.keys():
+            kappa = meanshiftkappa(ffopt['kappa0'], mu)
+        for j in range(J):
+            muM[:, j] = mu + kappa[:, j]
+            psiM[:, j] = np.concatenate(([psin[j]], psi * gamma[:, j]))
+        return psiM, muM
 
-    if ffopt == 'baseline':
+    # Baseline
+    if opt == 'baseline':
         psin = x[:J]
         mu = np.zeros(T)
         mu[0] = nrm
         mu[1:T] = x[J:J+T-1]
         par = x[J+T-1:]
         psi = psi_baseline(par, T)
-        psiM = np.array([np.append(psin[j], psi) for j in range(J)]).T
-        return psiM, mu, par
+        if 'kappa0' in ffopt.keys():
+            kappa = meanshiftkappa(ffopt['kappa0'], mu)
+        for j in range(J):
+            muM[:, j] = mu + kappa[:, j]
+            psiM[:, j] = np.concatenate(([psin[j]], psi * gamma[:, j]))
+        return psiM, muM, par
 
+##########################################################
 # Unstack PsiM further (including SEs) (Remove if not used)
-def unstack_psiM(nL, psiM, psiSE=None):
-    n, pi = nL.sum(), nL/nL.sum()
-    psin = psiM[0, :]
-    psi = np.sum(pi * psiM, axis=1)
-    if psiSE is not None:
-        piSE = np.sqrt(pi * (1-pi)/n)
-        psinSE = psiSE[0, :]
-        psiSE = psiSE[:, 0]
-        psiSE[0] = np.sqrt(((piSE * psin)**2 + (pi * psinSE)**2).sum())
-        return psi, psin, psiSE, psinSE
-    else:
-        return psi, psin
+##########################################################
+
+# def unstack_psiM(nL, psiM, psiSE=None):
+#     n, pi = nL.sum(), nL/nL.sum()
+#     psin = psiM[0, :]
+#     psi = np.sum(pi * psiM, axis=1)
+#     if psiSE is not None:
+#         piSE = np.sqrt(pi * (1-pi)/n)
+#         psinSE = psiSE[0, :]
+#         psiSE = psiSE[:, 0]
+#         psiSE[0] = np.sqrt(((piSE * psin)**2 + (pi * psinSE)**2).sum())
+#         return psi, psin, psiSE, psinSE
+#     else:
+#         return psi, psin
     
 ##########################################################
 # Unstack standard errors
@@ -133,9 +170,11 @@ def unstack_all(T, J, nL, thta, se, nrm, ffopt = 'np'):
 
     # Unstack parameters
     if ffopt == 'np':
-        psiM, mu = unstack(T, J, thta, nrm, ffopt)
+        psiM, muM = unstack(T, J, thta, nrm, ffopt)
+        mu = muM[:, 0]
     elif ffopt == 'baseline':
-        psiM, mu, par = unstack(T, J, thta, nrm, ffopt)
+        psiM, muM, par = unstack(T, J, thta, nrm, ffopt)
+        mu = muM[:, 0]
     
     # Unstack parameters further
     psin = psiM[0, :]

@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 from scipy.stats import chi2
 
 # Import custom functions
-from utils.datadesc import custom_plot
+from utils.customplot import custom_plot
 from utils.estgmm import estimate
 from utils.datamoms import data_moms
 
 # Import parameters
 from utils.config import DATA_DIR, QUANTS_DIR, OUTPUT_DIR
-from utils.config import Colors
+from utils.config import Colors, CRIT
 
 # Set colors
 red = Colors.RED
@@ -45,7 +45,7 @@ np.save(f'{QUANTS_DIR}/h_avg_ipw.npy', h_avg)
 # Baseline estimates
 nrm = 1
 r = estimate(data_for_est, nrm, ffopt='baseline', adj='ipw')
-np.save(f'{QUANTS_DIR}/baseline_est_out.npy', r)
+np.save(f'{QUANTS_DIR}/baseline_ests.npy', r)
 
 # Verify ps & coefs same as saved
 if r['ps'] is not None and r['coefs'] is not None:
@@ -109,7 +109,6 @@ f.close()
 
 # Parameters for plot
 xticklabs = ['0-12', '12-24', '24-36', '36-48']
-xticklabs = None
 
 # Plot structural hazard
 #h_avg = psi[0] * h_avg / h_avg[0]
@@ -118,9 +117,9 @@ se = [r['psiSE'], None]
 custom_plot(series, se, xlab='Weeks since unemployed', ylab='Hazard',
            legendlabs= ['Structural', 'Observed'], xticklabs=xticklabs,
            colors=[blue, black], linestyles=['-', '-.'], 
-           ylims=[-0.05, 0.95], legendpos='lower left', ydist=1)
+           ylims=[-0.05, 0.95], legendpos='lower left', ydist=0.2)
 plt.axvline(x=2, color='black', linestyle=':', linewidth=1.25, alpha=0.75)
-plt.text(0.69, 0.85, 'UI Exhaustion', fontsize=10, fontdict={'family': 'Charter'})
+plt.text(0.69, 0.85, 'UI Exhaustion')
 plt.savefig(f'{OUTPUT_DIR}/fig_baseline_estsA.pdf', dpi=300, format='pdf')
 
 # Plot average type
@@ -128,14 +127,30 @@ psiM = np.array([np.append(r['psin'][j], r['psi'][1:]) for j in range(J)]).T
 avg_type = h / psiM
 series = [avg_type[:, j] for j in range(J)]
 custom_plot(series, xticklabs=xticklabs,
-           ylab='Average Type', ydist=0.2, 
+           ylab='Average Type', ydist=0.2,  xlab='Weeks since unemployed', 
            legendlabs=['Short notice', 'Long notice'], 
            legendpos='lower left')
 plt.savefig(f'{OUTPUT_DIR}/fig_baseline_estsB.pdf', dpi=300, format='pdf')
 
+##########################################################
+# Appendix figure: unweighted estimates
+##########################################################
+
+h, *_ = data_moms(data_for_est, purpose='output')
+h_avg = h @ nL / nL.sum()
+runwtd = estimate(data_for_est, nrm, ffopt='baseline', adj='none')
+series = [runwtd['psi'], h_avg]
+se = [runwtd['psiSE'], None]
+custom_plot(series, se, xlab='Weeks since unemployed', ylab='Hazard',
+           legendlabs= ['Structural', 'Observed'], xticklabs=xticklabs,
+           colors=[blue, black], linestyles=['-', '-.'], 
+           ylims=[-0.05, 0.95], legendpos='lower left', ydist=0.2)
+plt.axvline(x=2, color='black', linestyle=':', linewidth=1.25, alpha=0.75)
+plt.text(0.69, 0.85, 'UI Exhaustion')
+plt.savefig(f'{OUTPUT_DIR}/fig_robust_unwtd.pdf', dpi=300, format='pdf')
 
 ##########################################################
-# Plot non-parametric estimates
+# Appendix figure: different functional forms
 ##########################################################
 
 # Non-parametric estimates
@@ -143,28 +158,51 @@ rnp = estimate(data_for_est, nrm, ffopt='np', adj='ipw')
 
 # Parameters for plot
 xticklabs = ['0-12', '12-24', '24-36', '36-48']
-xticklabs = None
 
 # Plot structural hazard
-#h_avg = psi[0] * h_avg / h_avg[0]
-series = [r['psi'], h_avg, rnp['psi']]
-se = [r['psiSE'], None, None]
+xax = np.arange(len(h_avg))
+plt.figure(figsize=(4.5, 3))
+plt.errorbar(xax, r['psi'], yerr=CRIT*r['psiSE'], color=black,
+                capsize=3, fmt='o', markersize=4)
+plt.errorbar(xax+0.075, rnp['psi'], yerr=CRIT*rnp['psiSE'], color=blue,
+                capsize=3, fmt='x', markersize=5)
+plt.xticks(xax, xticklabs)
+plt.tight_layout(pad=2)
+plt.xlabel('Weeks since unemployed')
+plt.ylabel('Hazard')
+plt.legend(['Log-Logistic (Baseline)', 'Non-parametric'], loc = 'lower left')
+plt.savefig(f'{OUTPUT_DIR}/fig_robust_np.pdf', dpi=300, format='pdf')
+plt.show()
+
+##########################################################
+# Appendix figure: estimates with 9 week intervals
+##########################################################
+
+# Data for estimation
+data_for_est = pd.concat([sample[['notice', 'dur', 'cens']], X], axis=1)
+data_for_est['dur'] = sample['dur_9week'] 
+T = len(sample['dur_9week'].unique())-1
+
+# Data moments for comparison
+h, *_ = data_moms(data_for_est, ps, purpose='output')
+h_avg = h @ nL / nL.sum()
+
+# Baseline estimates
+nrm = 1
+r9week = estimate(data_for_est, nrm, ffopt='baseline', adj='ipw')
+r9weeknp = estimate(data_for_est, nrm, ffopt='np', adj='ipw')
+
+# Plot estimates
+series = [r9week['psi'], r9weeknp['psi'], h_avg]
+se = [r9week['psiSE'], None, None]
+xticklabs = ['0-9', '9-18', '18-27', '27-36', '36-45']
 custom_plot(series, se, xlab='Weeks since unemployed', ylab='Hazard',
-           legendlabs= ['Structural', 'Observed', 'NP'], xticklabs=xticklabs,
-           colors=[blue, black, red], linestyles=['-', '-.', ':'], 
-           ylims=[-0.05, 0.95], legendpos='lower left', ydist=1)
+           legendlabs= ['Baseline', 'Non-parametric', 'Observed'], xticklabs=xticklabs, figsize=(4.5, 3), 
+           colors=[blue, red, black], linestyles=['-', '--', '-.'], 
+           ylims=[-0.075, 0.8], legendpos='lower left', ydist=0.2)
 plt.axvline(x=2, color='black', linestyle=':', linewidth=1.25, alpha=0.75)
-plt.text(0.69, 0.85, 'UI Exhaustion', fontsize=10, fontdict={'family': 'Charter'})
-plt.savefig(f'{OUTPUT_DIR}/fig_np_estsA.pdf', dpi=300, format='pdf')
+plt.savefig(f'{OUTPUT_DIR}/fig_robust_9week.pdf', dpi=300, format='pdf')
 
-# Plot average type
-psiM = np.array([np.append(rnp['psin'][j], rnp['psi'][1:]) for j in range(J)]).T
-avg_type = h / psiM
-series = [avg_type[:, j] for j in range(J)]
-custom_plot(series, xticklabs=xticklabs,
-           ylab='Average Type', ydist=0.2, 
-           legendlabs=['Short notice', 'Long notice'], 
-           legendpos='lower left')
-plt.savefig(f'{OUTPUT_DIR}/fig_np_estsB.pdf', dpi=300, format='pdf')
-
+##########################################################
+# Appendix figure: Estimates for the unweighted sample
 ##########################################################

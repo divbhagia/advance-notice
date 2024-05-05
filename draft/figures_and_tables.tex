@@ -1,5 +1,9 @@
 \documentclass{div}
-\usepackage{pdflscape} % Package for landscape pages
+\usepackage{svg}
+%%%%%%%%%%%%%%%%%%%% Locals 
+\newcommand{\agecutoff}{21 to 64 } 
+\newcommand{\outdir}{./../output}
+
 
 \begin{document}
 
@@ -14,11 +18,11 @@
 & Short &  Long & Diff. & & Short &  Long & Diff. \\
 & (1) & (2) & (2)-(1) & & (3) & (4) & (4)-(3) \\
 \midrule 
-\input{./../output/tab_sum_stats.tex} \addlinespace[1ex]
+\input{\outdir/tab_sum_stats.tex} \addlinespace[1ex]
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}
-\item \textit{Note:} The sample consists of respondents from the Displaced WorkerSupplement (DWS) for the years 1996-2020, who were between ages 21 to 64, had workedfull-time for at least six months at their previous job, received health insurancefrom their former employer, and did not expect to be recalled. Short notice refersto a notice period of one and two months, while long notice refers to a noticeperiod exceeding two months. Columns (1) and (2) present raw averages for thesample, while columns (3) and (4) show weighted averages, where the weightscorrespond to the inverse of the estimated probabilities of receiving short or longnotice.      
+\item \textit{Note:} The sample consists of respondents from the Displaced Worker Supplement (DWS) for the years 1996-2020, who were between ages of \agecutoff, had worked full-time for at least six months at their previous job, received health insurance from their former employer, and did not expect to be recalled. Short notice refers to a notice period of 1-2 months, while long notice refers to a notice period exceeding two months. Columns (1) and (2) present raw averages for the sample, while columns (3) and (4) show weighted averages, where the weights correspond to the inverse of the estimated probabilities of receiving short or long notice.      
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -31,14 +35,14 @@
 \toprule
 & (1) & (2) & (3) & (4) \\
 \midrule \addlinespace[1ex]
- \multicolumn{5}{c}{\underline{\sc{Panel A. $\I\{\text{Unemployment duration $=0$ weeks}\}$}}} \\ \addlinespace[2ex]
-\input{./../output/tab_reg_init_hazardA.tex} \addlinespace[3ex]
- \multicolumn{5}{c}{\underline{\sc{Panel B. $\I\{\text{Unemployment duration $\leq 12$ weeks}\}$}}} \\ \addlinespace[2ex]
-\input{./../output/tab_reg_init_hazardB.tex} \addlinespace[2ex]
+\multicolumn{5}{c}{\underline{\sc{Panel A. $\I\{\text{Unemployment duration $=0$ weeks}\}$}}} \\ \addlinespace[2ex]
+\input{\outdir/tab_reg_init_hazardA.tex} \addlinespace[3ex]
+\multicolumn{5}{c}{\underline{\sc{Panel B. $\I\{\text{Unemployment duration $\leq 12$ weeks}\}$}}} \\ \addlinespace[2ex]
+\input{\outdir/tab_reg_init_hazardB.tex} \addlinespace[2ex]
 Controls   &  No & Yes  & No & Yes \\
 Weights   & No  & No   & Yes & Yes \\
 \midrule
-\input{./../output/tab_reg_init_hazardC}
+\input{\outdir/tab_reg_init_hazardC}
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}
@@ -50,7 +54,7 @@ Weights   & No  & No   & Yes & Yes \\
 
 % % \begin{landscape}
 % % \begin{table}
-% %     \input{./../output/tab_sum_stats.tex}
+% %     \input{\outdir/tab_sum_stats.tex}
 % % \end{table}
 % % \end{landscape}
 
@@ -60,12 +64,12 @@ Weights   & No  & No   & Yes & Yes \\
 \centering
 \begin{subfigure}{.525\textwidth}
 \centering
-\includegraphics{./../output/fig_hazard_ipw.pdf}
+\includegraphics{\outdir/fig_hazard_ipw.pdf}
 \subcaption{Exit Rate}
 \end{subfigure}
 \begin{subfigure}{.45\textwidth}
 \centering
-\includegraphics{./../output/fig_survival_ipw.pdf}
+\includegraphics{\outdir/fig_survival_ipw.pdf}
 \subcaption{Survival Rate}
 \end{subfigure}
 \vspace{-0.75em}
@@ -74,60 +78,354 @@ Weights   & No  & No   & Yes & Yes \\
 
 % TABLE: Baseline Estimates
 \begin{table}[t]
-    \begin{threeparttable}
-    \caption{Estimation Results}\label{tab_baseline_estimates}
-    \begin{tabularx}{\linewidth}{Yp{0.5\textwidth}YY}
-    \toprule
-    Parameter & Explanation & Estimate & SE \\
-    \midrule  \addlinespace[1ex]
-    \multicolumn{4}{l}{\textit{Panel A: Estimated Parameters}}  \\ \addlinespace[1ex]
-    \input{./../output/tab_baseline_estsA} \addlinespace[1ex]
-    \multicolumn{4}{l}{\textit{Panel B: Duration Dependence}}  \\ \addlinespace[1ex]
-    \input{./../output/tab_baseline_estsB}   \\ 
-    \end{tabularx}
-    \begin{tabularx}{\linewidth}{p{1cm}XX}
-    \multicolumn{3}{l}{\textit{Hansen-Sargan Test}}  \\ \addlinespace[1ex]
-    \input{./../output/tab_baseline_estsC}   
-    \bottomrule
-    \end{tabularx}
-    \begin{tablenotes}
-    \item \textit{Note:} The table presents estimates from the Mixed Hazard model. The first weighted moment is normalized to one, and structural duration dependence is specified by equation (\ref{eqn_functional_form}). Panel A shows the estimated parameters from the model, and panel B presents structural hazards implied by the estimated parameters. The standard errors for the structural hazards are calculated using the delta method.
-    \end{tablenotes}
-    \end{threeparttable}
-    \end{table}
-    
+\begin{threeparttable}
+\caption{Estimation Results}\label{tab_baseline_estimates}
+\begin{tabularx}{\linewidth}{Yp{0.5\textwidth}YY}
+\toprule
+Parameter & Explanation & Estimate & SE \\
+\midrule  \addlinespace[1ex]
+\multicolumn{4}{l}{\textit{Panel A: Estimated Parameters}}  \\ \addlinespace[1ex]
+\input{\outdir/tab_baseline_estsA} \addlinespace[1ex]
+\multicolumn{4}{l}{\textit{Panel B: Duration Dependence}}  \\ \addlinespace[1ex]
+\input{\outdir/tab_baseline_estsB}   \\ 
+\end{tabularx}
+\begin{tabularx}{\linewidth}{p{1cm}XX}
+\multicolumn{3}{l}{\textit{Hansen-Sargan Test}}  \\ \addlinespace[1ex]
+\input{\outdir/tab_baseline_estsC}   
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}
+\item \textit{Note:} The table presents estimates from the Mixed Hazard model. The first weighted moment is normalized to one, and structural duration dependence is specified by equation (\ref{eqn_functional_form}). Panel A shows the estimated parameters from the model, and panel B presents structural hazards implied by the estimated parameters. The standard errors for the structural hazards are calculated using the delta method.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
 % FIGURE: Baseline Estimates
 \begin{figure}[t]\caption{Baseline Estimates}\label{fig_baseline_estimates}
-    \centering
-    %\vspace{-1.25em}
-    \begin{subfigure}{.49\linewidth}
-    \raggedleft
-    \includegraphics{./../output/fig_baseline_estsA}
-    \subcaption{Structural Hazard}
-    \end{subfigure} \hfill
-    \begin{subfigure}{.49\linewidth}
-    \includegraphics{./../output/fig_baseline_estsB}
-    \subcaption{Average Type}
-    \end{subfigure} 
-    \vspace{-0.75em}
-    \floatfoot{\textit{Note:} Solid line in panel A presents estimates for structural hazards as implied by the estimated parameters in panel A of Table \ref{tab_baseline_estimates}. The dotted line in panel A presents the observed exit rate from the data, averaged across workers with short and long notice. Panel B presents the implied average type at each duration for those with short and long notice. Error bars represent 90\% confidence intervals.}
-    \end{figure}
+\centering
+%\vspace{-1.25em}
+\begin{subfigure}{.49\linewidth}
+\raggedleft
+\includegraphics{\outdir/fig_baseline_estsA}
+\subcaption{Structural Hazard}
+\end{subfigure} \hfill
+\begin{subfigure}{.49\linewidth}
+\includegraphics{\outdir/fig_baseline_estsB}
+\subcaption{Average Type}
+\end{subfigure} 
+\vspace{-0.75em}
+\floatfoot{\textit{Note:} Solid line in panel A presents estimates for structural hazards as implied by the estimated parameters in panel A of Table \ref{tab_baseline_estimates}. The dotted line in panel A presents the observed exit rate from the data, averaged across workers with short and long notice. Panel B presents the implied average type at each duration for those with short and long notice. Error bars represent 90\% confidence intervals.}
+\end{figure}
 
-    % FIGURE: Non-Parametric Estimates
-\begin{figure}[t]\caption{Non-Parametric Estimates}\label{fig_np_estimates}
-    \centering
-    %\vspace{-1.25em}
-    \begin{subfigure}{.49\linewidth}
-    \raggedleft
-    \includegraphics{./../output/fig_np_estsA}
-    \subcaption{Structural Hazard}
-    \end{subfigure} \hfill
-    \begin{subfigure}{.49\linewidth}
-    \includegraphics{./../output/fig_np_estsB}
-    \subcaption{Average Type}
-    \end{subfigure} 
-    \vspace{-0.75em}
-    \floatfoot{\textit{Note:} Solid line in panel A presents estimates for structural hazards as implied by the estimated parameters in panel A of Table \ref{tab_baseline_estimates}. The dotted line in panel A presents the observed exit rate from the data, averaged across workers with short and long notice. Panel B presents the implied average type at each duration for those with short and long notice. Error bars represent 90\% confidence intervals.}
-    \end{figure}
+% FIGURE: Calibration
+\begin{figure}[t]\caption{Calibration of the Search Model}\label{fig_calibration}
+  \centering
+  \begin{subfigure}{.475\textwidth}
+  \includegraphics{./../output/fig_calib_offer}
+  \subcaption{Offer Arrival Rate}
+  \end{subfigure} 
+  \begin{subfigure}{.475\textwidth}
+  \includegraphics{./../output/fig_calib_search}
+  \subcaption{Search Effort}
+  \end{subfigure}
+  \floatfoot{\textit{Notes}: The figure presents the search effort and offer arrival rate from the calibration of the search model, assuming no heterogeneity (dashed line) and assuming two types of workers (solid line). The search effort is averaged over two types of workers.}
+  \end{figure}
+   
+
+% TABLE: Calibration Details
+\begin{table}[h]
+\begin{threeparttable}
+\caption{Calibration Parameters for the Search Model}\label{tab_calib_details}
+\begin{tabularx}{\textwidth}{p{0.65\textwidth}c}
+\toprule
+Parameter & Value \\
+\midrule
+Length of each period & 12 Weeks \\
+Discount factor $\beta$ & 0.985 \\
+Relative risk aversion $\sigma$ & 1.75 \\
+Per period wages $w$ & 1 \\
+Annuity Payments & 0.1 \\
+Unemployment benefits & 0.5 \\
+Benefit exhaustion $D_B$ & 3 \\
+Search cost parameter $\rho$ & 1 \\
+Search cost parameter $\theta$ & 50 \\
+First period arrival rate $\delta(1)$ & 1 \\
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}
+\item \textit{Note:} The table presents the parameters used for calibrating the search model in Section \ref{sec_search_model}.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+% FIGURE: Calibration Fit
+\begin{figure}[t]\caption{Search Model Calibration: Fit}\label{fig_calib_fit}
+\centering
+\begin{subfigure}{.49\linewidth}
+\raggedleft
+\includegraphics{\outdir/search_model_fitA}
+\subcaption{Observed Hazard}
+\end{subfigure} \hfill
+\begin{subfigure}{.49\linewidth}
+\includegraphics{\outdir/search_model_fitB}
+\subcaption{Structural Hazard}
+\end{subfigure} 
+\vspace{-0.75em}
+\floatfoot{\textit{Note:} The figure displays the fit of the search model for the two calibration exercises described in the text. Panel A shows the observed exit rate in the data (solid-line) alongside the corresponding fitted values obtained from calibrating the search model without heterogeneity (dotted-line) and with two types of workers (dashed-line). Panel B displays the estimated structural hazard from the Mixed Hazard (MH) model (solid-line) and the fitted structural hazard from calibrating the search model with two types of workers (dashed-line).}
+\end{figure}
+     
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Online Appendix                             
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%% Sections & Subsections 
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\setcounter{equation}{0}
+\setcounter{section}{2}
+\renewcommand{\thesection}{Appendix \Alph{section}}
+\renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+\renewcommand{\theequation}{\arabic{equation}}
+\renewcommand{\thetable}{\Alph{section}.\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
+\renewcommand{\theorem}{\textbf{Theorem \Alph{section}.\arabic{theorem}.}}
+\renewcommand{\lemma}{\textbf{Lemma \Alph{section}.\arabic{lemma}.}}
+\renewcommand{\corr}{\textbf{Corollary \Alph{section}.\arabic{corr}.}}
+\setcounter{theorem}{1}
+\setcounter{corr}{1}
+\setcounter{lemma}{1}
+
+
+\begin{center}
+\sc{\Large Online Appendix} \\ \vspace{0.25cm} \sc{\Large Duration Dependence and Heterogeneity: \\ Learning from Early Notice of Layoff} \\ \vspace{0.5cm}
+\setcounter{footnote}{1}
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\textit{\large \sc{Div Bhagia}}\footnote{California State University, Fullerton; dbhagia@fullerton.edu}\\ 
+\date{\large \today}
+\end{center}
+
+\setcounter{footnote}{0}
+
+% TABLE: Comparison of sample to DWS & CPS
+\begin{table}[t]
+\begin{threeparttable}
+\centering
+\caption{Comparison of the analytical sample to all individuals in the Displaced Worker Supplement (DWS) and the Current Population Survey (CPS)}\label{tab_cps_comparison}
+\begin{tabularx}{\textwidth}{p{5cm}YYY}
+\toprule
+& Sample & DWS & CPS \\
+& (1) & (2) & (3) \\
+\midrule
+\input{\outdir/tab_cps_comp.tex} 
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}
+\item  \textit{Note:}  All samples are restricted to individuals between the ages of \agecutoff and pertain to years 1996-2020. Column (1) includes individuals from the DWS who worked full-time for at least six months and were provided health insurance at their lost job, did not expect to be recalled, and received a layoff notice of 1-2 months or greater than 2 months. Columns (2) and (3) include all individuals in the DWS and the monthly CPS, respectively.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+% FIGURE: PS Balance
+\begin{figure}[t]\caption{Assessing Overlap of Propensity Score Distributions}\label{fig_ps_bal}
+\includegraphics{\outdir/fig_ps_balance}
+\floatfoot{\textit{Note:} The figure presents the density of estimated propensity scores for individuals with short and long notice separately.}
+\end{figure}
+
+% FIGURE: Length of Notice over Time
+\begin{figure}[t]\caption{Length of Notice over Time}\label{fig_dyear_bal}
+\centering
+\includegraphics{\outdir/fig_long_notice_ts.pdf}
+\floatfoot{\textit{Note:} The figure plots a 3-year moving average of the proportion of individuals who received a notice of more than
+2 months amongst all individuals in the sample who were displaced in a given year.}
+\end{figure}
+
+% FIGURE: Industry and Occupation
+\begin{figure}[p]\caption{Industry and Occupation of the Lost Job}\label{fig_occ_ind_bal}
+    \begin{subfigure}{0.51\textwidth}
+  \includegraphics[trim = 0.5in 0in 0in 0in]{./../output/fig_ind_ub.pdf}
+  \caption{Industry, Unbalanced}
+  \end{subfigure} 
+  \begin{subfigure}{0.475\textwidth}
+  \includegraphics[trim = 0.5in 0in 0in 0in]{./../output/fig_ind_bal.pdf}
+  \caption{Industry, Balanced}
+  \end{subfigure}
+    \begin{subfigure}{0.51\textwidth}
+  \includegraphics[trim = 0.5in 0in 0in 0in]{./../output/fig_occ_ub.pdf}
+  \caption{Occupation, Unbalanced}
+  \end{subfigure} 
+  \begin{subfigure}{0.475\textwidth}
+  \includegraphics[trim = 0.5in 0in 0in 0in]{./../output/fig_occ_bal.pdf}
+  \caption{Occupation, Balanced}
+  \end{subfigure}
+  \floatfoot{\textit{Note:} The figure presents the proportions of individuals whose displaced jobs were in specific industries (panels A and B) and occupations (panels C and D) among long-notice and short-notice workers in both the unbalanced and balanced samples. The error bars represent the 90\% confidence intervals.}
+   \end{figure}
+
+% TABLE: Regression of wages on notice length
+\begin{table}[t]
+\begin{threeparttable}
+\caption{Earnings at the Subsequent Job}\label{tab_reg_wages}
+\begin{tabularx}{\textwidth}{p{0.225\textwidth}YYYY}
+\toprule
+& \multicolumn{4}{c}{Weekly Log Earnings} \\
+& (1) & (2) & (3) & (4) \\
+\midrule
+\input{./../output/tab_reg_wagesA.tex} \addlinespace[2ex]
+Controls   &  No & Yes  & No & Yes \\
+Weights   & No  & No   & Yes & Yes \\
+\midrule
+\input{./../output/tab_reg_wagesB.tex}
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}
+\item \textit{Note:} The table shows results from linear regressions of log weekly wages at the subsequent job on an indicator for receiving a notice of more than 2 months. The sample used is similar to the main analytical sample, but it excludes individuals who had not yet found employment at the time of the survey, had multiple jobs between their previous and current job, or had incomplete earnings information for other reasons. Robust standard errors are reported in the parenthesis.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+% TABLE: Unemployment Insurance Take-up
+\begin{table}[h]\caption{Unemployment Insurance Take-up}\label{tab_uiben_recd}
+\begin{threeparttable}
+\begin{tabularx}{\textwidth}{XYY}
+\toprule
+Duration & Observations & Recieved UI Benefits \\
+\midrule
+\input{\outdir/tab_uiben_recd.tex} 
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}
+\item \textit{Notes}: This table reports the percentage of individuals in the baseline sample who reported receiving UI benefits by the duration of unemployment.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+   % Figure: Unemployment Exhaustion break at 26
+\begin{figure}[p]\caption{Timing of Benefit Exhaustion}\label{fig_uiex_break}
+\includegraphics{./../output/fig_uiex_break.pdf}
+\floatfoot{\textit{Note:} The figure presents the proportion of individuals who report having exhausted their UI benefits by the duration of unemployment. The sample is restricted to individuals in the main analytical sample who reported receiving UI benefits, and duration is binned in 12-week intervals.} 
+\end{figure}
+  
+  % FIGURE: Alternative Bins 9 weeks: DATA
+\begin{figure}[p]\caption{Survival and Exit Rates with Alternative Bins}\label{fig_altbins}
+\begin{subfigure}{.475\textwidth}
+\centering
+\includegraphics{./../output/fig_4week_survival.pdf}
+\subcaption{Survival Rate}
+\end{subfigure}
+\begin{subfigure}{.475\textwidth}
+\centering
+\includegraphics{./../output/fig_4week_hazard.pdf}
+\subcaption{Exit Rate}
+\end{subfigure}
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_9week_survival.pdf}
+\subcaption{Survival Rate}
+\end{subfigure}
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_9week_hazard.pdf}
+\subcaption{Exit Rate}
+\end{subfigure}
+\floatfoot{\textit{Note:} Unemployment duration is binned in 4-week intervals for panels A and B, while it is binned in 9-week intervals for panels C and D. Panel A and C present the proportion of individuals who are unemployed at the beginning of each interval. Panel B and D present the proportion of individuals exiting unemployment in each interval amongst those who were still unemployed at the beginning of the interval. Error bars represent 90\% confidence intervals.}
+\end{figure}
+
+ % FIGURE: Non-Parametric Estimates
+\begin{figure}[t]\caption{Non-Parametric Estimates}\label{fig_robust_ff}
+\centering 
+\includegraphics{./../output/fig_robust_np}
+\floatfoot{\textit{Note:} Figure presents estimates for the structural hazard from the Mixed Hazard model under alternative parametric assumptions. Error bars represent 90\% confidence intervals.}
+\end{figure}
+
+ % FIGURE: Alternative Bins
+ \begin{figure}[p]\caption{Estimates with Unemployment Duration Binned in 9-Week Intervals}\label{fig_robust_altbins}
+\includegraphics{./../output/fig_robust_9week}
+\floatfoot{\textit{Note:} The figure presents estimates from the Mixed Hazard model using data with unemployment duration binned in 9-week intervals. The solid line represents estimates for the structural hazard assuming the Log-Logistic functional form. The dashed line represents non-parametric estimates, while the dotted line represents the observed exit rate from the data.}
+\end{figure}
+
+% FIGURE: Data and Estimates using the Unweighted Sample
+\begin{figure}[p]\caption{Data and Estimates using the Unweighted Sample}\label{fig_robust_unwtd}
+\vspace{-0.25cm}
+\begin{subfigure}{.475\textwidth}
+\centering
+\includegraphics{./../output/fig_hazard_unwtd.pdf}
+\subcaption{Exit Rate}
+\end{subfigure}
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_robust_unwtd.pdf}
+\subcaption{Estimated Structural Hazard}
+\end{subfigure}
+\floatfoot{\textit{Note:} The figure presents data and estimates for the unweighted analytical sample. Panel A presents the exit rate from the data separately for long and short-notice workers. The solid line in panel B shows the estimated structural hazard from the Mixed Hazard model, while the dotted line represents the average exit rate for short and long-notice workers in the data.}
+\end{figure}
+
+% FIGURE: Simulation: Average Estimate
+\begin{figure}[h]\caption{Simulation: Average Estimate}\label{fig_simulation_average}
+  \includegraphics{./../output/fig_sm_sim_avgpred.pdf}
+  \floatfoot{\textit{Note:}  The solid line presents the average estimate from 1000 simulations of the search model. The dashed line presents the structural duration dependence $\E [h(d|\nu)]$ implied by the model. While the dotted line presents the observed structural duration dependence $\E [h(d|\nu)|D \geq d]$ implied by the model.}
+  \end{figure}
+  
+  % FIGURE: Simulation: Distribution of Estimates
+\begin{figure}[p]\caption{Estimates using Simulated Data from the Search Model}\label{fig_simulation_distribution} 
+\begin{subfigure}{.4\textwidth}
+\includegraphics{./../output/fig_sm_sim_dist1.pdf}
+\subcaption{$\psi(1)$}
+\end{subfigure} 
+\begin{subfigure}{.4\textwidth}
+\includegraphics{./../output/fig_sm_sim_dist2.pdf}
+\subcaption{$\psi(2)$}
+\end{subfigure} 
+\begin{subfigure}{.4\textwidth} 
+\includegraphics{./../output/fig_sm_sim_dist3.pdf}
+\subcaption{$\psi(3)$}
+\end{subfigure} 
+\begin{subfigure}{.4\textwidth}
+\includegraphics{./../output/fig_sm_sim_dist4.pdf}
+\subcaption{$\psi(4)$}
+\end{subfigure}
+\floatfoot{\textit{Note:}  The figure presents the normalized distribution of structural duration dependence estimated on simulated data from the search model. The vertical lines represent the mean of the distribution for each structural hazard. Standard normal density is overlaid for reference.}
+\end{figure}
+  
+% FIGURE: Alternative Assumptions on Heterogeneity Distribution
+\begin{figure}[p]\caption{Allow average type to vary}\label{fig_genHet}
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_extgen_hetA}
+\subcaption{Residuals}
+\end{subfigure} 
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_extgen_hetB}
+\subcaption{10 lowest-residual estimates}
+\end{subfigure} 
+\floatfoot{\textit{Note:} The figure presents results from the estimation of a more generalized Mixed Hazard model, where the mean of the heterogeneity distribution for individuals with different lengths of notice is allowed to vary according to the parameter $\kappa_1$. Panel A presents the residuals from GMM estimation for different values of $\kappa_1$. Panel B presents the estimates of structural hazard for different values of $\kappa_1$.}
+\end{figure} 
+  
+% FIGURE: Alternative Assumptions on Structural Hazards
+\begin{figure}[p]\caption{Allow structural hazards after the first period to vary}\label{fig_genStr}
+\makebox[\textwidth]{
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_extgen_strhazA.pdf}
+\subcaption{Residuals}
+\end{subfigure} 
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_extgen_strhazB.pdf}
+\subcaption{10 lowest-residual estimates}
+\end{subfigure} 
+\floatfoot{\textit{Note:}  The figure presents results from the estimation of a more generalized Mixed Hazard model, where the structural hazard after the initial period for individuals with different lengths of notice is allowed to vary according to the parameter $\gamma$. Panel A presents the residuals from GMM estimation for different values of $\gamma$. Panel B presents the estimates of structural hazard for different values of $\gamma$.}
+}
+\end{figure} 
+
+
+% FIGURE: Alternative Assumptions on Structural Hazards and Distribution of Heterogeneity
+\begin{figure}[p]\caption{Alternative Assumptions on Structural Hazards and Heterogeneity Distribution}\label{fig_genHetStr}
+\makebox[\textwidth]{
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_extgen_bothA.pdf}
+\subcaption{Residuals}
+\end{subfigure} \hspace{1em}
+\begin{subfigure}{.475\textwidth}
+\includegraphics{./../output/fig_extgen_bothB.pdf}
+\subcaption{25 lowest-residual estimates}
+\end{subfigure} 
+\floatfoot{\textit{Note:}  The figure presents results from the estimation of a more generalized Mixed Hazard model. The mean of the heterogeneity distribution for individuals with different lengths of notice is allowed to vary according to the parameter $\kappa_1$. The structural hazard after the initial period for individuals with different lengths of notice is allowed to vary according to the parameter $\gamma$. Panel A presents the residuals from GMM estimation for different values of $\kappa_1$ and $\gamma$. Panel B presents the estimates of structural hazard for the case where $\kappa_1=0$ and $\gamma=1$ (solid line) and for the case when $\kappa_1$ and $\gamma$ take values that minimize the residual in Panel A (dashed line).} 
+}
+\end{figure}
 
 \end{document}

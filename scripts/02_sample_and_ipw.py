@@ -6,10 +6,11 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Import custom functions and parameters
 from utils.datadesc import pred_ps
-from utils.config import DATA_DIR, QUANTS_DIR, Colors
+from utils.config import DATA_DIR, QUANTS_DIR, Colors, OUTPUT_DIR
 
 ##########################################################
 # Sample selection
@@ -29,8 +30,6 @@ sample = sample[(sample['dwnotice'] >= 3) & (sample['dwnotice'] <= 4)]
 sample = sample[(sample['dwyears'] >= 0.5)]
 sample = sample[(sample['dwhi'] == 2)]
 sample = sample[(sample['dwjobsince'] <= 2)]
-#sample['dur'] = sample['dur_9week']
-
 
 ##########################################################
 # Create exactly the same sample as before (REMOVE LATER)
@@ -128,12 +127,29 @@ sample.to_csv(f'{DATA_DIR}/sample.csv', index=False)
 # Check overlap in propensity scores 
 ##########################################################
 
-# Check overlap in propensity scores
-plt.figure(figsize=(3, 2.75))
-colors = [Colors.BLUE, Colors.RED]
+# set font as Charter
+plt.rcParams['font.serif'] = 'Charter'
+colors = [Colors().BLACK, Colors().RED]
+plt.figure(figsize=(5.5, 3.25))
 for j in range(len(notvals)):
-    plt.hist(ps[sample['notice']==notvals[j],1], bins=30, alpha=0.15, 
-             label=f'Group {j+1}', color=colors[j])
+    print(j, notvals[j])
+    print(f'Notice value: {notvals[j]}')
+    sns.kdeplot(ps[(sample['notice']==notvals[j]),j], 
+                 color=colors[j], fill=True, alpha=0.075, 
+                 edgecolor='black')
+plt.annotate('Short Notice', xy=(0.425, 2), 
+             xytext=(0.175, 2),
+             arrowprops=dict(facecolor='black', arrowstyle='<-'))
+plt.annotate('Long Notice', xy=(0.635, 2.5), 
+             xytext=(0.715, 2.5),
+             arrowprops=dict(facecolor='black', arrowstyle='<-'))
+sns.despine()
+plt.xlim(0.075, 0.99)
+plt.ylabel('Density')
+plt.xlabel('Propensity score')
+plt.tight_layout()
+plt.savefig(f'{OUTPUT_DIR}/fig_ps_balance.pdf', dpi=300)
+plt.show()
 
 ##########################################################
 

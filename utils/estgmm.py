@@ -36,9 +36,10 @@ def gmm(data, nrm, ffopt='np', ps = None):
 
     # Initialize
     T, J = exits.shape
-    if ffopt == 'np':
+    opt = ffopt['opt'] if isinstance(ffopt, dict) else ffopt
+    if opt == 'np':
         num_pars = 2 * (T-1) + J
-    elif ffopt == 'baseline':
+    elif opt == 'baseline':
         num_pars = 2 + (T-1) + J 
     num_moms = T * J
     thta0 = 0.25*np.ones(num_pars)
@@ -60,7 +61,7 @@ def gmm(data, nrm, ffopt='np', ps = None):
     # Two-step GMM
     thta_hat = minimize_(thta0, W)
     if num_moms > num_pars:
-        print('Two-step GMM')
+        #print('Two-step GMM')
         W = opt_wt_mat(thta_hat, data, nrm, ffopt, MomsFunc=indv_moms)
         thta_hat = minimize_(thta_hat, W)
 

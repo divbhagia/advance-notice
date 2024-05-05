@@ -9,7 +9,7 @@ import pandas as pd
 # Import custom functions
 from utils.dataclean import get_occ, get_broad_occ
 from utils.dataclean import get_ind, get_broad_ind
-from utils.dataclean import indicator
+from utils.dataclean import indicator, group_dur
 
 # Import parameters
 from utils.config import EXTRACT_IPUMS, IPUMS_DIR, DATA_DIR
@@ -129,10 +129,14 @@ df['race'] = df['race'].apply(lambda x: int(str(x)[0]))
 # Generate education categories
 df['educ_cat'] = np.where(df['educ'] <= 72, 'Less than HS', np.nan) 
 df['educ_cat'] = np.where(df['educ'] == 73, 'HS Degree', df['educ_cat'])
-df['educ_cat'] = np.where((80 <= df['educ']) & (df['educ'] <= 110), 'Some College', df['educ_cat']) 
+df['educ_cat'] = np.where((80 <= df['educ']) & (df['educ'] <= 110), 
+                          'Some College', df['educ_cat']) 
 df['educ_cat'] = np.where(df['educ']==111, 'College', df['educ_cat']) 
 df['educ_cat'] = np.where(df['educ']>111, 'Graduate Degree', df['educ_cat']) 
 df['educ_cat'] = np.where(df['educ']==999, np.nan, df['educ_cat']) 
+df['hs'] = indicator(df['educ'], 73, 'less')
+df['sc'] = indicator(df['educ'], [80, 110], 'range')
+df['col'] = indicator(df['educ'], 111, 'greater')
 
 ##########################################################
 # Unemployment duration
@@ -140,15 +144,6 @@ df['educ_cat'] = np.where(df['educ']==999, np.nan, df['educ_cat'])
 
 # Generate observed duration variable
 df['obsdur'] = np.where(df['jf'] == 1, df['dwwksun'], df['durunemp'])
-
-# Function to group duration
-def group_dur(dur_var, interval):
-    dur = 0
-    for i in range(0, 53, interval):
-        dur = np.where((dur_var >= i) & (dur_var < i + interval),
-                        i + 0.5 * interval, dur)
-    dur = np.where(dur_var > i, i + 0.5 * interval, dur)
-    return dur
 
 # Generate duration 4, 9, and 12 week intervals
 df['dur'] = group_dur(df['obsdur'], 12)

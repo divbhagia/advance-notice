@@ -8,14 +8,12 @@ import matplotlib.pyplot as plt
 
 # Import custom functions
 from utils.simfuncs import dgp, sim_data
-from utils.datadesc import custom_plot
+from utils.customplot import custom_plot
 from utils.datamoms import data_moms
-from utils.esthelpers import model_moms, unstack, unstack_psiM, numgrad
-from utils.estgmm import avg_moms, objfun, gmm
-from utils.inference import IndvMoms, AvgMomsInference, OptimalWeightMat, StdErrors
-
-# from utils.Inference import IndvMoms, StdErrors
-# from utils.EstNuisancePars import PredPS, RegAdj
+from utils.esthelpers import model_moms, unstack, unstack_all
+from utils.estgmm import gmm, estimate
+from utils.inference import std_errs, indv_moms
+import numpy as np
 
 # Seed
 np.random.seed(1118)
@@ -25,99 +23,89 @@ np.random.seed(1118)
 ##########################################################
 
 # DGP
-T, J = 8, 3
+T, J = 4, 2
 n = 100000
 dgp_opt = 'no_obs' 
-psiM, mu, nuP, betaL, betaPhi, x_means, cov_x1to3 = dgp(T, J, dgp_opt)
+psiMtr, mu, nuP, betaL, betaPhi, x_means, cov_x1to3, pL = dgp(T, J, dgp_opt)
 nrm = mu[0]
 
 # Simulate data
 print(f'Simulating data for n={n} with T={T}, J={J} and DGP={dgp_opt}...')
 data, nu, pL_X, phiX = sim_data(n, T+1, J, dgp_opt, out='all')
 nL = np.sum(pL_X, axis=0)
-psi = psiM @ nL/n
+psi_true = psiMtr @ nL/n
 
 ##########################################################
 # Compare model & data moments
 ##########################################################
 
 # Raw data moments
-h, exit, surv, exit_i, surv_i = data_moms(data)
-for var in ['h', 'exit', 'surv', 'exit_i', 'surv_i']:
-    exec(f"{var} = {var}['raw']")
+h, *_ = data_moms(data, purpose='output')
 h_avg = h @ nL/n
 
 # Compare data and model moments
-h_model, exit_mdl, surv_mdl = model_moms(psiM, mu, out='all')
-custom_plot([h[:,0], h_model[:,0]], legendlabs=['Data', 'Model'], 
-           ydist=0.1, ylims=[0,0.4])
-
-##########################################################
-# Check other GMM related functions
-##########################################################
-
-# True parameter values
-thta = np.concatenate([psiM[0,:].flatten(), mu[1:].flatten(),
-                    psiM[1:,0].flatten()])
-
-# GMM moments and objective function at true parameters
-m = avg_moms(thta, exit, surv, nrm)
-obj = objfun(thta, exit, surv, nrm)
-dobj_dx = numgrad(objfun, thta, exit, surv, nrm)
-dm_dx = numgrad(avg_moms, thta, exit, surv, nrm)
-print(f'Objective function at true parameters: {obj:.6f}')
-print(f'Number of moments (T={T}, J={J}): T x J = {T*J}')
-print(f'Number of parameters: (2 * (T-1) + J) = {2 * (T-1) + J}')
-print(f'Shape of gradient for objective function: {dobj_dx.shape}')
-print(f'Shape of Jacobian for moments: {dm_dx.shape}')
-
-# Estimate the model using true moments
-thta_hat = gmm(exit_mdl, surv_mdl, nrm=nrm)
-psiM_hat, mu_hat = unstack(T, J, thta_hat, nrm)
-
-# Inference related functions
-m_i = IndvMoms(thta, data, nrm)
-m_chk = AvgMomsInference(thta, data, nrm, MomsFunc=IndvMoms)
-W = OptimalWeightMat(thta, data, nrm, MomsFunc=IndvMoms)
-print(f'Shape of individual moments: {m_i.shape}')
-print(f'Shape of optimal weight matrix: {W.shape}')
-
-# Calculate & plot standard errors
-se = StdErrors(thta_hat, data, nrm, MomsFunc=IndvMoms)
-psiSE, muSE = unstack(T, J, se, nrm)
-psi_hat, psin_hat, psiSE, psinSE = unstack_psiM(nL, psiM, psiSE)
-
-# Plot estimates with confidence intervals
-plt.figure(figsize=[3, 2.5])
-plt.errorbar(np.arange(0, T), psi_hat, yerr=1.96*psiSE,
-              color='red', capsize=2, label='Est True Moms', alpha=0.75)
-plt.plot(psi, label='True', color='black', linestyle='--')
-plt.legend()
-plt.show()
+h_model, *_ = model_moms(psiMtr, mu, out='all')
+custom_plot([h[:,0], h_model[:,0]], legendlabs=['Data', 'Model'])
 
 ##########################################################
 # Estimation and inference on the true data
 ##########################################################
 
-# Estimate the model on simulated data
+# True parameter values
+thta = np.concatenate([psiMtr[0,:].flatten(), mu[1:].flatten(),
+                    psiMtr[1:,0].flatten()])
+
+# Estimate using GMM
+ffopt = 'np'
 print('Estimating the model on simulated data...')
-thta_hat = gmm(exit, surv, nrm=nrm)
-psiM_hat, mu_hat = unstack(T, J, thta_hat, nrm)
-
-# Standard errors
-print('Calculating standard errors...')
-se = StdErrors(thta_hat, data, nrm, MomsFunc=IndvMoms)
-psiSE, muSE = unstack(T, J, se, nrm)
-
-# Unstack estimates 
-psi_hat, psin_hat, psiSE, psinSE = unstack_psiM(nL, psiM_hat, psiSE)
+thta_hat = gmm(data, nrm, ffopt)[0]
+psiM_hat, mu_hat = unstack(T, J, thta_hat, nrm, ffopt)
+se = std_errs(thta_hat, data, nrm, ffopt, MomsFunc=indv_moms)
+psin, psi, par, mu, psinSE, psiSE, parSE, muSE = \
+        unstack_all(T, J, nL, thta_hat, se, nrm, ffopt)
 
 # Plot estimates with confidence intervals
 plt.figure(figsize=[3, 2.5])
-plt.errorbar(np.arange(0, T), psi_hat, yerr=1.96*psiSE,
+plt.errorbar(np.arange(0, T), psi, yerr=1.96*psiSE,
               color='red', capsize=2, label='Estimate', alpha=0.75)
-plt.plot(psi, label='True', color='black', linestyle='--')
+plt.plot(psi_true, label='True', color='black', linestyle='--')
+plt.legend()
+plt.show()
+
+# Or directly
+r = estimate(data, nrm, ffopt)
+plt.figure(figsize=[3, 2.5])
+plt.errorbar(np.arange(0, T), r['psi'], yerr=1.96*r['psiSE'],
+              color='red', capsize=2, label='Estimate', alpha=0.75)
+plt.plot(psi_true, label='True', color='black', linestyle='--')
 plt.legend()
 plt.show()
 
 ##########################################################
+# Extension 
+##########################################################
+
+gamma = np.ones((T-1, J))
+kappa = np.zeros((T, J))
+
+K = 50; lim = [0.75, 1.25];
+par = np.linspace(lim[0], lim[1], K)
+thta_list, Jstat_list = [], []
+for k in range(K):
+    ffopt = {'opt': 'baseline', 'gamma': gamma, 'kappa': kappa}
+    ffopt['gamma'][:, 1] = par[k]
+    thta_hat, Jstat = gmm(data, nrm, ffopt, print_=False)
+    thta_list.append(thta_hat)
+    Jstat_list.append(Jstat)
+
+# Find index of the best model
+Jstat_list = np.array(Jstat_list)
+best = np.argmin(Jstat_list)
+print(f'Best model: {par[best]}')
+
+# Plot distance
+plt.figure(figsize=[3, 2.5])
+plt.plot(par, Jstat_list, color='black', linestyle='--')
+plt.axvline(par[best], color='red', linestyle='--')
+
+    
