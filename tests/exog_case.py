@@ -13,7 +13,6 @@ from utils.datamoms import data_moms
 from utils.esthelpers import model_moms, unstack, unstack_all
 from utils.estgmm import gmm, estimate
 from utils.inference import std_errs, indv_moms
-import numpy as np
 
 # Seed
 np.random.seed(1118)
@@ -23,7 +22,7 @@ np.random.seed(1118)
 ##########################################################
 
 # DGP
-T, J = 4, 2
+T, J = 8, 2
 n = 100000
 dgp_opt = 'no_obs' 
 psiMtr, mu, nuP, betaL, betaPhi, x_means, cov_x1to3, pL = dgp(T, J, dgp_opt)
@@ -48,7 +47,7 @@ h_model, *_ = model_moms(psiMtr, mu, out='all')
 custom_plot([h[:,0], h_model[:,0]], legendlabs=['Data', 'Model'])
 
 ##########################################################
-# Estimation and inference on the true data
+# Estimation and inference 
 ##########################################################
 
 # True parameter values
@@ -82,30 +81,3 @@ plt.legend()
 plt.show()
 
 ##########################################################
-# Extension 
-##########################################################
-
-gamma = np.ones((T-1, J))
-kappa = np.zeros((T, J))
-
-K = 50; lim = [0.75, 1.25];
-par = np.linspace(lim[0], lim[1], K)
-thta_list, Jstat_list = [], []
-for k in range(K):
-    ffopt = {'opt': 'baseline', 'gamma': gamma, 'kappa': kappa}
-    ffopt['gamma'][:, 1] = par[k]
-    thta_hat, Jstat = gmm(data, nrm, ffopt, print_=False)
-    thta_list.append(thta_hat)
-    Jstat_list.append(Jstat)
-
-# Find index of the best model
-Jstat_list = np.array(Jstat_list)
-best = np.argmin(Jstat_list)
-print(f'Best model: {par[best]}')
-
-# Plot distance
-plt.figure(figsize=[3, 2.5])
-plt.plot(par, Jstat_list, color='black', linestyle='--')
-plt.axvline(par[best], color='red', linestyle='--')
-
-    

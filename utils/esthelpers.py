@@ -56,11 +56,12 @@ def model_moms(psiM, mu, out='h'):
         g[:, j] = psiM[:, j] * (c[:, :, j] @ mu[:, j])
 
     # Hazard rate
-    h, S = np.zeros((T, J)), np.zeros((T, J))
+    h, S = np.zeros((T, J)), np.zeros((T+1, J))
     h[0, :], S[0, :] = g[0, :], 1
     for t in range(1, T):
         S[t, :] = S[t-1, :] * (1 - h[t-1, :])
         h[t, :] = g[t, :] / S[t, :]
+    S[T, :] = S[T-1, :] * (1 - h[T-1, :])
 
     # Return
     if out == 'all':
@@ -117,8 +118,9 @@ def unstack(T, J, x, nrm, ffopt = 'np'):
         mu[0] = nrm
         mu[1:T] = x[J:J+T-1]
         psi = x[J+T-1:]
-        if 'kappa0' in ffopt.keys():
-            kappa = meanshiftkappa(ffopt['kappa0'], mu)
+        if isinstance(ffopt, dict):
+            if 'kappa0' in ffopt.keys():
+                kappa = meanshiftkappa(ffopt['kappa0'], mu)
         for j in range(J):
             muM[:, j] = mu + kappa[:, j]
             psiM[:, j] = np.concatenate(([psin[j]], psi * gamma[:, j]))
@@ -132,8 +134,9 @@ def unstack(T, J, x, nrm, ffopt = 'np'):
         mu[1:T] = x[J:J+T-1]
         par = x[J+T-1:]
         psi = psi_baseline(par, T)
-        if 'kappa0' in ffopt.keys():
-            kappa = meanshiftkappa(ffopt['kappa0'], mu)
+        if isinstance(ffopt, dict):
+            if 'kappa0' in ffopt.keys():
+                kappa = meanshiftkappa(ffopt['kappa0'], mu)
         for j in range(J):
             muM[:, j] = mu + kappa[:, j]
             psiM[:, j] = np.concatenate(([psin[j]], psi * gamma[:, j]))

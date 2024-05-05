@@ -129,6 +129,8 @@ def dgp(T=8, J=2, dgpopt = 'default', _print=True):
         for j in range(len(Xb)):
             pL[j] = E(expXb[j]/ expXb.sum())
         pL = np.array(pL, dtype=float)
+    elif dgpopt == 'no_obs':
+        pL = np.array([1/J]*J)
     else:
         pL = None
 
