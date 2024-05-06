@@ -78,7 +78,7 @@ def psi_baseline(par, T):
     psi = np.zeros(T-1)
     with np.errstate(invalid='ignore'): 
         for d in range(1, T):
-            psi[d-1] = (a2/a1) * (d/a1)**(a2-1) / (1 + (d/a1)**a2) ** 2
+            psi[d-1] = (a2/a1) * (d/a1)**(a2-1) / (1 + (d/a1)**a2) 
     return psi
 # Note: ignoring error as it occurs due to initial values during optimization
 
