@@ -51,6 +51,7 @@ def dgp(T=8, J=2, dgpopt = 'default', _print=True):
     # Parameters for the structural hazard (default: increasing hazard)
     psin = np.array([0.25, 0.5, 0.7])
     psiPar = [0.25, 0.5] 
+    psiPar = [2, 3]
     #def psi_fun(y, a, b): return (b / a) * ((y / a) ** (b - 1))
 
     # Parameters for (Beta) distribution of nu
@@ -75,8 +76,12 @@ def dgp(T=8, J=2, dgpopt = 'default', _print=True):
     #############################
 
     # Decreasing structural hazard
-    if dgpopt == 'inchaz':
+    if dgpopt == 'dechaz':
         psiPar = [2.5, 1.25]
+
+    # Increasing structural hazard
+    if dgpopt == 'inchaz':
+        psiPar = [0.25, 0.5]
 
     # nu is independent of X
     if dgpopt == 'nu_ind_X' or dgpopt == 'no_obs':
@@ -85,7 +90,7 @@ def dgp(T=8, J=2, dgpopt = 'default', _print=True):
         nu_P_pr = np.array([0, 0, 1])
 
     # No observables (betaL = betaPhi = 0)
-    if dgpopt == 'no_obs':
+    if dgpopt == 'no_obs' or dgpopt == 'dechaz' or dgpopt == 'inchaz':
         if _print:
             print('betaL and betaPhi are set to 0.')
         betaL = np.zeros((K, J))
@@ -129,7 +134,7 @@ def dgp(T=8, J=2, dgpopt = 'default', _print=True):
         for j in range(len(Xb)):
             pL[j] = E(expXb[j]/ expXb.sum())
         pL = np.array(pL, dtype=float)
-    elif dgpopt == 'no_obs':
+    elif dgpopt == 'no_obs' or dgpopt == 'dechaz' or dgpopt == 'inchaz':
         pL = np.array([1/J]*J)
     else:
         pL = None
@@ -148,11 +153,13 @@ def sim_data(n=100000, T=8, J=2, dgpopt = 'default', out='data', _print=False):
 
     # Get DGP parameters
     if _print:
-        print(f'Simulating data for n={n} with T={T}, J={J} and DGP={dgpopt}...')
-    psiM, _, nu_P, betaL, betaPhi, xmeans, cov_x1to3, _ = dgp(T, J, dgpopt, _print)
+        print(f'Simulating data with n={n}, T={T}, J={J}, DGP={dgpopt}...')
+    psiM, _, nu_P, betaL, betaPhi, xmeans, cov_x1to3, _ = \
+          dgp(T, J, dgpopt, _print)
 
     # Generate X variables
-    if dgpopt == 'fewvars':
+    dgpopts = ['fewvars', 'no_obs', 'dechaz', 'inchaz']
+    if dgpopt in dgpopts:
         x6 = np.random.binomial(1, xmeans[6], n)
         x7 = np.random.binomial(1, xmeans[7], n)
         X = np.column_stack((x6, x7))

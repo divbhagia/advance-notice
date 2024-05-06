@@ -31,9 +31,12 @@ def add_lines_labs(labels):
 ##########################################################
 
 def set_plot_aes():
-    from utils.config import FONT
-    plt.rcParams[f'font.{FONT['family']}'] = FONT['font']
-    plt.rcParams.update({'font.size': FONT['size'], 
+    from utils.config import FONT    
+    import matplotlib.font_manager as font_manager
+    fonts = [font.name for font in font_manager.fontManager.ttflist]
+    if FONT['font'] in fonts:
+        plt.rcParams[f'font.{FONT['family']}'] = FONT['font']
+        plt.rcParams.update({'font.size': FONT['size'], 
                      'font.family': FONT['family']})
     plt.rcParams['axes.spines.top'] = False
     plt.rcParams['axes.spines.right'] = False
