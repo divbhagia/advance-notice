@@ -66,6 +66,6 @@ def sim_data(n, dgpqnts):
           ['x'+str(i) for i in range(len(Xdgp))]
     data = pd.DataFrame(data, columns=col_labs)
 
-    return data, phiX, nu, pL_X
+    return data, nu, pL_X, phiX
 
 ##########################################################

@@ -76,7 +76,7 @@ def gmm(data, nrm, ffopt='np', ps = None):
 # Function to estimate and calculate standard errors
 ##########################################################
 
-def estimate(data, nrm, ffopt, adj='ipw'):
+def estimate(data, nrm, ffopt, adj='none'):
 
     # Estimate
     nL = data['notice'].value_counts().sort_index().values

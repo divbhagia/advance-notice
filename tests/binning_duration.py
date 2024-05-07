@@ -77,7 +77,7 @@ if __name__ == '__main__':
     h_str_bin = (S_model_bin[:-1] - S_model_bin[1:]) / S_model_bin[:-1] 
 
     # h_str binned
-    data, phiX, nu, pL_X = sim_data(n, dgpqnts)
+    data, nu, pL_X, phiX = sim_data(n, dgpqnts)
     L = data['notice'].values.astype(int)
     h_i = np.zeros((n, T))
     S_i = np.ones((n, T))
