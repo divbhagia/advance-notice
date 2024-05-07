@@ -4,8 +4,7 @@ import multiprocessing as mp
 from utils.esthelpers import model_moms, unstack
 from utils.dataclean import group_dur
 from utils.datamoms import data_moms
-from utils.simdgp import dgp
-from utils.simdata import sim_data
+from utils.simdgp import dgp, sim_data
 from utils.datadesc import pred_ps
 from utils.customplot import custom_plot
 from utils.estgmm import gmm
@@ -46,7 +45,7 @@ if __name__ == '__main__':
 
     # DGP parameters
     n = 100000
-    iters = 2
+    iters = 100
     T, J = 60, 2
     interval = 12
     psin = np.array([0.15, 0.4, 0.6, 0.8])[:J]

@@ -51,7 +51,8 @@ def model_moms(psiM, mu, out='h'):
     for t in range(1, T):
         for k in range(1, T):
             for j in range(J):
-                c[t, k, j] = c[t - 1, k, j] - psiM[t - 1, j] * c[t - 1, k - 1, j]
+                c[t, k, j] = c[t - 1, k, j] \
+                            - psiM[t - 1, j] * c[t - 1, k - 1, j]
     for j in range(J):
         g[:, j] = psiM[:, j] * (c[:, :, j] @ mu[:, j])
 

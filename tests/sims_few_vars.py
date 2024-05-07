@@ -1,4 +1,4 @@
-from utils.simfuncs import sim_data
+from utils.simdgp import sim_data
 from utils.estgmm import estimate
 from utils.datadesc import custom_plot
 import multiprocessing as mp
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # Import packages
     import matplotlib.pyplot as plt
-    from utils.simfuncs import dgp, moms_fewvars
+    from utils.simdgp import dgp, moms_fewvars
 
     # DGP
     seed = 1118

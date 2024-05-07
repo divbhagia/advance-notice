@@ -7,7 +7,7 @@ import numpy as np
 import multiprocessing as mp
 
 # Import custom functions
-from utils.simfuncs import dgp, sim_data
+from utils.simdgp import dgp, sim_data
 from utils.customplot import custom_plot
 from utils.esthelpers import unstack, model_moms
 from utils.estgmm import gmm

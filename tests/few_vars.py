@@ -7,7 +7,7 @@ import numpy as np
 
 # Import custom functions
 from utils.datadesc import custom_plot, pred_ps
-from utils.simfuncs import dgp, sim_data, moms_fewvars
+from utils.simdgp import dgp, sim_data, moms_fewvars
 from utils.datamoms import data_moms
 from utils.esthelpers import model_moms, unstack_all
 from utils.estgmm import gmm, estimate

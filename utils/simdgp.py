@@ -1,7 +1,6 @@
 import numpy as np
-import pandas as pd
 import sympy as sp
-from sympy.stats import Bernoulli, Beta, E, sample
+from sympy.stats import Binomial, Beta, E
 
 ##########################################################
 
@@ -84,24 +83,24 @@ def dgp(T, psin, psiopt='nm', betaL=None, betaP=None):
         raise ValueError('betaL must have J-1 dimensions')
 
     # BetaL and BetaP coefficients
-    coefs = np.array([1, 0, 0])
-    betaP = coefs if betaP is None else np.append(1, betaP)
-    betaL = coefs if betaL is None else np.append(1, betaL)
-    betaL = np.column_stack((np.ones_like(coefs), betaL))
+    betaP = np.array([1, 0, 0]) if betaP is None else np.append(1, betaP)
+    betaL = np.array([1, 1, 1]) if betaL is None else np.append(1, betaL)
+    betaL = np.column_stack((np.array([1, 1, 1]), betaL))
 
     # Implied moments of nu: E[phi(X)^k nu^k]
-    X1 = Bernoulli('X1', 0.5)
-    X2 = Bernoulli('X2', 0.2)
+    X1 = Binomial('X1', 1, 0.5)
+    X2 = Binomial('X2', 1, 0.2)
     X = np.array([1, X1, X2])
     phiX = betaP @ X 
     pars = [nupars(x1=1), nupars(x1=0, x2=1), nupars(x1=0, x2=0)]
     nu = [Beta(f'nu{i}', pars[i][0], pars[i][1]) for i in range(3)]
     nu = nu[0] * X1 + nu[1] * (1-X1) * X2 + nu[2] * (1-X1) * (1-X2)
-    mu = np.array([E(phiX**t * nu**t) for t in range(1, T+1)])
+    mu = np.array([E(phiX**t * nu**t) for t in range(1, T+1)],
+                  dtype=float)
 
     # Probability of notice
-    pLnum = [sp.exp(X @ betaL[:,j]) for j in range(J)]
-    pL_X = [pLnum[j] / sum(pLnum) for j in range(J)]
+    pL_Xnum = sp.Array([sp.exp(X @ betaL[:,j]) for j in range(J)])
+    pL_X = pL_Xnum / np.sum(pL_Xnum)
     pL = np.array([E(pL_X[j]) for j in range(J)], dtype=float)
 
     # Specify psi and stack psin & psi into psiM
@@ -122,60 +121,6 @@ def dgp(T, psin, psiopt='nm', betaL=None, betaP=None):
 
     return quants
 
-##########################################################
-# Function to simulate data
-##########################################################
-
-def sim_data(n, dgpqnts):
-
-    # Unpack parameters
-    Xdgp, nudgp, psiM = dgpqnts['X'], dgpqnts['nu'], dgpqnts['psiM']
-    phiXdgp = sp.lambdify(sp.symbols('X1 X2'), dgpqnts['phiX'], 'numpy')
-    pL_Xdgp = sp.lambdify(sp.symbols('X1 X2'), dgpqnts['pL_X'], 'numpy')
-    T, J = psiM.shape
-
-    # Generate X, phi(X), nu
-    X = np.zeros((n, len(Xdgp)))
-    X[:, 0] = 1
-    for k in range(1, len(Xdgp)):
-        X[:, k] = sample(Xdgp[k], size=n).astype(int)
-    phiX = np.array(phiXdgp(X[:, 1], X[:, 2])).reshape(-1, 1)
-    nu = np.array(sample(nudgp, size=n)).reshape(-1, 1)
-    
-    # Notice assignment mechanism & corresponding psi_l(d)
-    pL_X = np.array(pL_Xdgp(X[:, 1], X[:, 2])).T
-    L = np.array([0]*n)
-    psi_i = np.zeros((n, T))
-    for i in range(n):
-        L[i] = np.random.choice(range(J), p=pL_X[i, :])
-        psi_i[i, :] = psiM[:, L[i]]
-
-    # Exit probabilities & unemployment duration
-    exited = np.array([0]*n)
-    exit_probs = psi_i * phiX * nu
-    crit = np.random.random((n, T))
-    exit = (exit_probs > crit).astype(int) 
-    for t in range(T):
-        exited += exit[:, t]
-        exit[exited != 0, t+1:] = 0
-    unemp_dur = np.argmax(exit, axis=1).astype(float)
-    unemp_dur[exited==0] = np.nan # we do not observe unemp_dur > T
-
-    # (Independent) Censoring
-    censtime = np.random.choice(range(1, T), n)
-    cens = ((censtime < unemp_dur) | (exited==0)).astype(int)
-    obsdur = unemp_dur.copy()
-    obsdur[cens==1] = censtime[cens==1]
-    T_bar = round(T/2)
-    cens_ind = (censtime > T_bar).astype(int)
-
-    # Create pandas dataframe (return X, L, censored, obs_dur)
-    data = np.column_stack((obsdur, cens, L, cens_ind, X))
-    col_labs = ['dur', 'cens', 'notice', 'cens_ind'] +\
-          ['x'+str(i) for i in range(len(Xdgp))]
-    data = pd.DataFrame(data, columns=col_labs)
-
-    return data
 
 ##########################################################
 
