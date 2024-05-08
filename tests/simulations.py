@@ -25,7 +25,7 @@ def sim_once(n, dgpqnts, seed):
     data = sim_data(n, dgpqnts)[0]
     nrm = dgpqnts['mu'][0]
     r = estimate(data, nrm, ffopt='np', adj='ipw')
-    return r['psi']
+    return r
 
 def sim_multi(n, dgpqnts, seeds):
     num_cores = round(mp.cpu_count()/1.5)
@@ -40,12 +40,12 @@ def sim_multi(n, dgpqnts, seeds):
 if __name__ == '__main__':
 
     # DGP parameters
-    n = 50000
+    n = 100000
     T, J = 6, 2
-    iters = 25
+    iters = 200
     psin = np.array([0.15, 0.4, 0.6, 0.8])[:J]
-    betaL = np.array([15, 5])
-    betaP = np.array([0, 0])
+    betaL = np.array([5, 2])
+    betaP = np.array([-0.5, 0.2])
     psiopt = 'nm'
 
     # Get DGP quantities
@@ -53,11 +53,20 @@ if __name__ == '__main__':
     dgpqnts = dgp(T+1, psin, psiopt, betaL, betaP)
 
     # Simulate data and estimate
-    psi_hats = sim_multi(n, dgpqnts, seeds=range(iters))
+    r = sim_multi(n, dgpqnts, seeds=range(iters))
+    psi_hats = [x['psi'] for x in r]
+    psi_ses = [x['psiSE'] for x in r]
     psi_hat = np.mean(psi_hats, axis=0)
+    psi_se = np.mean(psi_ses, axis=0)
+    psi_se_iters = np.std(psi_hats, axis=0)
 
-    # Plot
+    # Plot estimates
     custom_plot([psi_hat, dgpqnts['psi']],
                 legendlabs=['Estimated', 'True'])
+    
+    # Plot standard errors
+    custom_plot([psi_se_iters,  psi_se], 
+                legendlabs=['SE Iters', 'SE Anal'], 
+                ylims=[0, 0.05])
 
 ##########################################################
