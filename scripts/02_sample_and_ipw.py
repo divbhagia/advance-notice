@@ -51,9 +51,6 @@ if old_sample:
     sample = sample[(sample['jf'] == 1) | 
                     ((sample['jf'] == 0) & (sample['obsdur'] >= 52))]
 
-#sample['notice'] = indicator(sample['dwnotice'], 4)
-#sample['notice'].value_counts().sort_index()
-
 ##########################################################
 # Remove missing values
 ##########################################################
