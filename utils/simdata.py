@@ -22,8 +22,9 @@ def sim_data(n, dgpqnts):
     # Generate X & phi(X)
     X = np.zeros((n, len(Xdgp)))
     X[:, 0] = 1
+    xseeds = np.random.randint(1, 100000, len(Xdgp)-1)
     for k in range(1, len(Xdgp)):
-        X[:, k] = sample(Xdgp[k], size=n).astype(int)
+        X[:, k] = sample(Xdgp[k], size=n, seed = xseeds[k-1]).astype(int)
     phiX = np.array([phiXdgp(X[i, 1], X[i, 2]) for i in range(n)])
     phiX = phiX.flatten().reshape(n, 1)
 

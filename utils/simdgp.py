@@ -1,6 +1,7 @@
 import numpy as np
 import sympy as sp
 from sympy.stats import Binomial, Beta, E
+from utils.esthelpers import model_moms
 
 ##########################################################
 
@@ -65,7 +66,7 @@ def nupars(x1, x2=None):
 # Define DGP function
 ##########################################################
 
-def dgp(T, psin, psiopt='nm', betaL=None, betaP=None):
+def dgp(T, psin, psiopt='nm', betaL=None, betaP=None, interval=1):
 
     """
     psiopt options:
@@ -114,10 +115,26 @@ def dgp(T, psin, psiopt='nm', betaL=None, betaP=None):
     psiM[1:, :] = np.repeat(psi.reshape(-1, 1), J, axis=1)
     psi = psiM @ pL
 
+    # Structural moments: binned and unbinned
+    h_str = np.array([E(psi[d] * phiX * nu) for d in range(T)], dtype=float)
+    S_str = np.append(1, np.cumprod(1 - h_str))
+    S_str_bin = S_str[1:][::interval]
+    S_str_bin = np.append(1, S_str_bin)
+    h_str_bin = ((S_str_bin[:-1] - S_str_bin[1:]) / S_str_bin[:-1])[:-1]
+
+    # Observed moments: binned and unbinned
+    h_obs = model_moms(psiM, mu, out='all')[0] @ pL
+    S_obs = np.append(1, np.cumprod(1 - h_obs))
+    S_obs_bin = S_obs[1:][::interval]
+    S_obs_bin = np.append(1, S_obs_bin)
+    h_obs_bin = ((S_obs_bin[:-1] - S_obs_bin[1:]) / S_obs_bin[:-1])[:-1]
+
     # Collect all results in a dictionary
     quants = {'mu': mu, 'pL': pL, 'psi': psi, 'psiM': psiM, 
               'X': X, 'betaL': betaL, 'betaP': betaP, 
-              'pL_X': pL_X, 'nu': nu, 'phiX': phiX}
+              'pL_X': pL_X, 'nu': nu, 'phiX': phiX,
+              'h_str': h_str, 'h_str_bin': h_str_bin,
+              'h_obs': h_obs, 'h_obs_bin': h_obs_bin}
 
     return quants
 

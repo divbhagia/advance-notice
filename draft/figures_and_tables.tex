@@ -428,4 +428,15 @@ Duration & Observations & Recieved UI Benefits \\
 }
 \end{figure}
 
+\newpage
+\section{Bins}
+
+Model is identified from duration distribution
+$$ G(d|l, X) = Pr(D \leq d |l, X) $$ 
+$$ h(d|l, X) = \frac{Pr(D \leq d |l, X)-Pr(D \leq d-1 |l, X)}{1-Pr(D \leq d-1 |l, X)} $$
+Bin it and estimate using 
+$$ h^i(d|l, X) = \E\left[\frac{Pr(D \leq d |l, X,\nu)-Pr(D \leq d-i |l, X,\nu)}{1-Pr(D \leq d-i |l, X,\nu)}\right] $$
+
+
+
 \end{document}
