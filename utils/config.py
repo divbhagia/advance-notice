@@ -1,7 +1,9 @@
 
 # Some parameters
 DOWNLOAD_RAW = True
-EXTRACT_IPUMS = False
+EXTRACT_IPUMS = True
+SIM_SM_AGAIN = True
+RUN_EXT_AGAIN = True
 
 # Download link for the raw data
 DATA_LINK = 'https://www.dropbox.com/scl/fi/l45oehwvjucfz9xpafdj1/raw.zip?rlkey=g4zdee32tgwcox4boc9950zxo&st=5ojpr02p&dl=1'
@@ -16,7 +18,7 @@ TEST_QUANTS_DIR = 'tests/quants'
 DIRS = [DATA_DIR, OUTPUT_DIR, QUANTS_DIR, TEST_QUANTS_DIR]
 
 # Specify font for plots
-FONT = {'family': 'serif', 'font': 'Lato', 'size': 9}
+FONT = {'family': 'serif', 'font': 'PT Serif', 'size': 9}
 
 # Critical value for confidence intervals
 CRIT = 1.645 # 90% confidence interval

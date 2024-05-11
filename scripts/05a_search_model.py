@@ -60,7 +60,6 @@ x = minimize(distance, x0, args=(psiH, h_data, 2),
 dlta2 = np.concatenate([np.array([dlta0]), x[:T-1]])
 nu2 = x[T-1:T+1]
 p2 = np.array([x[-1], 1-x[-1]])
-print(nu2, p2)
 r2 = avg_opt(T, sgma, beta, rho, thta, w, b, a, dlta2, nu=nu2, p=p2)
 
 ######################################################

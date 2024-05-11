@@ -48,7 +48,6 @@ custom_plot([bal, unbal], legendlabs=['Balanced', 'Unbalanced'],
 plt.xticks(np.arange(0, len(bal), 3), np.arange(1996, 2021, 3))
 plt.axhline(y=0.5, color='black', linestyle='--', linewidth=0.5)
 plt.savefig(f'{OUTPUT_DIR}/fig_long_notice_ts.pdf')
-plt.show()
 
 ##########################################################
 # Appendix figure: Industry and occupation 
@@ -111,7 +110,6 @@ for i, v in enumerate(vars):
     fig.tight_layout()
     plt.savefig(f'{OUTPUT_DIR}/fig_{v}.pdf', dpi=300, 
                 format='pdf', backend='pdf')
-    plt.show()
     
 ##########################################################
 # Appendix table: Unemployment insurance take-up

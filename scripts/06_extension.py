@@ -9,6 +9,7 @@ from utils.estgmm import gmm
 from utils.esthelpers import unstack
 from utils.customplot import set_plot_aes
 from utils.config import DATA_DIR, QUANTS_DIR, Colors, OUTPUT_DIR
+from utils.config import RUN_EXT_AGAIN
 set_plot_aes()
 
 ######################################################
@@ -35,7 +36,6 @@ blue = Colors().BLUE
 grey = Colors().GREY
 
 # Parameters
-run_again = False
 nrm = 1
 opt = 'baseline'
 numpars = 2*(T-1) + J if opt == 'np' else 2 + (T-1) + J
@@ -69,7 +69,7 @@ thtas = np.zeros((K1, K2, numpars))
 Jstats = np.zeros((K1, K2))
 
 # Estimate model for different values of gamma and kappa1
-if run_again:
+if RUN_EXT_AGAIN:
     ffopt = {'opt': opt, 'gamma': gamma, 'kappa0': kpars[0]}
     for k in range(K1):
         for l in range(K2):

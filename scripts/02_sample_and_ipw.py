@@ -146,7 +146,6 @@ plt.ylabel('Density')
 plt.xlabel('Propensity score')
 plt.tight_layout()
 plt.savefig(f'{OUTPUT_DIR}/fig_ps_balance.pdf', dpi=300)
-plt.show()
 
 ##########################################################
 

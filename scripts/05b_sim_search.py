@@ -4,7 +4,7 @@ import seaborn as sns
 from utils.searchmodel import parameters, avg_opt, sim_search_model
 import multiprocessing as mp
 from utils.customplot import custom_plot
-from utils.config import QUANTS_DIR, OUTPUT_DIR, Colors
+from utils.config import QUANTS_DIR, OUTPUT_DIR, Colors, SIM_SM_AGAIN
 
 # np print options
 np.set_printoptions(precision=4, suppress=True)
@@ -31,7 +31,6 @@ def sim_multi(Tb, n, nu, p, pi, dlta0, dlta1, ffopt, nrm, seeds):
 if __name__ == '__main__':
 
     # Parameters
-    sim_again = False
     np.random.seed(1117)
     T, Tb, n = 4, 3, 3000
     othpars = parameters(T, Tb)
@@ -57,7 +56,7 @@ if __name__ == '__main__':
     nrm = 1
     ffopt = 'baseline'
     seeds = np.random.choice(999999999, iters)
-    if sim_again:
+    if SIM_SM_AGAIN:
         results = sim_multi(Tb, n, nu, p, pi, dlta0, dlta1, 
                             ffopt, nrm, seeds)
     else:

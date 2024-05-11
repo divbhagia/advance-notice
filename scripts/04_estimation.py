@@ -51,6 +51,8 @@ np.save(f'{QUANTS_DIR}/baseline_ests.npy', r)
 if r['ps'] is not None and r['coefs'] is not None:
     print('PS match:', np.allclose(r['ps'], ps))
     print('Coefs match:', np.allclose(r['coefs'], coefs))
+    if not np.allclose(r['ps'], ps) or not np.allclose(r['coefs'], coefs):
+        raise ValueError('Estimates do not match saved quantities')
 
 ##########################################################
 # Baseline estimates table
@@ -172,7 +174,6 @@ plt.xlabel('Weeks since unemployed')
 plt.ylabel('Hazard')
 plt.legend(['Log-Logistic (Baseline)', 'Non-parametric'], loc = 'lower left')
 plt.savefig(f'{OUTPUT_DIR}/fig_robust_np.pdf', dpi=300, format='pdf')
-plt.show()
 
 ##########################################################
 # Appendix figure: estimates with 9 week intervals
