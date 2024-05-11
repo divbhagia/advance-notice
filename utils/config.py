@@ -1,9 +1,9 @@
 
 # Some parameters
-DOWNLOAD_RAW = True
-EXTRACT_IPUMS = True
-SIM_SM_AGAIN = True
-RUN_EXT_AGAIN = True
+DOWNLOAD_RAW = False
+EXTRACT_IPUMS = False
+SIM_SM_AGAIN = False
+RUN_EXT_AGAIN = False
 
 # Download link for the raw data
 DATA_LINK = 'https://www.dropbox.com/scl/fi/l45oehwvjucfz9xpafdj1/raw.zip?rlkey=g4zdee32tgwcox4boc9950zxo&st=5ojpr02p&dl=1'

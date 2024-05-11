@@ -118,7 +118,7 @@ series = [r['psi'], h_avg]
 se = [r['psiSE'], None]
 custom_plot(series, se, xlab='Weeks since unemployed', ylab='Hazard',
            legendlabs= ['Structural', 'Observed'], xticklabs=xticklabs,
-           colors=[blue, black], linestyles=['-', '-.'], 
+           colors=[blue, black], linestyles=['-', ':'], 
            ylims=[-0.05, 0.95], legendpos='lower left', ydist=0.2)
 plt.axvline(x=2, color='black', linestyle=':', linewidth=1.25, alpha=0.75)
 plt.text(0.69, 0.85, 'UI Exhaustion')
@@ -145,7 +145,7 @@ series = [runwtd['psi'], h_avg]
 se = [runwtd['psiSE'], None]
 custom_plot(series, se, xlab='Weeks since unemployed', ylab='Hazard',
            legendlabs= ['Structural', 'Observed'], xticklabs=xticklabs,
-           colors=[blue, black], linestyles=['-', '-.'], 
+           colors=[blue, black], linestyles=['-', ':'], 
            ylims=[-0.05, 0.95], legendpos='lower left', ydist=0.2)
 plt.axvline(x=2, color='black', linestyle=':', linewidth=1.25, alpha=0.75)
 plt.text(0.69, 0.85, 'UI Exhaustion')
@@ -164,9 +164,9 @@ xticklabs = ['0-12', '12-24', '24-36', '36-48']
 # Plot structural hazard
 xax = np.arange(len(h_avg))
 plt.figure(figsize=(4.5, 3))
-plt.errorbar(xax, r['psi'], yerr=CRIT*r['psiSE'], color=black,
+plt.errorbar(xax, r['psi'], yerr=CRIT*r['psiSE'], color=blue,
                 capsize=3, fmt='o', markersize=4)
-plt.errorbar(xax+0.075, rnp['psi'], yerr=CRIT*rnp['psiSE'], color=blue,
+plt.errorbar(xax+0.075, rnp['psi'], yerr=CRIT*rnp['psiSE'], color=black,
                 capsize=3, fmt='x', markersize=5)
 plt.xticks(xax, xticklabs)
 plt.tight_layout(pad=2)
@@ -199,11 +199,9 @@ se = [r9week['psiSE'], None, None]
 xticklabs = ['0-9', '9-18', '18-27', '27-36', '36-45']
 custom_plot(series, se, xlab='Weeks since unemployed', ylab='Hazard',
            legendlabs= ['Baseline', 'Non-parametric', 'Observed'], xticklabs=xticklabs, figsize=(4.5, 3), 
-           colors=[blue, red, black], linestyles=['-', '--', '-.'], 
+           colors=[blue, red, black], linestyles=['-', '--', ':'], 
            ylims=[-0.075, 0.8], legendpos='lower left', ydist=0.2)
 plt.axvline(x=2, color='black', linestyle=':', linewidth=1.25, alpha=0.75)
 plt.savefig(f'{OUTPUT_DIR}/fig_robust_9week.pdf', dpi=300, format='pdf')
 
-##########################################################
-# Appendix figure: Estimates for the unweighted sample
 ##########################################################

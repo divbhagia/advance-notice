@@ -85,7 +85,7 @@ def custom_plot(series, se = None, xlab = '', ylab = '', title = '',
         linewidths = len(linestyles)*[1.5]
         for i in range(len(linestyles)):
             if linestyles[i] == ':':
-                linewidths[i] = 2.5
+                linewidths[i] = 2
 
     # Default xtick labels
     if xticklabs is None:

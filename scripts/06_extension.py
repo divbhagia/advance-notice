@@ -125,8 +125,8 @@ plt.figure(figsize=[3, 2.5])
 plt.contourf(gpars, kpars, Jstats.T, 50, cmap='ocean_r', alpha=1)
 plt.plot(gpars[best[0]], kpars[best[1]], 'ko', markersize=3)
 plt.annotate(text1 + text2, (1.005, 0.01))
-plt.axvline(gpars[best[0]], color=black, linestyle='--', linewidth=0.5)
 plt.axhline(kpars[best[1]], color=black, linestyle='--', linewidth=0.5)
+plt.axvline(gpars[best[0]], color=black, linestyle='--', linewidth=0.5)
 plt.colorbar()
 plt.xlabel('$\\gamma$')
 plt.ylabel('$\\kappa_1$')
@@ -156,13 +156,13 @@ plot_range_both = 25
 
 # Plot for different values of gamma
 plt.figure(figsize=[3, 2.5])
-print(f'Plotting {plot_range} best models for gen_strhaz')
+print(f'Plotting {plot_range}/{K1} best models for gen_strhaz')
 for k in range(plot_range):
     plt.plot(psis[ord_gidx[k], kidx0, :], 
              #label=f'$\\gamma={gpars[ord_gidx[k]]:.2f}$', 
              alpha=0.35, color=grey)
-plt.plot(h_avg, color=black, linestyle='--', label='Observed')
 plt.plot(r['psi'], color=black, linestyle='-', label='Baseline')
+plt.plot(h_avg, color=black, linestyle='--', label='Observed')
 plt.xticks(range(T), xticks)
 plt.xlabel(xlabel)
 plt.legend(loc='lower left')
@@ -190,8 +190,8 @@ print(f'Plotting {plot_range_both} best models for both')
 for k in range(plot_range_both):
     plt.plot(psis[ord_idx[k,0], ord_idx[k,1], :], 
              alpha=0.35, color='grey')
-plt.plot(h_avg, color=black, linestyle='--', label='Observed')
 plt.plot(r['psi'], color=black, linestyle='-', label='Baseline')
+plt.plot(h_avg, color=black, linestyle='--', label='Observed')
 plt.xticks(range(T), xticks)
 plt.xlabel(xlabel)
 plt.legend(loc='upper left')

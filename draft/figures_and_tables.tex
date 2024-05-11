@@ -114,7 +114,7 @@ Parameter & Explanation & Estimate & SE \\
 \subcaption{Average Type}
 \end{subfigure} 
 \vspace{-0.75em}
-\floatfoot{\textit{Note:} Solid line in panel A presents estimates for structural hazards as implied by the estimated parameters in panel A of Table \ref{tab_baseline_estimates}. The dotted line in panel A presents the observed exit rate from the data, averaged across workers with short and long notice. Panel B presents the implied average type at each duration for those with short and long notice. Error bars represent 90\% confidence intervals.}
+\floatfoot{\textit{Note:} The solid blue line in panel A presents estimates for structural hazards as implied by the estimated parameters in panel A of Table \ref{tab_baseline_estimates}. The dotted black line in panel A presents the observed exit rate from the data, averaged across workers with short and long notice. Panel B presents the implied average type at each duration for those with short and long notice. Error bars represent 90\% confidence intervals.}
 \end{figure}
 
 % FIGURE: Calibration
@@ -128,7 +128,7 @@ Parameter & Explanation & Estimate & SE \\
   \includegraphics{./../output/fig_calib_search}
   \subcaption{Search Effort}
   \end{subfigure}
-  \floatfoot{\textit{Notes}: The figure presents the search effort and offer arrival rate from the calibration of the search model, assuming no heterogeneity (dashed line) and assuming two types of workers (solid line). The search effort is averaged over two types of workers.}
+  \floatfoot{\textit{Notes}: The figure presents the search effort and offer arrival rate from the calibration of the search model, assuming no heterogeneity (dashed black line) and assuming two types of workers (solid blue line). The search effort is averaged over two types of workers.}
   \end{figure}
    
 
@@ -171,7 +171,7 @@ First period arrival rate $\delta(1)$ & 1 \\
 \subcaption{Structural Hazard}
 \end{subfigure} 
 \vspace{-0.75em}
-\floatfoot{\textit{Note:} The figure displays the fit of the search model for the two calibration exercises described in the text. Panel A shows the observed exit rate in the data (solid-line) alongside the corresponding fitted values obtained from calibrating the search model without heterogeneity (dotted-line) and with two types of workers (dashed-line). Panel B displays the estimated structural hazard from the Mixed Hazard (MH) model (solid-line) and the fitted structural hazard from calibrating the search model with two types of workers (dashed-line).}
+\floatfoot{\textit{Note:} The figure displays the fit of the search model for the two calibration exercises described in the text. Panel A shows the observed exit rate in the data (solid black line) alongside the corresponding fitted values obtained from calibrating the search model without heterogeneity (dotted red line) and with two types of workers (dashed blue line). Panel B displays the estimated structural hazard from the Mixed Hazard (MH) model (solid black line) and the fitted structural hazard from calibrating the search model with two types of workers (dashed blue line).}
 \end{figure}
      
 
@@ -333,13 +333,13 @@ Duration & Observations & Recieved UI Benefits \\
 \begin{figure}[t]\caption{Non-Parametric Estimates}\label{fig_robust_ff}
 \centering 
 \includegraphics{./../output/fig_robust_np}
-\floatfoot{\textit{Note:} Figure presents estimates for the structural hazard from the Mixed Hazard model under alternative parametric assumptions. Error bars represent 90\% confidence intervals.}
+\floatfoot{\textit{Note:} The figure compares non-parametric estimates of the structural hazard from the Mixed Hazard model with baseline estimates that assume a log-logistic functional form for the structural hazard. Error bars represent 90\% confidence intervals.}
 \end{figure}
 
  % FIGURE: Alternative Bins
  \begin{figure}[p]\caption{Estimates with Unemployment Duration Binned in 9-Week Intervals}\label{fig_robust_altbins}
 \includegraphics{./../output/fig_robust_9week}
-\floatfoot{\textit{Note:} The figure presents estimates from the Mixed Hazard model using data with unemployment duration binned in 9-week intervals. The solid line represents estimates for the structural hazard assuming the Log-Logistic functional form. The dashed line represents non-parametric estimates, while the dotted line represents the observed exit rate from the data.}
+\floatfoot{\textit{Note:} The figure presents estimates from the Mixed Hazard model using data with unemployment duration binned in 9-week intervals. The solid blue line represents estimates for the structural hazard assuming the Log-Logistic functional form. The dashed red line represents non-parametric estimates, while the dotted black line represents the observed exit rate from the data.}
 \end{figure}
 
 % FIGURE: Data and Estimates using the Unweighted Sample
@@ -354,13 +354,13 @@ Duration & Observations & Recieved UI Benefits \\
 \includegraphics{./../output/fig_robust_unwtd.pdf}
 \subcaption{Estimated Structural Hazard}
 \end{subfigure}
-\floatfoot{\textit{Note:} The figure presents data and estimates for the unweighted analytical sample. Panel A presents the exit rate from the data separately for long and short-notice workers. The solid line in panel B shows the estimated structural hazard from the Mixed Hazard model, while the dotted line represents the average exit rate for short and long-notice workers in the data.}
+\floatfoot{\textit{Note:} The figure presents data and estimates for the unweighted analytical sample. Panel A presents the exit rate from the data separately for long and short-notice workers. The solid blue line in panel B shows the estimated structural hazard from the Mixed Hazard model, while the dotted black line represents the average exit rate for short and long-notice workers in the data.}
 \end{figure}
 
 % FIGURE: Simulation: Average Estimate
 \begin{figure}[h]\caption{Simulation: Average Estimate}\label{fig_simulation_average}
   \includegraphics{./../output/fig_sm_sim_avgpred.pdf}
-  \floatfoot{\textit{Note:}  The solid line presents the average estimate from 1000 simulations of the search model. The dashed line presents the structural duration dependence $\E [h(d|\nu)]$ implied by the model. While the dotted line presents the observed structural duration dependence $\E [h(d|\nu)|D \geq d]$ implied by the model.}
+  \floatfoot{\textit{Note:}  The solid blue line presents the average estimate from 1000 simulations of the search model. The dashed red line presents the structural duration dependence $\E [h(d|\nu)]$ implied by the model. While the dotted black line presents the observed structural duration dependence $\E [h(d|\nu)|D \geq d]$ implied by the model.}
   \end{figure}
   
   % FIGURE: Simulation: Distribution of Estimates
@@ -394,7 +394,7 @@ Duration & Observations & Recieved UI Benefits \\
 \includegraphics{./../output/fig_extgen_hetB}
 \subcaption{10 lowest-residual estimates}
 \end{subfigure} 
-\floatfoot{\textit{Note:} The figure presents results from the estimation of a more generalized Mixed Hazard model, where the mean of the heterogeneity distribution for individuals with different lengths of notice is allowed to vary according to the parameter $\kappa_1$. Panel A presents the residuals from GMM estimation for different values of $\kappa_1$. Panel B presents the estimates of structural hazard for different values of $\kappa_1$.}
+\floatfoot{\textit{Note:} The figure presents results from the estimation of a more generalized Mixed Hazard model, where the mean of the heterogeneity distribution for individuals with different lengths of notice is allowed to vary according to the parameter $\kappa_1$. Panel A presents the residuals from GMM estimation for different values of $\kappa_1$. Panel B presents the structural hazard estimates from the 10 best models with the lowest-valued residuals (light grey lines), compared to the baseline estimate (solid line) and the observed hazard in the data (dashed line).}
 \end{figure} 
   
 % FIGURE: Alternative Assumptions on Structural Hazards
@@ -408,7 +408,7 @@ Duration & Observations & Recieved UI Benefits \\
 \includegraphics{./../output/fig_extgen_strhazB.pdf}
 \subcaption{10 lowest-residual estimates}
 \end{subfigure} 
-\floatfoot{\textit{Note:}  The figure presents results from the estimation of a more generalized Mixed Hazard model, where the structural hazard after the initial period for individuals with different lengths of notice is allowed to vary according to the parameter $\gamma$. Panel A presents the residuals from GMM estimation for different values of $\gamma$. Panel B presents the estimates of structural hazard for different values of $\gamma$.}
+\floatfoot{\textit{Note:}  The figure presents results from the estimation of a more generalized Mixed Hazard model, where the structural hazard after the initial period for individuals with different lengths of notice is allowed to vary according to the parameter $\gamma$. Panel A presents the residuals from GMM estimation for different values of $\gamma$. Panel B presents the structural hazard estimates from the 10 best models with the lowest-valued residuals (light grey lines), compared to the baseline estimate (solid line) and the observed hazard in the data (dashed line).}
 }
 \end{figure} 
 
@@ -424,7 +424,7 @@ Duration & Observations & Recieved UI Benefits \\
 \includegraphics{./../output/fig_extgen_bothB.pdf}
 \subcaption{25 lowest-residual estimates}
 \end{subfigure} 
-\floatfoot{\textit{Note:}  The figure presents results from the estimation of a more generalized Mixed Hazard model. The mean of the heterogeneity distribution for individuals with different lengths of notice is allowed to vary according to the parameter $\kappa_1$. The structural hazard after the initial period for individuals with different lengths of notice is allowed to vary according to the parameter $\gamma$. Panel A presents the residuals from GMM estimation for different values of $\kappa_1$ and $\gamma$. Panel B presents the estimates of structural hazard for the case where $\kappa_1=0$ and $\gamma=1$ (solid line) and for the case when $\kappa_1$ and $\gamma$ take values that minimize the residual in Panel A (dashed line).} 
+\floatfoot{\textit{Note:}  The figure presents results from the estimation of a more generalized Mixed Hazard model. The mean of the heterogeneity distribution for individuals with different lengths of notice is allowed to vary according to the parameter $\kappa_1$. The structural hazard after the initial period for individuals with different lengths of notice is allowed to vary according to the parameter $\gamma$. Panel A presents the residuals from GMM estimation for different values of $\kappa_1$ and $\gamma$. Panel B presents the structural hazard estimates from the 25 best models with the lowest-valued residuals (light grey lines), compared to the baseline estimate (solid line) and the observed hazard in the data (dashed line).} 
 }
 \end{figure}
 

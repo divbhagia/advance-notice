@@ -70,12 +70,13 @@ if __name__ == '__main__':
     # Plot average estimate
     labs =['Estimate', '$E[h(d|\\nu)]$', 'Observed']
     xticklabs = ['1', '2', '3', '4']
+    colors = [Colors.BLUE, Colors.RED, Colors.BLACK]
     custom_plot([h_obs[0]*psi/psi[0], 
                  h_obs[0]*h_str/h_str[0], h_obs], legendpos='lower left',
                 legendlabs=labs, ylims=[0.2, 0.385], ydist=0.05,
                 xlab='Time since unemployed', ylab='Hazard', 
                 figsize= [4.5, 3], xticklabs=xticklabs,
-                savepath=f'{OUTPUT_DIR}/fig_sm_sim_avgpred.pdf')
+                colors=colors, savepath=f'{OUTPUT_DIR}/fig_sm_sim_avgpred.pdf')
     
     # x and y to superimpose standard normal distribution
     x = np.linspace(-4, 4, 1000)
