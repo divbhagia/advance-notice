@@ -4,6 +4,7 @@ DOWNLOAD_RAW = False
 EXTRACT_IPUMS = False
 SIM_SM_AGAIN = False
 RUN_EXT_AGAIN = False
+SIMBIN_AGAIN = False
 
 # Download link for the raw data
 DATA_LINK = 'https://www.dropbox.com/scl/fi/l45oehwvjucfz9xpafdj1/raw.zip?rlkey=g4zdee32tgwcox4boc9950zxo&st=5ojpr02p&dl=1'
@@ -28,6 +29,7 @@ class Colors:
     RED = (0.7, 0.1, 0.2)
     BLACK = (0, 0, 0)
     GREY = (0.5, 0.5, 0.5)
+    DGREY = (0.3, 0.3, 0.3)
     BLUE = (0.2, 0.2, 0.65)
     GREEN = (0.2, 0.5, 0.3)
     WHITE = (1, 1, 1)

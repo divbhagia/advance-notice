@@ -1,11 +1,13 @@
 job.slurm
-__pychache__/
+__pychache__
 **/__pychache__/
 .DS_Store
 **/.DS_Store/*
-myenv/
 data/
 logs/
 output/
 archive/
-utils/__pycache__/
+draft/*
+!draft/figures_and_tables.tex
+scripts/quants/
+tests/quants/

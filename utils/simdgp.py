@@ -48,7 +48,7 @@ def weibull(x, opt='cons'):
     if opt == 'cons':
         b, k = 0.175, 1
     if opt == 'inc':
-        b, k = 0.2, 1.1
+        b, k = 0.2, 1.2
     if opt == 'dec':
         b, k = 0.2, 0.75
     return b * k * (x**(k-1)) 
@@ -110,7 +110,7 @@ def dgp(T, psin, psiopt='nm', betaL=None, betaP=None, interval=1):
     # Specify psi and stack psin & psi into psiM
     if psiopt == 'nm':
         tvals = np.linspace(10, 20, T-1)
-        psi = loglogistictp(tvals, tp=tvals[T//2], a2=5)
+        psi = loglogistictp(tvals, tp=tvals[T//2-2], a2=8)
     else:
         psi = weibull(np.arange(1,T), psiopt)
     psiM = np.zeros((T, J))
