@@ -1,6 +1,5 @@
 job.slurm
-__pychache__
-**/__pychache__/
+__pycache__/
 .DS_Store
 **/.DS_Store/*
 data/
