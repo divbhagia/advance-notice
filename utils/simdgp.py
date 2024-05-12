@@ -13,9 +13,9 @@ from utils.esthelpers import model_moms
 #   Notice (L) prob: exp(betaL * X) / sum(exp(betaL * X))
 #   phi(X) = betaP * X
 #   nu independent of L | X, 
-#       nu ~ Beta(1, 1) if x7 = 1
-#       nu ~ Beta(2, 1) if x7 = 0 & x6 = 1
-#       nu ~ Beta(1, 3) if x7 = 0 & x6 = 0
+#       nu ~ Beta(a1, b1) if x7 = 1
+#       nu ~ Beta(a2, b2) if x7 = 0 & x6 = 1
+#       nu ~ Beta(a3, b3) if x7 = 0 & x6 = 0
 #   psin defines first period probs by notice length
 #  Note: with beta_L = (c, 0, 0), exogenous L
 
@@ -46,21 +46,21 @@ def loglogistictp(x, tp, a2):
 # Weibull Hazard
 def weibull(x, opt='cons'):
     if opt == 'cons':
-        b, k = 1, 1
+        b, k = 0.175, 1
     if opt == 'inc':
-        b, k = 0.25, 1.25
+        b, k = 0.2, 1.1
     if opt == 'dec':
-        b, k = 1.25, 0.75
+        b, k = 0.2, 0.75
     return b * k * (x**(k-1)) 
 
 # nu parameters
 def nupars(x1, x2=None):
     if x1 == 1:
-        return 1, 1
+        return 0.1, 0.1
     if x1 == 0 and x2 == 1:
-        return 2, 1
+        return 0.3, 0.5
     if x1 == 0 and x2 == 0:
-        return 1, 3
+        return 0.25, 0.5
 
 ##########################################################
 # Define DGP function
@@ -96,8 +96,11 @@ def dgp(T, psin, psiopt='nm', betaL=None, betaP=None, interval=1):
     pars = [nupars(x1=1), nupars(x1=0, x2=1), nupars(x1=0, x2=0)]
     nu = [Beta(f'nu{i}', pars[i][0], pars[i][1]) for i in range(3)]
     nu = nu[0] * X1 + nu[1] * (1-X1) * X2 + nu[2] * (1-X1) * (1-X2)
-    mu = np.array([E(phiX**t * nu**t) for t in range(1, T+1)],
-                  dtype=float)
+    mu = np.zeros(T)
+    for t in range(1, T+1):
+        mu[t-1] = E((phiX** t * nu ** t).subs({X1: 1})) * E(X1) \
+        + E((phiX** t * nu ** t).subs({X1: 0, X2: 1})) * E((1-X1)*X2)  \
+        + E((phiX** t * nu ** t).subs({X1: 0, X2: 0})) * E((1-X1)*(1-X2))
 
     # Probability of notice
     pL_Xnum = sp.Array([sp.exp(X @ betaL[:,j]) for j in range(J)])
@@ -109,43 +112,17 @@ def dgp(T, psin, psiopt='nm', betaL=None, betaP=None, interval=1):
         tvals = np.linspace(10, 20, T-1)
         psi = loglogistictp(tvals, tp=tvals[T//2], a2=5)
     else:
-        psi = weibull(np.arange(1, T), psiopt)
+        psi = weibull(np.arange(1,T), psiopt)
     psiM = np.zeros((T, J))
     psiM[0, :] = psin[:J]
     psiM[1:, :] = np.repeat(psi.reshape(-1, 1), J, axis=1)
     psi = psiM @ pL
 
-    # Structural moments: binned and unbinned
-    h_str = np.array([E(psi[d] * phiX * nu) for d in range(T)], dtype=float)
-    S_str = np.append(1, np.cumprod(1 - h_str))
-    S_str_bin = S_str[1:][::interval]
-    S_str_bin = np.append(1, S_str_bin)
-    h_str_bin = ((S_str_bin[:-1] - S_str_bin[1:]) / S_str_bin[:-1])[:-1]
-
-    # Observed moments: binned and unbinned
-    h_obs = model_moms(psiM, mu, out='all')[0] @ pL
-    S_obs = np.append(1, np.cumprod(1 - h_obs))
-    S_obs_bin = S_obs[1:][::interval]
-    S_obs_bin = np.append(1, S_obs_bin)
-    h_obs_bin = ((S_obs_bin[:-1] - S_obs_bin[1:]) / S_obs_bin[:-1])[:-1]
-
     # Collect all results in a dictionary
     quants = {'mu': mu, 'pL': pL, 'psi': psi, 'psiM': psiM, 
-              'X': X, 'betaL': betaL, 'betaP': betaP, 
-              'pL_X': pL_X, 'nu': nu, 'phiX': phiX,
-              'h_str': h_str, 'h_str_bin': h_str_bin,
-              'h_obs': h_obs, 'h_obs_bin': h_obs_bin}
+              'X': X, 'phiX': phiX, 'pL_X': pL_X, 'T': T, 'J': J,
+            'betaL': betaL, 'betaP': betaP}
 
     return quants
 
-
 ##########################################################
-
-
-    
-        
-
-
-
-
-

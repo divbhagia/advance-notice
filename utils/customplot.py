@@ -50,7 +50,7 @@ def custom_plot(series, se = None, xlab = '', ylab = '', title = '',
                legendlabs = None, xticklabs = None, figsize = [2.9, 2.75],
                ydist = 0.1, ylims = None, crit = CRIT, colors = None,
                linestyles = None, linewidths = None, legendpos = 'best',
-               savepath = None):
+               savepath = None, subplot = False, legend = True):
     
     # Initialize
     #matplotlib.use('PDF')
@@ -110,7 +110,8 @@ def custom_plot(series, se = None, xlab = '', ylab = '', title = '',
     yticks = np.arange(np.round(lb*10)/10, ub, ydist)
 
     # Plot figure
-    plt.figure(figsize=figsize)
+    if subplot is False:
+        plt.figure(figsize=figsize)
     for j in range(num_series):
         plt.plot(series[j], label=legendlabs[j], 
                      color=colors[j], linestyle=linestyles[j],
@@ -129,9 +130,10 @@ def custom_plot(series, se = None, xlab = '', ylab = '', title = '',
     plt.title(title, fontdict=font_title)
 
     # Customize legend
-    plt.legend(prop = font_legend, loc = legendpos,
-               borderaxespad=0.5, borderpad=0.25, 
-               labelspacing=0.25, handlelength=2.5, framealpha=0.5)
+    if legend:
+        plt.legend(prop = font_legend, loc = legendpos,
+                   borderaxespad=0.5, borderpad=0.25, 
+                   labelspacing=0.25, handlelength=2.5, framealpha=0.5)
 
     # # Customize font for tick labels
     for label in plt.gca().get_xticklabels() + plt.gca().get_yticklabels():
