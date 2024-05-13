@@ -39,6 +39,8 @@ def indv_moms_ipw(thta_all, data, nrm, ffopt='np'):
         npars = 2 + (T-1) + J 
     thta = thta_all[:npars]
     coefs = thta_all[npars:]
+    if J>2:
+        coefs = coefs.reshape(nvars, J-1)
 
     # All moments
     ps = pred_ps(data, coefs)[0]

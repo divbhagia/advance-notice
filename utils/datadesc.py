@@ -7,7 +7,7 @@ import statsmodels.api as sm
 # Function to predict propensity scores
 ##########################################################
 
-def pred_ps(data, coefs=None):
+def pred_ps(data, coefs=None, outmodel=False):
     
     # Initialize
     notice = data['notice']
@@ -24,6 +24,10 @@ def pred_ps(data, coefs=None):
     X = np.array(X, dtype=float)
     ps = np.exp(X @ betaL) / np.exp(X @ betaL).sum(axis=1, keepdims=True)
 
+    # Return model if requested
+    if outmodel:
+        return ps, coefs, model
+    
     return ps, coefs
 
 ##########################################################

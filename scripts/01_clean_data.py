@@ -75,6 +75,7 @@ varlist = ['dwjobsince', 'dwhrswkc', 'dwunion', 'dwlastwrk',
 for var in varlist:
     df[var] = np.where(df[var] >= 96, np.nan, df[var])
 df['dwreas'] = np.where(df['dwreas'] >= 95, np.nan, df['dwreas'])
+df['dwnotice'] = np.where(df['dwnotice'] >= 5, np.nan, df['dwnotice'])
 
 ##########################################################
 # CPI adjustment
