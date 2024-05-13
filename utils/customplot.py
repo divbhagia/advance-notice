@@ -50,7 +50,8 @@ def custom_plot(series, se = None, xlab = '', ylab = '', title = '',
                legendlabs = None, xticklabs = None, figsize = [2.9, 2.75],
                ydist = 0.1, ylims = None, crit = CRIT, colors = None,
                linestyles = None, linewidths = None, legendpos = 'best',
-               savepath = None, subplot = False, legend = True):
+               savepath = None, subplot = False, legend = True,
+               ax = None):
     
     # Initialize
     #matplotlib.use('PDF')
@@ -110,8 +111,10 @@ def custom_plot(series, se = None, xlab = '', ylab = '', title = '',
     yticks = np.arange(np.round(lb*10)/10, ub, ydist)
 
     # Plot figure
-    if subplot is False:
+    if subplot is False and ax is None:
         plt.figure(figsize=figsize)
+    if ax is not None:
+        plt = ax
     for j in range(num_series):
         plt.plot(series[j], label=legendlabs[j], 
                      color=colors[j], linestyle=linestyles[j],

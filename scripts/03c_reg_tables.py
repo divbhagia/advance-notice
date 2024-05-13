@@ -30,6 +30,12 @@ h0 = np.where(sample['obsdur'] == 0, 1, 0)
 h0to12 = np.where((sample['dur'] == d0) & (sample['cens']==0), 1, 0)
 lnearn = sample['lnearnc']
 
+# Print mean of h0 and h0to12 by notice
+m_h0 = pd.crosstab(sample['notice'], h0, normalize='index')[1]
+m_h0to12 = pd.crosstab(sample['notice'], h0to12, normalize='index')[1]
+print(f'Mean of h0 by notice: {m_h0}')
+print(f'Mean of h0to12 by notice: {m_h0to12}')
+
 ##########################################################
 # Initial hazard and wages at subsequent job regressions
 ##########################################################

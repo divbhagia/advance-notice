@@ -46,7 +46,7 @@ def loglogistictp(x, tp, a2):
 # Weibull Hazard
 def weibull(x, opt='cons'):
     if opt == 'cons':
-        b, k = 0.175, 1
+        b, k = 0.15, 1
     if opt == 'inc':
         b, k = 0.2, 1.2
     if opt == 'dec':
@@ -109,8 +109,12 @@ def dgp(T, psin, psiopt='nm', betaL=None, betaP=None, interval=1):
 
     # Specify psi and stack psin & psi into psiM
     if psiopt == 'nm':
-        tvals = np.linspace(10, 20, T-1)
-        psi = loglogistictp(tvals, tp=tvals[T//2-2], a2=8)
+        # hazard increases till T/2 and then decreases
+        psi = np.zeros(T-1)
+        psi[:T//2] = weibull(np.arange(1,T//2+1), 'inc')
+        psi[T//2:] = 1.75*weibull(np.arange(1,T//2), 'dec')
+        #tvals = np.linspace(10, 20, T-1)
+        #psi = loglogistictp(tvals, tp=tvals[T//2-2], a2=8)
     else:
         psi = weibull(np.arange(1,T), psiopt)
     psiM = np.zeros((T, J))

@@ -53,6 +53,14 @@ if r['ps'] is not None and r['coefs'] is not None:
     print('Coefs match:', np.allclose(r['coefs'], coefs))
     if not np.allclose(r['ps'], ps) or not np.allclose(r['coefs'], coefs):
         raise ValueError('Estimates do not match saved quantities')
+    
+# Print quantities
+h_avg_dec_1to2 = (h_avg[1] - h_avg[0]) / h_avg[0]
+print(f'Obs hazard change 1 to 2: {100*h_avg_dec_1to2:.1f}\n')
+psi_dec_1to2 = (r['psi'][1] - r['psi'][0]) / r['psi'][0]
+print(f'Structural hazard change 1 to 2: {100*psi_dec_1to2:.1f}\n')
+psi_dec_2to3 = (r['psi'][2] - r['psi'][1]) / r['psi'][1]
+print(f'Structural hazard change 2 to 3: {100*psi_dec_2to3:.1f}\n')
 
 ##########################################################
 # Baseline estimates table
