@@ -7,9 +7,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tabulate import tabulate
 
 # Import custom functions and parameters
-from utils.datadesc import pred_ps
+from utils.customplot import set_plot_aes
+from utils.datadesc import pred_ps, rmlinestex
 from utils.config import DATA_DIR, QUANTS_DIR, Colors, OUTPUT_DIR
 
 ##########################################################
@@ -19,55 +21,57 @@ from utils.config import DATA_DIR, QUANTS_DIR, Colors, OUTPUT_DIR
 # Load data
 dws = pd.read_csv(f'{DATA_DIR}/dws.csv')
 
+# Variables with missing values
+missingval_vars = ['dwlastwrk', 'dwnotice', 'dwunion', 'dwhi', 'dwyears', 
+                   'dwweekl', 'dwjobsince', 'ind', 'occ', 'obsdur']
+# Note obsdur is missing when jf=1 & dwwksun is missing
+
 # Sample selection 
 sample = dws.copy()
 sample = sample[(sample['year'] >= 1996) & (sample['year'] <= 2020)]
 sample = sample[(sample['age'] >= 21) & (sample['age'] <= 64)]
-sample = sample[(sample['dwfulltime'] == 2)]                    
-sample = sample[(sample['dwclass'] <= 3)]                       
-sample = sample[(sample['dwrecall'] != 2)]                     
-sample = sample[(sample['dwnotice'] >= 3) & (sample['dwnotice'] <= 4)]
-sample = sample[(sample['dwyears'] >= 0.5)]
-sample = sample[(sample['dwhi'] == 2)]
-sample = sample[(sample['dwjobsince'] <= 2)]
 
-##########################################################
-# Create exactly the same sample as before (REMOVE LATER)
-##########################################################
+# Conditions for sample selection
+cond1 = (sample['dwrecall'] != 2) 
+cond2 = (sample['dwclass'] <= 3) 
+cond3 = (sample[missingval_vars].isnull().sum(axis=1) == 0)
+cond4 = (sample['dwfulltime'] == 2)
+cond5 = (sample['dwyears'] >= 0.5)
+cond6 = (sample['dwhi'] == 2)
+cond7 = (sample['dwjobsince'] <= 2)
+cond8 = (sample['dwnotice'] >= 3) & (sample['dwnotice'] <= 4)
+conds = np.array([eval(f'cond{j+1}') for j in range(8)]).T
 
-old_sample = False
-if old_sample:
-    sample = dws.copy()
-    sample = sample[(sample['year'] >= 1996) & (sample['year'] <= 2020)]
-    sample = sample[(sample['age'] >= 21) & (sample['age'] <= 64)]
-    sample = sample[(sample['dwfulltime'] == 2)]                    
-    sample = sample[(sample['dwclass'] <= 3)]                       
-    sample = sample[(sample['dwrecall'] != 2)]                     
-    sample = sample[(sample['dwnotice'] >= 2) & (sample['dwnotice'] <= 4)]
-    sample = sample[(sample['dwyears'] >= 0.5)]
-    sample = sample[(sample['dwhi'] == 2)]
-    sample = sample[(sample['dwjobsince'] <= 2)]
-    sample = sample[(sample['dwlastwrk'] == 2) | (sample['dwlastwrk'] == 3)]
-    sample = sample[(sample['jf'] == 1) | 
-                    ((sample['jf'] == 0) & (sample['obsdur'] >= 52))]
+# Labels for conditions
+condlabs = ['DWS 1996-2020, 21-64 year old respondents',
+            'No recall expectation',
+            'Lost job was not self-employment', 
+            'Non-missing values for variables used',
+            'Worked full-time at lost job',
+            'Employed for at least 6 months at lost job',
+            'Had health insurance at lost job',
+            'Held less than 3 jobs since lost job',
+            'Got a notice of 1-2 or >2 months',
+            ]
 
-##########################################################
-# Remove missing values
-##########################################################
+# Apply conditions and record sample size reductions in a table
+sample_sizes = []
+for j in range(conds.shape[1]):
+    sample_sizes.append(sample.shape[0])
+    sample = sample.loc[conds[:,j]]
+    conds = conds[conds[:,j]]
+sample_sizes.append(sample.shape[0])
 
-rm_missing = True
-if rm_missing:
-    varlist = ['dwlastwrk', 'dwunion', 'dwhi', 'dwyears', 
-               'dwweekl','dwjobsince', 'ind', 'occ', 'obsdur']
-    sample = sample.dropna(subset=varlist)
-    print('Missing values:')
-    print(sample.isnull().sum()[sample.isnull().sum() != 0])
-
-# Note obsdur is missing when jf=1 & dwwksun is missing
+# Create latex table
+tab = np.array([condlabs, sample_sizes]).T
+print(tabulate(tab))
+tabpath = f'{OUTPUT_DIR}/tab_sample_selection.tex'
+with open(tabpath, 'w') as f:
+    f.write(tabulate(tab, tablefmt='latex'))
+rmlinestex(tabpath)
 
 # Are there individuals who haven't found a job and left lf?
 sample[(sample['jf'] == 0)]['nilf'].value_counts()
-print(sample['notice'].value_counts().sort_index())
 
 ##########################################################
 # Estimate prop score and add weights to the sample
@@ -124,17 +128,14 @@ sample.to_csv(f'{DATA_DIR}/sample.csv', index=False)
 # Check overlap in propensity scores 
 ##########################################################
 
-# set font as Charter
-plt.rcParams['font.serif'] = 'Charter'
+set_plot_aes()
 colors = [Colors().BLACK, Colors().RED]
 plt.figure(figsize=(5.5, 3.25))
 for j in range(len(notvals)):
-    print(j, notvals[j])
-    print(f'Notice value: {notvals[j]}')
-    sns.kdeplot(ps[(sample['notice']==notvals[j]),j], 
+    sns.kdeplot(ps[(sample['notice']==notvals[j]),1], 
                  color=colors[j], fill=True, alpha=0.075, 
                  edgecolor='black')
-plt.annotate('Short Notice', xy=(0.425, 2), 
+plt.annotate('Short Notice', xy=(0.4, 2), 
              xytext=(0.175, 2),
              arrowprops=dict(facecolor='black', arrowstyle='<-'))
 plt.annotate('Long Notice', xy=(0.635, 2.5), 

@@ -19,7 +19,9 @@ TEST_QUANTS_DIR = 'tests/quants'
 DIRS = [DATA_DIR, OUTPUT_DIR, QUANTS_DIR, TEST_QUANTS_DIR]
 
 # Specify font for plots
-FONT = {'family': 'serif', 'font': 'PT Serif', 'size': 9}
+FONT = {'family': 'serif', 
+        'font': 'PT Serif', 
+        'size': 9.5}
 
 # Critical value for confidence intervals
 CRIT = 1.645 # 90% confidence interval

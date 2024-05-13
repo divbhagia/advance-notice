@@ -1,7 +1,7 @@
 import numpy as np
 from tabulate import tabulate
 from scipy.stats import t
-from sklearn.linear_model import LogisticRegression
+import statsmodels.api as sm
 
 ##########################################################
 # Function to predict propensity scores
@@ -16,14 +16,12 @@ def pred_ps(data, coefs=None):
 
     # Fit model if no coefficients are provided
     if coefs is None:
-        model = LogisticRegression(max_iter=10000, solver='liblinear', 
-                                   fit_intercept=False)
-        model.fit(X, notice)
-        coefs = model.coef_.flatten()
+        model = sm.MNLogit(notice, X).fit()
+        coefs = model.params.values
     
     # Predict propensity scores
-    X = np.array(X, dtype=float)
     betaL = np.column_stack([np.zeros(X.shape[1]), coefs])
+    X = np.array(X, dtype=float)
     ps = np.exp(X @ betaL) / np.exp(X @ betaL).sum(axis=1, keepdims=True)
 
     return ps, coefs

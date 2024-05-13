@@ -42,6 +42,10 @@ dws = pd.read_csv(f'{DATA_DIR}/dws.csv')
 sample['dataind'], dws['dataind'], cps['dataind'] = 1, 2, 3
 master = pd.concat([cps, dws, sample], axis=0)
 
+# Select sample
+master = master[(master['year'] >= 1996) & (master['year'] <= 2020)]
+master = master[(master['age'] >= 21) & (master['age'] <= 64)]
+
 # Variable list and labels
 varlist = ['age', 'female', 'married', 'black', 'hs', 'sc', 'col', 
            'emp', 'unemp', 'nilf']

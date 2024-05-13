@@ -70,7 +70,8 @@ df['dwweekc'] = np.where(df['dwweekc'] == 0, np.nan, df['dwweekc'])
 
 # Other DWS variables
 df['dwwksun'] = np.where(df['dwwksun'] >= 996, np.nan, df['dwwksun'])
-varlist = ['dwjobsince', 'dwhrswkc', 'dwunion', 'dwlastwrk', 'dwhi']
+varlist = ['dwjobsince', 'dwhrswkc', 'dwunion', 'dwlastwrk', 
+           'dwhi', 'dwnotice']
 for var in varlist:
     df[var] = np.where(df[var] >= 96, np.nan, df[var])
 df['dwreas'] = np.where(df['dwreas'] >= 95, np.nan, df['dwreas'])
