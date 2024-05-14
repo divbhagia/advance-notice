@@ -100,7 +100,6 @@ def estimate(key):
 # Estimate model for different psiopts and intervals
 ######################################################
 
-SIMBIN_AGAIN = False
 if SIMBIN_AGAIN:
     for k in keys:
         psi_hat[k], psi_bin[k], h_avg_bin[k], h_avg[k] = estimate(k)
@@ -172,7 +171,7 @@ for row, subfig in enumerate(subfigs):
     for col, ax in enumerate(axs):
         key = f'{psiopts[row]}_{intervals[col]}'
         ax.set_title(f'Bin Size: {intervals[col]}', fontsize=9)
-        ax.plot(h_avg_bin_nrm[key]/psi_hat_nrm[key], color=Colors.RED)
+        ax.plot(h_avg_bin_nrm[key]/psi_hat_nrm[key], color=Colors.BLACK)
         ax.set_ylim(ylims[psiopts[row]])
         ax.set_yticks(np.arange(0, 1.25, 0.5))
         ax.grid(axis='y', linestyle='--', alpha=0.5)
