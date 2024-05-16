@@ -76,7 +76,7 @@ def gmm(data, nrm, ffopt='np', ps = None):
 # Function to estimate and calculate standard errors
 ##########################################################
 
-def estimate(data, nrm, ffopt, adj='none'):
+def estimate(data, nrm, ffopt, adj='none', seadj = False):
 
     # Estimate
     nL = data['notice'].value_counts().sort_index().values
@@ -85,8 +85,11 @@ def estimate(data, nrm, ffopt, adj='none'):
         ps, coefs = pred_ps(data)
         thta_hat, Jstat = gmm(data, nrm, ffopt, ps)
         thta_all = np.append(thta_hat, coefs)
-        se = std_errs(thta_all, data, nrm, ffopt, MomsFunc=indv_moms_ipw)
-        se = se[:len(thta_hat)]
+        if seadj:
+            se = std_errs(thta_all, data, nrm, ffopt, MomsFunc=indv_moms_ipw)
+            se = se[:len(thta_hat)]
+        else:
+            se = std_errs(thta_hat, data, nrm, ffopt, MomsFunc=indv_moms)
     elif adj == 'none':
         ps, coefs = None, None
         thta_hat, Jstat = gmm(data, nrm, ffopt)

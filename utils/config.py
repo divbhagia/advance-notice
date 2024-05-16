@@ -2,7 +2,7 @@
 # Some parameters
 DOWNLOAD_RAW = False
 EXTRACT_IPUMS = False
-SIM_SM_AGAIN = False
+SIM_SM_AGAIN = True
 RUN_EXT_AGAIN = True
 SIMBIN_AGAIN = True
 

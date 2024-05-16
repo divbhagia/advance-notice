@@ -126,23 +126,23 @@ ylims = {'nm': (-0.5, 2.75), 'inc': (-0.5, 3.25),
 ydist = {'nm': 1, 'inc': 1, 'dec': 0.5, 'cons': 0.5}
 labels = ['Estimate', 'True', 'Observed']
 xticklabs = np.arange(1, T+1, 2)
-psioptlabs = {'nm': 'Non-monotonic Hazard', 'inc': 'Increasing Hazard',
+psioptlabs = {'nm': 'Non-Monotonic Hazard', 'inc': 'Increasing Hazard',
               'dec': 'Decreasing Hazard', 'cons': 'Constant Hazard'}
 alph = ['A', 'B', 'C', 'D']
 
 # Plot hazards
-fig = plt.figure(constrained_layout=True, figsize=(6, 7))
+fig = plt.figure(constrained_layout=True, figsize=(6, 6.5))
 subfigs = fig.subfigures(nrows=4, ncols=1)
 for row, subfig in enumerate(subfigs):
-    subfig.suptitle(f'\n Panel {alph[row]}: {psioptlabs[psiopts[row]]}\n', 
-                    fontsize=10,)
+    subfig.suptitle(f'\nPanel {alph[row]}: {psioptlabs[psiopts[row]]}', 
+                    fontsize=10)
     axs = subfig.subplots(nrows=1, ncols=4)
     for col, ax in enumerate(axs):
         key = f'{psiopts[row]}_{intervals[col]}'
-        ax.set_title(f'Bin Size: {intervals[col]}', fontsize=9)
-        ax.plot(psi_bin_nrm[key], color=Colors.DGREY, linestyle='-',
+        ax.set_title(f'Bin Size: {intervals[col]}', fontsize=9, pad=4)
+        ax.plot(psi_hat_nrm[key], color=Colors.DGREY, linestyle='-',
                 linewidth=1.5)
-        ax.plot(psi_hat_nrm[key], color=Colors.RED, linestyle=':',
+        ax.plot(psi_bin_nrm[key], color=Colors.RED, linestyle=':',
                 linewidth=2.5)
         ax.plot(h_avg_bin_nrm[key], color=Colors.BLACK, linestyle='--')
         ax.set_ylim(ylims[psiopts[row]])
@@ -157,20 +157,19 @@ fig.legend(labels, loc='lower center', ncol=3, fontsize=11,
 plt.savefig(f'{OUTPUT_DIR}/sim_binningA.pdf', bbox_inches='tight',
             dpi = 300, format = 'pdf')
 
-
 # Plot Average type
 ylims = {'nm': (0, 1.25), 'inc': (0, 1.25), 
          'dec': (0.25, 1.25), 'cons': (0.25, 1.25)}
-fig = plt.figure(constrained_layout=True, figsize=(6, 7))
+fig = plt.figure(constrained_layout=True, figsize=(6, 6.5))
 subfigs = fig.subfigures(nrows=4, ncols=1)
 alph = ['A', 'B', 'C', 'D']
 for row, subfig in enumerate(subfigs):
-    subfig.suptitle(f'\nPanel {alph[row]}: {psioptlabs[psiopts[row]]}\n', 
+    subfig.suptitle(f'\nPanel {alph[row]}: {psioptlabs[psiopts[row]]}', 
                     fontsize=10)
     axs = subfig.subplots(nrows=1, ncols=4)
     for col, ax in enumerate(axs):
         key = f'{psiopts[row]}_{intervals[col]}'
-        ax.set_title(f'Bin Size: {intervals[col]}', fontsize=9)
+        ax.set_title(f'Bin Size: {intervals[col]}', fontsize=9, pad=4)
         ax.plot(h_avg_bin_nrm[key]/psi_hat_nrm[key], color=Colors.BLACK)
         ax.set_ylim(ylims[psiopts[row]])
         ax.set_yticks(np.arange(0, 1.25, 0.5))
