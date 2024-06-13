@@ -1,5 +1,5 @@
 
-This repository contains the code for the paper "Duration Dependence and Heterogeneity: Learning from Early Notice of Layoff" by Div Bhagia. 
+This repository contains the code for the paper "Duration Dependence and Heterogeneity: Learning from Early Notice of Layoff" by Div Bhagia. The latest version of the paper can be found on this link: [https://www.dbhagia.com/research/](https://www.dbhagia.com/research/).
 
 ## Software Requirements
 
