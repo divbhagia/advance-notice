@@ -1,6 +1,6 @@
 
 # Some parameters
-DOWNLOAD_RAW = False
+DOWNLOAD_RAW = True
 EXTRACT_IPUMS = False
 SIM_SM_AGAIN = True
 RUN_EXT_AGAIN = True

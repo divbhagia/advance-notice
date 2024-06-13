@@ -27,3 +27,6 @@ make
 ```
 If you did not create a virtual environment, just omit the `pyenv activate env-notice` command.
 
+## Data
+The paper uses the Displaced Worker Survey (DWS) of the Current Population Survey (CPS). The data is downloaded from IPUMS-CPS and is hosted on Dropbox at this [link](https://www.dropbox.com/scl/fo/r2gg07w5qy9kygd00uhbq/AFRzAmOEtgqU7uE2kauVTPw?rlkey=7rz8wj46r8gdrnjm9gbzdx47g&dl=0). The code will automatically download the raw data and process it to create the final dataset.
+
