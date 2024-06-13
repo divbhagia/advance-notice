@@ -43,8 +43,8 @@ gdist = 0.01
 kdist = 0.01
 glims = [0.90, 1.1]
 klims = [-0.1, 0.1]
-K1 = int((glims[1] - glims[0]) / gdist) + 1
-K2 = int((klims[1] - klims[0]) / kdist) + 1
+K1 = int((glims[1] - glims[0]) / gdist) 
+K2 = int((klims[1] - klims[0]) / kdist) 
 gpars = np.linspace(glims[0], glims[1], K1)
 kpars = np.linspace(klims[0], klims[1], K2)
 print(f'K1 = {K1}, K2 = {K2}')
@@ -103,7 +103,8 @@ plt.figure(figsize=[3, 2.5])
 plt.plot(gpars, Jstats[:, kidx0], color=red, linestyle='-')
 plt.axvline(gpars[gbest], color=black, linestyle='--',
             linewidth=0.75)
-plt.annotate(f'$\\gamma^*={gpars[gbest]:.0f}$', (1.005, 0.6))
+plt.annotate(f'$\\gamma^*={gpars[gbest]:.2f}$', 
+             (gpars[gbest]+0.5*gdist, 0.6))
 plt.xlabel('$\\gamma$')
 plt.tight_layout()
 plt.savefig(f'{OUTPUT_DIR}/fig_extgen_strhazA.pdf', dpi=300, format='pdf')
@@ -113,20 +114,21 @@ plt.figure(figsize=[3, 2.5])
 plt.plot(kpars, Jstats[gidx1, :], color=red, linestyle='-')
 plt.axvline(kpars[kbest], color=black, linestyle='--',
             linewidth=0.75)
-plt.annotate(f'$\\kappa_1^*={kpars[kbest]:.0f}$', (0.005, 6))
+plt.annotate(f'$\\kappa_1^*={kpars[kbest]:.2f}$', 
+             (kpars[kbest]+0.5*kdist, 6))
 plt.xlabel('$\\kappa_1$')
 plt.tight_layout()
 plt.savefig(f'{OUTPUT_DIR}/fig_extgen_hetA.pdf', dpi=300, format='pdf')
 
 # Plot for both varying
-text1 = f'$\\gamma^*={gpars[best[0]]:.0f}$\n$'
-text2 = f'\\kappa_1^*={kpars[best[1]]:.0f}$'
+text1 = f'$\\gamma^*={gpars[best[0]]:.2f}$\n$'
+text2 = f'\\kappa_1^*={kpars[best[1]]:.2f}$'
 plt.figure(figsize=[3, 2.5])
 plt.contourf(gpars, kpars, Jstats.T, 50, cmap='ocean_r', alpha=1)
 plt.plot(gpars[best[0]], kpars[best[1]], 'ko', markersize=3)
-plt.annotate(text1 + text2, (1.005, 0.01))
-plt.axhline(kpars[best[1]], color=black, linestyle='--', linewidth=0.5)
-plt.axvline(gpars[best[0]], color=black, linestyle='--', linewidth=0.5)
+plt.annotate(text1 + text2, (1.015, -0.04), fontsize=7)
+plt.axhline(0, color=black, linestyle='--', linewidth=0.5)
+plt.axvline(1, color=black, linestyle='--', linewidth=0.5)
 plt.colorbar()
 plt.xlabel('$\\gamma$')
 plt.ylabel('$\\kappa_1$')

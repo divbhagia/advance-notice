@@ -12,35 +12,31 @@ SCRIPTS := $(shell ls ./scripts/*.py)
 SCRIPTS := $(filter-out ./scripts/00_init.py, $(SCRIPTS))
 SCRIPTS := $(filter-out ./scripts/01_clean_data.py, $(SCRIPTS))
 
-# Files to clean before running the main program (optional)
-CLEANFILES += $(shell find ./scripts/quants/ -type f \! -name "sim*" ! -name "ext*")
-CLEANFILES += $(shell ls ./output/*)
-CLEANFILES += $(shell ls ./data/*)
-
 # Default target
-all: act-venv mainprog manuscript
-all_clean: act-venv clean all
+all: init_data mainprog manuscript
 
-act-venv:
-	@eval "$(pyenv virtualenv-init -)"
-	@eval "$(activate env-notice)"
-	@pip install -r requirements.txt
+# Remove output and data folders
+clean: 
+	rm -r ./output/
+	rm -r ./data/
+	echo "Removed output and data folders."
 
-clean:
-	for files in $(CLEANFILES); do \
-		rm -f $$files; \
-	done
+# Initialize, download and process raw data
+init_data:
+	echo "Downloading raw data..."
 	python ./scripts/00_init.py
-	echo "Data cleaning..."
+	echo "Processing raw data..."
 	python ./scripts/01_clean_data.py
-	echo "Data cleaning done."
+	echo "Data processing done."
 
+# Run scripts for the main program
 mainprog: 
 	for script in $(SCRIPTS); do \
 		echo $$script; \
 		python $$script; \
 	done
 
+# Compile manuscript
 manuscript:
 	cd ./draft; \
 	pdflatex $(MANUSCRIPT).tex; \

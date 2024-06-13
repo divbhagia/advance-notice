@@ -12,27 +12,17 @@ from utils.dataclean import get_ind, get_broad_ind
 from utils.dataclean import indicator, group_dur
 
 # Import parameters
-from utils.config import EXTRACT_IPUMS, IPUMS_DIR, DATA_DIR
+from utils.config import IPUMS_DIR, DATA_DIR
 from utils.config import RAW_DATA_DIR, SELECTED_VARS
 
-##########################################################
-# Extract IPUMS data or load previously extracted data
-##########################################################
-
-# Extract IPUMS data or load previously extracted data
-if EXTRACT_IPUMS:
-    from ipumspy import readers # type: ignore
-    ddi = readers.read_ipums_ddi(f'{IPUMS_DIR}/cps_00039.xml')
-    df = readers.read_microdata(ddi, f'{IPUMS_DIR}/cps_00039.dat')
-    df.columns = df.columns.str.lower()
-    df.to_csv(f'{IPUMS_DIR}/cps_raw.csv')
-else:
-    df = pd.read_csv(f'{IPUMS_DIR}/cps_raw.csv')
 
 ##########################################################
-# Remove armed forces and keep select variables 
+# Load data, remove armed forces and keep select variables 
 ##########################################################
-    
+
+# Load CPS data
+df = pd.read_csv(f'{IPUMS_DIR}/cps_raw.csv')
+
 # Filter armed forces & children under 14/15
 df = df[df['popstat']==1]
 

@@ -14,8 +14,8 @@ DATA_DIR = 'data'
 RAW_DATA_DIR = DATA_DIR + '/raw'
 IPUMS_DIR = RAW_DATA_DIR + '/ipums-extract'
 OUTPUT_DIR = 'output'
-QUANTS_DIR = 'scripts/quants'
-TEST_QUANTS_DIR = 'tests/quants'
+QUANTS_DIR = 'output/quants'
+TEST_QUANTS_DIR = 'output/quants'
 DIRS = [DATA_DIR, OUTPUT_DIR, QUANTS_DIR, TEST_QUANTS_DIR]
 
 # Specify font for plots

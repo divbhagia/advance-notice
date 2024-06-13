@@ -2,7 +2,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%% Locals 
-\newcommand{\agecutoff}{21 to 64} 
+\newcommand{\agecutoff}{21 to 64 } 
 \newcommand{\outdir}{./../output}
 
 
@@ -178,16 +178,27 @@ First period arrival rate $\delta(1)$ & 1 \\
 \floatfoot{\textit{Note:} The figure displays the fit of the search model for the two calibration exercises described in the text. Panel A shows the observed exit rate in the data (solid black line) alongside the corresponding fitted values obtained from calibrating the search model without heterogeneity (dotted red line) and with two types of workers (dashed blue line). Panel B displays the estimated structural hazard from the Mixed Hazard (MH) model (solid black line) and the fitted structural hazard from calibrating the search model with two types of workers (dashed blue line).}
 \end{figure}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% Online Appendix                             
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%%%%%%%%%%%%%%%%%%% Appendix: Data
 \setcounter{table}{0}
 \setcounter{figure}{0}
 \renewcommand{\thetable}{C\arabic{table}}
 \renewcommand{\thefigure}{C\arabic{figure}}
+
+% TABLE: Sample selection
+\begin{table}[p]
+\begin{threeparttable}
+\caption{Sample Selection}\label{tab_sample}
+\begin{tabularx}{\textwidth}{p{9cm}Y}
+\toprule
+Sample condition & Observations  \\ \midrule
+\input{\outdir/tab_sample_selection.tex}
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}
+\item  \textit{Note:} The table shows the number of observations remaining at each step of sample selection. 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
 
 % TABLE: Comparison of sample to DWS & CPS
 \begin{table}[t]
@@ -313,8 +324,8 @@ Duration & Observations & Recieved UI Benefits \\
 %%%%%%%%%%%%%%%%%%%% Appendix: Robustness
 \setcounter{table}{0}
 \setcounter{figure}{0}
-\renewcommand{\thetable}{E\arabic{table}}
-\renewcommand{\thefigure}{E\arabic{figure}}
+\renewcommand{\thetable}{D\arabic{table}}
+\renewcommand{\thefigure}{D\arabic{figure}}
 
 
 % FIGURE: Data and Estimates using the Unweighted Sample
@@ -332,6 +343,19 @@ Duration & Observations & Recieved UI Benefits \\
 \floatfoot{\textit{Note:} The figure presents data and estimates for the unweighted analytical sample. Panel A presents the exit rate from the data separately for long and short-notice workers. The solid blue line in panel B shows the estimated structural hazard from the Mixed Hazard model, while the dotted black line represents the average exit rate for short and long-notice workers in the data.}
 \end{figure}
 
+% FIGURE: Estimates with Alternative Notice Categories
+\begin{figure}[p]\caption{Estimates with Alternative Notice Categories}\label{fig_robust_notice_cat}
+\begin{subfigure}{.475\textwidth}
+\centering
+\includegraphics{\outdir/fig_notcatsA.pdf}
+\subcaption{No notice, 1-2 months, >2 months}
+\end{subfigure}
+\begin{subfigure}{.475\textwidth}
+\includegraphics{\outdir/fig_notcatsB.pdf}
+\subcaption{<1 month, 1-2 months, >2 months}
+\end{subfigure}
+\floatfoot{\textit{Note:} Panel A presents the estimated hazard for the sample consisting of individuals who received no notice, along with those who received notice periods of 1-2 months and >2 months, as in the main analytical sample. Panel B estimates are for individuals who received notice of <1 month, in addition to the groups from the main analytical sample. J-Stat refers to the Sargan-Hansen statistic for overidentifying restrictions.}
+\end{figure}
 
 % FIGURE: Non-Parametric Estimates
 \begin{figure}[t]\caption{Non-Parametric Estimates}\label{fig_robust_ff}
@@ -344,6 +368,18 @@ Duration & Observations & Recieved UI Benefits \\
 \begin{figure}[p]\caption{Estimates with Unemployment Duration Binned in 9-Week Intervals}\label{fig_robust_altbins}
 \includegraphics{\outdir/fig_robust_9week}
 \floatfoot{\textit{Note:} The figure presents estimates from the Mixed Hazard model using data with unemployment duration binned in 9-week intervals. The solid blue line represents estimates for the structural hazard assuming the Log-Logistic functional form. The dashed red line represents non-parametric estimates, while the dotted black line represents the observed exit rate from the data.}
+\end{figure}
+
+% FIGURE: Binning Robustness, Hazard
+\begin{figure}[p]\caption{Estimation on Binned Simulated Data: Hazard}\label{fig_sim_binA}
+	\includegraphics{\outdir/sim_binningA.pdf}
+\floatfoot{\textit{Note}: The figure presents results from a robustness exercise evaluating the impact of binning data into intervals. I calculate the moments used for estimation from the Mixed Hazard model with 12 durations. These moments are then binned into intervals of lengths ranging from 1 to 4, and the model is estimated using the binned moments. Along with the estimates of the structural hazard (dark grey solid line), I present two additional quantities binned similarly for comparison. The dotted red line represents the true structural cumulative hazard of exiting in the specific interval, while the black dashed line represents the average observed hazard.}
+\end{figure}
+
+% FIGURE: Binning Robustness, Average Type
+\begin{figure}[p]\caption{Estimation on Binned Simulated Data: Average Type}\label{fig_sim_binB}
+	\includegraphics{\outdir/sim_binningB.pdf}
+\floatfoot{\textit{Note}: The figure presents results from a robustness exercise evaluating the impact of binning data into intervals. I calculate the moments used for estimation from the Mixed Hazard model with 12 durations. These moments are then binned into intervals of lengths ranging from 1 to 4, and the model is estimated using the binned moments. The plots represent the average type at each duration as implied by the estimated structural hazard.}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%% Appendix: Generalization
@@ -399,8 +435,8 @@ Duration & Observations & Recieved UI Benefits \\
 %%%%%%%%%%%%%%%%%%%% Appendix: Search Model
 \setcounter{table}{0}
 \setcounter{figure}{0}
-\renewcommand{\thetable}{G\arabic{table}}
-\renewcommand{\thefigure}{G\arabic{figure}}
+\renewcommand{\thetable}{F\arabic{table}}
+\renewcommand{\thefigure}{F\arabic{figure}}
 
 
 % FIGURE: Simulation: Average Estimate
