@@ -55,7 +55,7 @@ nrm = 1
 ffopt = 'baseline'
 adj = 'ipw'
 colors = [Colors.BLUE, Colors.RED, Colors.BLACK]
-print_examine = True
+print_examine = False
 
 # Load baseline estimates for comparison
 baseline_ests = np.load(f'{QUANTS_DIR}/baseline_ests.npy', 
