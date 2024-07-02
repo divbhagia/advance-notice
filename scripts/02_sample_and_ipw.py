@@ -13,6 +13,7 @@ from tabulate import tabulate
 from utils.customplot import set_plot_aes
 from utils.datadesc import pred_ps, rmlinestex
 from utils.config import DATA_DIR, QUANTS_DIR, Colors, OUTPUT_DIR
+from utils.config import print_bold
 
 ##########################################################
 # Sample selection
@@ -130,8 +131,16 @@ ps, coefs = pred_ps(est_data)
 np.save(f'{QUANTS_DIR}/ps.npy', ps)
 np.save(f'{QUANTS_DIR}/coefs.npy', coefs)
 
-# Add balancing weights to the data
+# Check if any extreme propensity scores
 notvals = np.sort(sample['notice'].unique())
+keep = 0
+ll, ul = 0.1, 0.9
+for j in range(1,len(notvals)):
+    keep += (ps[:,j]>ll) & (ps[:,j]<ul)
+keep = (keep==max(keep))
+print_bold(f'Observations with {ll}<PS<{ul}: {sum(keep)}/{len(keep)}')
+
+# Add balancing weights to the data
 for j in range(len(notvals)):
     sample.loc[(sample['notice']==notvals[j]), 'wt'] = \
         1/ps[(sample['notice']==notvals[j]),j]
@@ -145,19 +154,19 @@ sample.to_csv(f'{DATA_DIR}/sample.csv', index=False)
 
 set_plot_aes()
 colors = [Colors().BLACK, Colors().RED]
-plt.figure(figsize=(5.5, 3.25))
+plt.figure(figsize=(5, 3))
 for j in range(len(notvals)):
     sns.kdeplot(ps[(sample['notice']==notvals[j]),1], 
                  color=colors[j], fill=True, alpha=0.075, 
                  edgecolor='black')
-plt.annotate('Short Notice', xy=(0.4, 2), 
-             xytext=(0.175, 2),
+plt.annotate('Short Notice', xy=(0.4, 2.05), 
+             xytext=(0.125, 2),
              arrowprops=dict(facecolor='black', arrowstyle='<-'))
-plt.annotate('Long Notice', xy=(0.635, 2.5), 
-             xytext=(0.715, 2.5),
+plt.annotate('Long Notice', xy=(0.615, 2.45), 
+             xytext=(0.725, 2.4),
              arrowprops=dict(facecolor='black', arrowstyle='<-'))
 sns.despine()
-plt.xlim(0.075, 0.99)
+plt.xticks(np.arange(0, 1.1, 0.1))
 plt.ylabel('Density')
 plt.xlabel('Propensity score')
 plt.tight_layout()
