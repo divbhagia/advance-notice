@@ -19,7 +19,7 @@ Here, `x` is the version of python you are using and `env-notice` is the name of
 
 If you used `pyenv` to create a virtual environment as described above, you can clone the repository, install the required packages, and run all the code using the following commands:
 ```bash
-git clone git@github.com:divbhagia/notice.git
+git clone https://github.com/divbhagia/notice.git
 cd notice
 pyenv activate env-notice
 pip install -r requirements.txt
