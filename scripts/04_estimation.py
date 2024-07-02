@@ -149,11 +149,11 @@ plt.savefig(f'{OUTPUT_DIR}/fig_baseline_estsB.pdf', dpi=300, format='pdf')
 h, *_ = data_moms(data_for_est, purpose='output')
 h_avg = h @ nL / nL.sum()
 runwtd = estimate(data_for_est, nrm, ffopt='baseline', adj='none')
-series = [runwtd['psi'], h_avg]
-se = [runwtd['psiSE'], None]
+series = [runwtd['psi'], r['psi'], h_avg]
+se = [runwtd['psiSE'], None, None]
 custom_plot(series, se, xlab='Weeks since unemployed', ylab='Hazard',
-           legendlabs= ['Structural', 'Observed'], xticklabs=xticklabs,
-           colors=[blue, black], linestyles=['-', ':'], 
+           legendlabs= ['Unweighted', 'Weighted', 'Observed'], 
+           xticklabs=xticklabs, colors=[blue, red, black], 
            ylims=[-0.05, 0.95], legendpos='lower left', ydist=0.2)
 plt.axvline(x=2, color='black', linestyle=':', linewidth=1.25, alpha=0.75)
 plt.text(0.69, 0.85, 'UI Exhaustion')
@@ -206,7 +206,7 @@ series = [r9week['psi'], r9weeknp['psi'], h_avg]
 se = [r9week['psiSE'], None, None]
 xticklabs = ['0-9', '9-18', '18-27', '27-36', '36-45']
 custom_plot(series, se, xlab='Weeks since unemployed', ylab='Hazard',
-           legendlabs= ['Baseline', 'Non-parametric', 'Observed'], xticklabs=xticklabs, figsize=(4.5, 3), 
+           legendlabs= ['Log-Logistic', 'Non-parametric', 'Observed'], xticklabs=xticklabs, figsize=(4.35, 2.85), 
            colors=[blue, red, black], linestyles=['-', '--', ':'], 
            ylims=[-0.075, 0.8], legendpos='lower left', ydist=0.2)
 plt.axvline(x=2, color='black', linestyle=':', linewidth=1.25, alpha=0.75)

@@ -44,3 +44,7 @@ dwsvars = ['dwstat', 'dwresp', 'dwrecall', 'dwfulltime', 'dwclass',
            'dwsuppwt', 'dws', 'dwreas', 'dwnotice', 'dwlastwrk', 'dwunion', 'dwben', 'dwexben', 'dwhi', 'dwind1990', 'dwocc1990', 'dwmove', 'dwhinow', 'dwyears', 'dwweekl', 'dwweekc', 'dwjobsince', 'dwhrswkc', 'dwwksun']
 SELECTED_VARS = cpsvars + dwsvars
 
+# Rando functions
+def print_bold(text): 
+    print(f"\033[1m{text}\033[0m")
+

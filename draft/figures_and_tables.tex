@@ -167,11 +167,11 @@ First period arrival rate $\delta(1)$ & 1 \\
 \centering
 \begin{subfigure}{.49\linewidth}
 \raggedleft
-\includegraphics{\outdir/search_model_fitA}
+\includegraphics{\outdir/fig_search_model_fitA}
 \subcaption{Observed Hazard}
 \end{subfigure} \hfill
 \begin{subfigure}{.49\linewidth}
-\includegraphics{\outdir/search_model_fitB}
+\includegraphics{\outdir/fig_search_model_fitB}
 \subcaption{Structural Hazard}
 \end{subfigure} 
 \vspace{-0.75em}
@@ -340,7 +340,7 @@ Duration & Observations & Recieved UI Benefits \\
 \includegraphics{\outdir/fig_robust_unwtd.pdf}
 \subcaption{Estimated Structural Hazard}
 \end{subfigure}
-\floatfoot{\textit{Note:} The figure presents data and estimates for the unweighted analytical sample. Panel A presents the exit rate from the data separately for long and short-notice workers. The solid blue line in panel B shows the estimated structural hazard from the Mixed Hazard model, while the dotted black line represents the average exit rate for short and long-notice workers in the data.}
+\floatfoot{\textit{Note:} The figure presents data and estimates for the unweighted analytical sample. Panel A displays the exit rate from the data separately for long and short-notice workers. In panel B, the solid blue line shows the estimated structural hazard from the Mixed Hazard model using unweighted moments, the dashed red line shows the estimate using weighted moments, and the dotted black line represents the average exit rate for short and long-notice workers in the data.}
 \end{figure}
 
 % FIGURE: Estimates with Alternative Notice Categories
@@ -372,13 +372,13 @@ Duration & Observations & Recieved UI Benefits \\
 
 % FIGURE: Binning Robustness, Hazard
 \begin{figure}[p]\caption{Estimation on Binned Simulated Data: Hazard}\label{fig_sim_binA}
-	\includegraphics{\outdir/sim_binningA.pdf}
+	\includegraphics{\outdir/fig_sim_binningA.pdf}
 \floatfoot{\textit{Note}: The figure presents results from a robustness exercise evaluating the impact of binning data into intervals. I calculate the moments used for estimation from the Mixed Hazard model with 12 durations. These moments are then binned into intervals of lengths ranging from 1 to 4, and the model is estimated using the binned moments. Along with the estimates of the structural hazard (dark grey solid line), I present two additional quantities binned similarly for comparison. The dotted red line represents the true structural cumulative hazard of exiting in the specific interval, while the black dashed line represents the average observed hazard.}
 \end{figure}
 
 % FIGURE: Binning Robustness, Average Type
 \begin{figure}[p]\caption{Estimation on Binned Simulated Data: Average Type}\label{fig_sim_binB}
-	\includegraphics{\outdir/sim_binningB.pdf}
+	\includegraphics{\outdir/fig_sim_binningB.pdf}
 \floatfoot{\textit{Note}: The figure presents results from a robustness exercise evaluating the impact of binning data into intervals. I calculate the moments used for estimation from the Mixed Hazard model with 12 durations. These moments are then binned into intervals of lengths ranging from 1 to 4, and the model is estimated using the binned moments. The plots represent the average type at each duration as implied by the estimated structural hazard.}
 \end{figure}
 

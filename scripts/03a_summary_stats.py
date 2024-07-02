@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from utils.datadesc import sum_tab, latex, stats_by_cat
+from utils.datadesc import sum_tab, latex
 
 # Data directory
 from utils.config import DATA_DIR, OUTPUT_DIR
@@ -15,7 +15,7 @@ sample = pd.read_csv(f'{DATA_DIR}/sample.csv')
 # Variable list
 varlist = ['age', 'female', 'married', 'black', 'col', 'pc', 
             'union', 'in_metro', 'dwyears', 'lnearnl']
-stats_by_cat(sample, 'lnearnl', 'notice', 'Log Earnings')
+
 # Variable labels
 labels = ['Age', 'Female', 'Married', 'Black',
             'College Degree', 'Plant Closure', 'Union Membership',

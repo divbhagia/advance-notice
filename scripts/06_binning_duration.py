@@ -53,11 +53,9 @@ def bin_quants(q, interval):
 # DGP parameters
 T, J = 12, 2
 psin = np.array([0.1, 0.2, 0.3, 0.5])[:J]
-betaL = np.array([1, 1])
-betaP = np.array([0, 0]) 
 
 # Estimation parameters
-psiopts = ['nm', 'inc', 'dec', 'cons']
+psiopts = ['inc', 'dec', 'cons', 'nm']
 intervals = [1, 2, 3, 4]
 keys = [f'{psiopt}_{interval}' for psiopt in psiopts for interval in intervals]
 
@@ -77,7 +75,7 @@ def estimate(key):
     interval = int(interval)
 
     # Get DGP quantities
-    dgpqnts = dgp(T, psin, psiopt, betaL, betaP)
+    dgpqnts = dgp(T, psin, psiopt)
     psiM, mu, psi = dgpqnts['psiM'], dgpqnts['mu'], dgpqnts['psi']
     nrm = mu[0]
     h = model_moms(psiM, mu)
@@ -86,6 +84,7 @@ def estimate(key):
     h_avg_bin = np.repeat(h_avg_bin, interval)
 
     # Calculate true binned psi
+    psi = psi * mu[0]
     psi_bin = bin_quants(psi, interval)
     psi_bin = np.repeat(psi_bin, interval)
 
@@ -124,10 +123,10 @@ h_avg_bin_nrm = {key: h_avg_bin[key] / h_avg_bin[key][0] for key in keys}
 ylims = {'nm': (-0.5, 2.75), 'inc': (-0.5, 3.25), 
          'dec': (0, 1.25), 'cons': (0.25, 1.25)}
 ydist = {'nm': 1, 'inc': 1, 'dec': 0.5, 'cons': 0.5}
-labels = ['Estimate', 'True', 'Observed']
-xticklabs = np.arange(1, T+1, 2)
-psioptlabs = {'nm': 'Non-Monotonic Hazard', 'inc': 'Increasing Hazard',
-              'dec': 'Decreasing Hazard', 'cons': 'Constant Hazard'}
+labels = ['Estimate', 'True (Cumulative)', 'Observed']
+xticklabs = np.arange(2, T+1, 2)
+psioptlabs = {'inc': 'Increasing Hazard', 'dec': 'Decreasing Hazard', 
+              'cons': 'Constant Hazard', 'nm': 'Non-Monotonic Hazard'}
 alph = ['A', 'B', 'C', 'D']
 
 # Plot hazards
@@ -146,15 +145,16 @@ for row, subfig in enumerate(subfigs):
                 linewidth=2.5)
         ax.plot(h_avg_bin_nrm[key], color=Colors.BLACK, linestyle='--')
         ax.set_ylim(ylims[psiopts[row]])
-        ax.set_xticks(np.arange(0, T+1, 2))
+        ax.set_xticks(np.arange(1, T+1, 2))
+        ax.set_xticklabels(xticklabs)
         ax.set_yticks(np.arange(0, ylims[psiopts[row]][1],
                                  ydist[psiopts[row]]))
         ax.grid(axis='y', linestyle='--', alpha=0.5)
-    # Add legend
+# Add legend
 fig.legend(labels, loc='lower center', ncol=3, fontsize=11,
            bbox_to_anchor=(0.5, -0.075), handlelength=3, handletextpad=0.5,
            columnspacing=1.5)
-plt.savefig(f'{OUTPUT_DIR}/sim_binningA.pdf', bbox_inches='tight',
+plt.savefig(f'{OUTPUT_DIR}/fig_sim_binningA.pdf', bbox_inches='tight',
             dpi = 300, format = 'pdf')
 
 # Plot Average type
@@ -173,9 +173,11 @@ for row, subfig in enumerate(subfigs):
         ax.plot(h_avg_bin_nrm[key]/psi_hat_nrm[key], color=Colors.BLACK)
         ax.set_ylim(ylims[psiopts[row]])
         ax.set_yticks(np.arange(0, 1.25, 0.5))
+        ax.set_xticks(np.arange(1, T+1, 2))
+        ax.set_xticklabels(xticklabs)
         ax.grid(axis='y', linestyle='--', alpha=0.5)
 
-plt.savefig(f'{OUTPUT_DIR}/sim_binningB.pdf', bbox_inches='tight',
+plt.savefig(f'{OUTPUT_DIR}/fig_sim_binningB.pdf', bbox_inches='tight',
             dpi = 300, format = 'pdf')
 
 ######################################################

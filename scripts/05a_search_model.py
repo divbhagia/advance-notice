@@ -73,7 +73,7 @@ labs = ['Data', 'No heterogeneity', '2-types of workers']
 colors = [Colors.BLACK, Colors.RED, Colors.BLUE]
 linestyles = ['-', ':', '--']
 linewidths = [1.5, 3, 1.5]
-savepath = f'{OUTPUT_DIR}/search_model_fitA.pdf'
+savepath = f'{OUTPUT_DIR}/fig_search_model_fitA.pdf'
 custom_plot([h_data, r1['h_obs'], r2['h_obs']], 
             colors=colors, xticklabs=xticklabs, xlab = xlab,
             linestyles=linestyles, linewidths=linewidths,
@@ -83,7 +83,7 @@ custom_plot([h_data, r1['h_obs'], r2['h_obs']],
 colors = [Colors.BLACK, Colors.BLUE]
 linestyles = ['-', '--']
 labs = ['MH Estimate', '2-types of workers']
-savepath = f'{OUTPUT_DIR}/search_model_fitB.pdf'
+savepath = f'{OUTPUT_DIR}/fig_search_model_fitB.pdf'
 custom_plot([psiH, r2['h_str']], colors=colors, 
             xticklabs=xticklabs, xlab = xlab,
             linestyles=linestyles, legendlabs=labs, 

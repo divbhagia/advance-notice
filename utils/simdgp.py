@@ -13,9 +13,9 @@ from utils.esthelpers import model_moms
 #   Notice (L) prob: exp(betaL * X) / sum(exp(betaL * X))
 #   phi(X) = betaP * X
 #   nu independent of L | X, 
-#       nu ~ Beta(a1, b1) if x7 = 1
-#       nu ~ Beta(a2, b2) if x7 = 0 & x6 = 1
-#       nu ~ Beta(a3, b3) if x7 = 0 & x6 = 0
+#       nu ~ Beta(a1, b1) if X1 = 1
+#       nu ~ Beta(a2, b2) if X1 = 0 & X2 = 1
+#       nu ~ Beta(a3, b3) if X1 = 0 & X2 = 0
 #   psin defines first period probs by notice length
 #  Note: with beta_L = (c, 0, 0), exogenous L
 
@@ -78,10 +78,12 @@ def dgp(T, psin, psiopt='nm', betaL=None, betaP=None, interval=1):
     
     # Initialize and errors and warnings
     J = len(psin)
-    if sum(betaP) > 0 or sum(betaP) < -1:
-        print('sum(betaP) not in (-1, 0), may lead to phi(X)>1 or <0')
-    if len(betaL.shape) != J-1:
-        raise ValueError('betaL must have J-1 dimensions')
+    if betaP is not None:
+        if sum(betaP) > 0 or sum(betaP) < -1:
+            print('sum(betaP) not in (-1, 0), may lead to phi(X)>1 or <0')
+    if betaL is not None:
+        if len(betaL.shape) != J-1:
+            raise ValueError('betaL must have J-1 dimensions')
 
     # BetaL and BetaP coefficients
     betaP = np.array([1, 0, 0]) if betaP is None else np.append(1, betaP)

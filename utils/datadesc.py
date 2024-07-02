@@ -16,7 +16,7 @@ def pred_ps(data, coefs=None, outmodel=False):
 
     # Fit model if no coefficients are provided
     if coefs is None:
-        model = sm.MNLogit(notice, X).fit()
+        model = sm.MNLogit(notice, X).fit(disp=0)
         coefs = model.params.values
     
     # Predict propensity scores
@@ -73,6 +73,14 @@ def latex(table, file, rmlines=True, addlines=None, **kwargs):
                 if i in addlines:
                     f.write(f'\\midrule\n')
 
+# Find significant rows
+def find_sig_rows(table):
+    sig_rows = np.array([False]*len(table))
+    for i, x in enumerate(table):
+        for j in range(len(x)):
+            if '***' in x[j]:
+                sig_rows[i] = True
+    return sig_rows
 
 ##########################################################
 # Function to give asterisks for significance
@@ -164,7 +172,7 @@ def sum_tab(df, varlist, byvar, labels=None, wts=None,
         if se:
             table.append(row2)
     nL = df[byvar].value_counts().sort_index().values
-    last_row = np.array((2*len(nL))*[''], dtype='<U16')
+    last_row = np.array((2*len(nL))*[''], dtype='<U32')
     last_row[0] = 'Observations'
     last_row[1:len(nL)+1] = nL
     table.append(last_row)
