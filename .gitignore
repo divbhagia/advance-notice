@@ -8,6 +8,7 @@ output/
 archive/
 draft/*
 !draft/figures_and_tables.tex
+!draft/div.cls
 scripts/quants/
 tests/quants/
 review/
