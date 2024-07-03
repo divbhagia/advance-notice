@@ -40,8 +40,9 @@ cond4 = (sample['dwfulltime'] == 2)
 cond5 = (sample['dwyears'] >= 0.5)
 cond6 = (sample['dwhi'] == 2)
 cond7 = (sample['dwjobsince'] <= 2)
-cond8 = (sample['dwnotice'] >= 3) & (sample['dwnotice'] <= 4)
-conds = np.array([eval(f'cond{j+1}') for j in range(8)]).T
+cond8 = (sample['dwnotice'] >= 2) & (sample['dwnotice'] <= 4)
+cond9 = (sample['dwnotice'] >= 3) & (sample['dwnotice'] <= 4)
+conds = np.array([eval(f'cond{j+1}') for j in range(9)]).T
 
 # Also keep sample with all notcats
 sample_all = sample.loc[conds[:,:7].all(axis=1)].copy()
@@ -56,7 +57,8 @@ condlabs = ['DWS 1996-2020, 21-64 year old respondents',
             'Employed for at least 6 months at lost job',
             'Had health insurance at lost job',
             'Held less than 3 jobs since lost job',
-            'Got a notice of 1-2 or >2 months',
+            'Got a notice before job loss',
+            'Got a notice of >1 month',
             ]
 
 # Apply conditions and record sample size reductions in a table
