@@ -34,6 +34,25 @@ sample = pd.read_csv(f'{DATA_DIR}/sample_all.csv')
 X = pd.read_csv(f'{DATA_DIR}/controls_all.csv')
 sample['notice'] = sample['dwnotice']
 
+# Plot summary statistics for full sample
+varlist = ['age', 'female', 'married', 'black', 'col', 'pc', 
+            'union', 'in_metro', 'dwyears', 'lnearnl']
+table = sum_tab(sample, varlist, 'notice', labels = varlist, 
+                se=False, diff=False)
+print(tabulate(table, headers=['Variable', '1', '2', '3', '4'],))
+            
+# Table convert to numbers
+tab = np.array(table[:,1:], dtype=float)
+diff = tab[:,-1].reshape(-1,1)-tab
+diff_str = np.array([['']*(tab.shape[1])]*tab.shape[0], dtype='<U8')
+# turn diff to string with 2 digits (keep structure)
+for row in range(diff.shape[0]):
+    for col in range(diff.shape[1]):
+        diff_str[row, col] = f'{diff[row, col]:.2f}'
+# Add varlist as row names for diff_str
+diff_str = np.insert(diff_str[:-1,:], 0, varlist, axis=1)
+print(tabulate(diff_str, headers=['Variable', '1', '2', '3', '4'],))
+
 # Prepare data for estimation
 data_all = pd.concat([sample[['notice', 'dur', 'cens']], X], axis=1)
 data_134 = data_all[data_all['notice'] != 2].copy()
@@ -55,7 +74,7 @@ nrm = 1
 ffopt = 'baseline'
 adj = 'ipw'
 colors = [Colors.BLUE, Colors.RED, Colors.BLACK]
-print_examine = False
+print_examine = True
 
 # Load baseline estimates for comparison
 baseline_ests = np.load(f'{QUANTS_DIR}/baseline_ests.npy', 
@@ -164,13 +183,17 @@ for i, key in enumerate(psi_hats.keys()):
 if print_examine:
 
     # Data for examination
+    linestyles = ['-.', '-', '--']
+    colors 
     plt.figure(figsize=(10, 3))
     for i, name in enumerate(datasets.keys()):  
         plt.subplot(1, 4, i+1)
         notvals = np.sort(datasets[name]['notice'].unique())
+        clrs = colors[-len(notvals):]
+        lstls = linestyles[-len(notvals):]
         series = [h[name][:,j] for j in range(len(notvals))]
-        custom_plot(series, subplot=True,
-                    legendlabs=[f'Notice {int(x)}' for x in notvals])
+        custom_plot(series, subplot=True, colors=clrs, linestyles=lstls,
+                    legendlabs=[f'{int(x)}' for x in notvals])
 
     # Summary statistics for examination
     for name in datasets.keys():
