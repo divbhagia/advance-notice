@@ -1,5 +1,6 @@
+import numpy as np
 from utils.searchmodel import parameters, uiben, avg_opt
-from utils.datadesc import custom_plot
+from utils.customplot import custom_plot
 
 ######################################################
 # Baseline parameters
@@ -24,6 +25,7 @@ pars = (T, sgma, beta, rho, thta, w, b, a, dlta)
 
 b1 = uiben(T, Tb=4, r=0.5)
 b2 = uiben(T, Tb=8, r=0.5)
+dlta2 = np.append(2 * dlta[0], dlta[1:])
 pars1 = (T, sgma, beta, rho, thta, w, b1, a, dlta)
 pars2 = (T, sgma, beta, rho, thta, w, b2, a, dlta)
 r1 = avg_opt(*pars1, nu=[nu, nu])

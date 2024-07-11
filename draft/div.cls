@@ -102,11 +102,11 @@
 %\RequirePackage[nodisplayskipstretch]{setspace}
 \RequirePackage{setspace}
 \RequirePackage{indentfirst}
-\setlength{\parindent}{1em}						% Paragraph Indentation
-\setlength{\skip\footins}{1cm} 					% Footnote Space
+\setlength{\parindent}{1em}					% Paragraph Indentation
+\setlength{\skip\footins}{1cm} 				% Footnote Space
 \setlength{\parskip}{2mm} 						% Paragraph Skip
-\setstretch{1.25} 								% Line Space
-\RequirePackage[margin=1.15in]{geometry} 		% Margins
+\setstretch{1.5} 								   % Line Space
+\RequirePackage[margin=1.25in]{geometry} 	% Margins
 
 
 % Sections & Subsections 
