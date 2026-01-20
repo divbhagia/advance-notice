@@ -4,7 +4,6 @@ __pycache__/
 **/.DS_Store/*
 data/
 logs/
-output/
 archive/
 draft/*
 !draft/figures_and_tables.tex
